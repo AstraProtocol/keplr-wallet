@@ -65,10 +65,11 @@ window.keplr = new Keplr(
 );
 
 // Make sure that icon file will be included in bundle
-require("./public/assets/temp-icon.svg");
+require("./public/assets/logo.png");
 require("./public/assets/icon/icon-16.png");
 require("./public/assets/icon/icon-48.png");
 require("./public/assets/icon/icon-128.png");
+require("./public/assets/icon/icon-256.png");
 
 configure({
   enforceActions: "always", // Make mobx to strict mode.
@@ -109,9 +110,9 @@ const StateRenderer: FunctionComponent = observer(() => {
     return (
       <div style={{ height: "100%" }}>
         <Banner
-          icon={require("./public/assets/temp-icon.svg")}
+          icon={require("./public/assets/logo.png")}
           logo={require("./public/assets/logo-temp.png")}
-          subtitle="Wallet for the Interchain"
+          subtitle="Wallet for the Astra Blockchain"
         />
       </div>
     );
@@ -119,9 +120,9 @@ const StateRenderer: FunctionComponent = observer(() => {
     return (
       <div style={{ height: "100%" }}>
         <Banner
-          icon={require("./public/assets/temp-icon.svg")}
+          icon={require("./public/assets/logo.png")}
           logo={require("./public/assets/logo-temp.png")}
-          subtitle="Wallet for the Interchain"
+          subtitle="Wallet for the Astra Blockchain"
         />
       </div>
     );

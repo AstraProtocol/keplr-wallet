@@ -82,16 +82,11 @@ export const RegisterPage: FunctionComponent = observer(() => {
       <div className={style.logoContainer}>
         <img
           className={style.icon}
-          src={require("../../public/assets/temp-icon.svg")}
+          src={require("../../public/assets/logo.png")}
           alt="logo"
         />
         <div className={style.logoInnerContainer}>
-          <img
-            className={style.logo}
-            src={require("../../public/assets/logo-temp.png")}
-            alt="logo"
-          />
-          <div className={style.paragraph}>Wallet for the Interchain</div>
+          <div className={style.paragraph}>Wallet for the Astra Blockchain</div>
         </div>
       </div>
       {registerConfig.render()}

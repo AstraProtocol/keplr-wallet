@@ -86,9 +86,9 @@ export const LockPage: FunctionComponent = observer(() => {
         })}
       >
         <Banner
-          icon={require("../../public/assets/temp-icon.svg")}
+          icon={require("../../public/assets/logo.png")}
           logo={require("../../public/assets/logo-temp.png")}
-          subtitle="Wallet for the Interchain"
+          subtitle="Wallet for the Astra Blockchain"
         />
         <PasswordInput
           label={intl.formatMessage({
