@@ -5,13 +5,13 @@ order: 1
 
 ## How to detect Keplr
 
-You can determine whether Keplr is installed on the user device by checking `window.keplr`. If `window.keplr` returns `undefined` after document.load, Keplr is not installed. There are several ways to wait for the load event to check the status. Refer to the examples below:
+You can determine whether Keplr is installed on the user device by checking `window.astra`. If `window.astra` returns `undefined` after document.load, Keplr is not installed. There are several ways to wait for the load event to check the status. Refer to the examples below:
 
 You can register the function to `window.onload`:
 
 ```javascript
 window.onload = async () => {
-    if (!window.keplr) {
+    if (!window.astra) {
         alert("Please install keplr extension");
     } else {
         const chainId = "cosmoshub-4";
@@ -19,9 +19,9 @@ window.onload = async () => {
         // Enabling before using the Keplr is recommended.
         // This method will ask the user whether to allow access if they haven't visited this website.
         // Also, it will request that the user unlock the wallet if the wallet is locked.
-        await window.keplr.enable(chainId);
+        await window.astra.enable(chainId);
     
-        const offlineSigner = window.keplr.getOfflineSigner(chainId);
+        const offlineSigner = window.astra.getOfflineSigner(chainId);
     
         // You can get the address/public keys by `getAccounts` method.
         // It can return the array of address/public key.
@@ -43,12 +43,12 @@ or track the document's ready state through the document event listener:
 
 ```javascript
 async getKeplr(): Promise<Keplr | undefined> {
-    if (window.keplr) {
-        return window.keplr;
+    if (window.astra) {
+        return window.astra;
     }
     
     if (document.readyState === "complete") {
-        return window.keplr;
+        return window.astra;
     }
     
     return new Promise((resolve) => {
@@ -57,7 +57,7 @@ async getKeplr(): Promise<Keplr | undefined> {
                 event.target &&
                 (event.target as Document).readyState === "complete"
             ) {
-                resolve(window.keplr);
+                resolve(window.astra);
                 document.removeEventListener("readystatechange", documentStateChange);
             }
         };
@@ -96,7 +96,7 @@ Then, you can add the `@keplr-wallet/types` window to a global window object and
 enable(chainIds: string | string[]): Promise<void>
 ```
 
-The `window.keplr.enable(chainIds)` method requests the extension to be unlocked if it's currently locked. If the user hasn't given permission to the webpage, it will ask the user to give permission for the webpage to access Keplr.
+The `window.astra.enable(chainIds)` method requests the extension to be unlocked if it's currently locked. If the user hasn't given permission to the webpage, it will ask the user to give permission for the webpage to access Keplr.
 
 `enable` method can receive one or more chain-id as an array. When the array of chain-id is passed, you can request permissions for all chains that have not yet been authorized at once.
 
@@ -232,7 +232,7 @@ If `preferNoSetMemo` is set to true, Keplr will not override the memo and set fi
 
 You can set the values as follows:
 ```javascript
-window.keplr.defaultOptions = {
+window.astra.defaultOptions = {
     sign: {
         preferNoSetFee: true,
         preferNoSetMemo: true,
