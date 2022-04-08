@@ -12,3 +12,4 @@ dist/*
 prod/*
 
 yarn.lock
+src/config.ts

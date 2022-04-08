@@ -157,7 +157,7 @@ export const AssetStakedChartView: FunctionComponent = observer(() => {
 
   return (
     <React.Fragment>
-      <div className={styleAsset.containerChart}>
+      {/* <div className={styleAsset.containerChart}>
         <div className={styleAsset.centerText}>
           <div className={styleAsset.big}>
             <FormattedMessage id="main.account.chart.total-balance" />
@@ -265,7 +265,7 @@ export const AssetStakedChartView: FunctionComponent = observer(() => {
             }}
           />
         </React.Suspense>
-      </div>
+      </div> */}
       <div style={{ marginTop: "12px", width: "100%" }}>
         <div className={styleAsset.legend}>
           <div className={styleAsset.label} style={{ color: "#5e72e4" }}>

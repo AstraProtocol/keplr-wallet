@@ -7,7 +7,6 @@ import {
   ASTRA_RPC_CONFIG,
   ASTRA_RPC_ENDPOINT,
   PRIVILEGED_ORIGINS,
- 
 } from "./config.var";
 
 export const EmbedChainInfos: ChainInfo[] = [
@@ -19,10 +18,9 @@ export const EmbedChainInfos: ChainInfo[] = [
     chainId: "astra_11110-1",
     chainName: "Astra",
     stakeCurrency: {
-      coinDenom: "ASTRA",
-      coinMinimalDenom: "astra",
+      coinDenom: "ASA",
+      coinMinimalDenom: "aastra",
       coinDecimals: 18,
-      coinGeckoId: "astra",
     },
     walletUrl:
       process.env.NODE_ENV === "production"
@@ -38,18 +36,16 @@ export const EmbedChainInfos: ChainInfo[] = [
     bech32Config: Bech32Address.defaultBech32Config("astra"),
     currencies: [
       {
-        coinDenom: "ASTRA",
-        coinMinimalDenom: "astra",
+        coinDenom: "ASA",
+        coinMinimalDenom: "aastra",
         coinDecimals: 18,
-        coinGeckoId: "astra",
       },
     ],
     feeCurrencies: [
       {
-        coinDenom: "ASTRA",
-        coinMinimalDenom: "astra",
+        coinDenom: "ASA",
+        coinMinimalDenom: "aastra",
         coinDecimals: 18,
-        coinGeckoId: "astra",
       },
     ],
     coinType: 60,
