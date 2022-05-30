@@ -15,7 +15,7 @@ export const EmbedChainInfos: ChainInfo[] = [
     rpcConfig: ASTRA_RPC_CONFIG,
     rest: ASTRA_REST_ENDPOINT,
     restConfig: ASTRA_REST_CONFIG,
-    chainId: "astra_11110-1",
+    chainId: "astra_11112-1",
     chainName: "Astra",
     stakeCurrency: {
       coinDenom: "ASA",
@@ -50,7 +50,7 @@ export const EmbedChainInfos: ChainInfo[] = [
     ],
     coinType: 60,
     features: ["ibc-transfer", "ibc-go"],
-  }
+  },
 ];
 
 // The origins that are able to pass any permission that external webpages can have.
