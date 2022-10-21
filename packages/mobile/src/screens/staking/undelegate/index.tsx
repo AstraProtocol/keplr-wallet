@@ -174,8 +174,8 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
           sendConfigs.amountConfig.amount,
           sendConfigs.recipientConfig.recipient
         );
-        await tx.simulateAndSend(
-          { gasAdjustment: 1.3 },
+        await tx.sendWithGasPrice(
+          { gas: gasLimit },
           sendConfigs.memoConfig.memo,
           {
             preferNoSetMemo: true,
@@ -261,22 +261,21 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
           clearBackground
         />
       </KeyboardAwareScrollView>
-      <View
-        style={style.flatten(["flex-1", "justify-end", "margin-bottom-12"])}
-      >
+      <View style={style.flatten(["flex-1", "justify-end"])}>
         <View style={style.flatten(["height-1", "background-color-gray-70"])} />
         <View
-          style={{
-            ...style.flatten(["background-color-background"]),
-            height: 56,
-          }}
+          style={style.flatten([
+            "background-color-background",
+            "height-68",
+            "justify-center",
+            "padding-x-page",
+          ])}
         >
           <Button
             text={intl.formatMessage({ id: "stake.undelegate.undelegate" })}
             disabled={amountErrorText.length !== 0}
             loading={account.txTypeInProgress === "redelegate"}
             onPress={onContinueHandler}
-            containerStyle={style.flatten(["margin-x-page", "margin-top-12"])}
           />
         </View>
         <AvoidingKeyboardBottomView />

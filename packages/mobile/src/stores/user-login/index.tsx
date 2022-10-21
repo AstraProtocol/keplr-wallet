@@ -1,20 +1,32 @@
-import { TikiServiceProvider } from "@khanh-vo/service-provider-tiki";
-import { TorusStorageLayer } from "@tkey/storage-layer-torus";
-import { ShareSerializationModule, SHARE_SERIALIZATION_MODULE_NAME } from "@tkey/share-serialization";
-import { SecurityQuestionsModule, SECURITY_QUESTIONS_MODULE_NAME } from "@tkey/security-questions";
-import { SeedPhraseModule, SEED_PHRASE_MODULE_NAME, MetamaskSeedPhraseFormat } from "@tkey/seed-phrase";
-import { action, computed, makeObservable, observable } from "mobx";
-import { ModuleMap } from "@tkey/common-types";
 import { Mnemonic } from "@keplr-wallet/crypto";
+import { TikiServiceProvider } from "@khanh-vo/service-provider-tiki";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { ModuleMap } from "@tkey/common-types";
 import ThresholdKey from "@tkey/default";
+import {
+  SecurityQuestionsModule,
+  SECURITY_QUESTIONS_MODULE_NAME,
+} from "@tkey/security-questions";
+import {
+  MetamaskSeedPhraseFormat,
+  SeedPhraseModule,
+  SEED_PHRASE_MODULE_NAME,
+} from "@tkey/seed-phrase";
+import {
+  ShareSerializationModule,
+  SHARE_SERIALIZATION_MODULE_NAME,
+} from "@tkey/share-serialization";
+import { TorusStorageLayer } from "@tkey/storage-layer-torus";
 import BN from "bn.js";
 import * as WebBrowser from "expo-web-browser";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { SocialLoginConfigPROD, SocialLoginConfigUAT } from "./config";
+import { action, computed, makeObservable, observable } from "mobx";
 import { loginWithApple } from "./apple-service";
+import { SocialLoginConfigPROD, SocialLoginConfigUAT } from "./config";
 
 export enum RegisterType {
-  new, recover, unknown
+  new,
+  recover,
+  unknown,
 }
 
 export declare type ServiceProviderType = "apple" | "google" | "tiki";
@@ -36,14 +48,14 @@ export class UserLoginStore {
   KEY = "__socialLoginInfo__";
   protected _socialLoginEnabledFunc?: () => boolean;
 
-  constructor(params: {
-    socialLoginEnabledFunc?: () => boolean
-  }) {
+  constructor(params: { socialLoginEnabledFunc?: () => boolean }) {
     const { socialLoginEnabledFunc } = params;
     this._socialLoginEnabledFunc = socialLoginEnabledFunc;
 
     const DEBUG = true;
-    const { storageLayerUrl, serviceProviders } = DEBUG ? SocialLoginConfigUAT : SocialLoginConfigPROD;
+    const { storageLayerUrl, serviceProviders } = DEBUG
+      ? SocialLoginConfigUAT
+      : SocialLoginConfigPROD;
 
     this._storageLayerUrl = storageLayerUrl;
     this._serviceProviders = serviceProviders;
@@ -61,7 +73,7 @@ export class UserLoginStore {
           isSocialLoginActive,
           shareB,
           serviceProviderType,
-          socialLoginData
+          socialLoginData,
         } = JSON.parse(value);
 
         this._isSocialLoginActive = isSocialLoginActive ?? false;
@@ -131,7 +143,10 @@ export class UserLoginStore {
 
   @computed
   get isSocialLoginActive(): boolean {
-    if (!this._socialLoginEnabledFunc || this._socialLoginEnabledFunc() !== true) {
+    if (
+      !this._socialLoginEnabledFunc ||
+      this._socialLoginEnabledFunc() !== true
+    ) {
       return false;
     }
 
@@ -146,7 +161,10 @@ export class UserLoginStore {
 
   @computed
   get socialLoginData(): any | undefined {
-    if (!this._socialLoginEnabledFunc || this._socialLoginEnabledFunc() !== true) {
+    if (
+      !this._socialLoginEnabledFunc ||
+      this._socialLoginEnabledFunc() !== true
+    ) {
       return undefined;
     }
 
@@ -155,15 +173,21 @@ export class UserLoginStore {
 
   @action
   async openLogin(params: {
-    serviceProviderType: ServiceProviderType,
-    redirectUrl?: string,
+    serviceProviderType: ServiceProviderType;
+    redirectUrl?: string;
   }) {
-    const { serviceProviderType, redirectUrl = "astrawallet://" } = params;
+    const { serviceProviderType, redirectUrl = "app.astra.oauth://" } = params;
 
-    var { hostUrl, loginPath = "" } = this._serviceProviders[serviceProviderType];
+    var { hostUrl, loginPath = "" } = this._serviceProviders[
+      serviceProviderType
+    ];
 
-    hostUrl = hostUrl.endsWith("/") ? hostUrl.substring(0, hostUrl.length - 1) : hostUrl;
-    loginPath = loginPath.startsWith("/") ? loginPath.substring(1, loginPath.length) : loginPath;
+    hostUrl = hostUrl.endsWith("/")
+      ? hostUrl.substring(0, hostUrl.length - 1)
+      : hostUrl;
+    loginPath = loginPath.startsWith("/")
+      ? loginPath.substring(1, loginPath.length)
+      : loginPath;
     const url = `${hostUrl}/${loginPath}`;
 
     let socialLoginData: any;
@@ -176,16 +200,11 @@ export class UserLoginStore {
         }
 
         socialLoginData = result.socialLoginData;
-      }
-      catch (e) {
+      } catch (e) {
         throw e;
       }
-    }
-    else {
-      const result = await WebBrowser.openAuthSessionAsync(
-        url,
-        redirectUrl,
-      );
+    } else {
+      const result = await WebBrowser.openAuthSessionAsync(url, redirectUrl);
 
       if (result.type !== "success") {
         throw new Error(LoginErrorMsg.oauthFailed);
@@ -212,12 +231,17 @@ export class UserLoginStore {
     this._shareB = shareB;
     this._serviceProviderType = serviceProviderType;
     this._socialLoginData = socialLoginData;
+
+    const info = await this.checkSocialLogin();
+    this.updateRegisterType(
+      info.isNewUser ? RegisterType.new : RegisterType.recover
+    );
   }
 
   @action
   async reconstructSocialLoginData(params: {
-    password: string,
-    mnemonic?: string,
+    password: string;
+    mnemonic?: string;
   }) {
     const jsonString = await AsyncStorage.getItem(this.KEY);
     if (!jsonString) {
@@ -231,7 +255,10 @@ export class UserLoginStore {
 
     const modules = this.getModules();
     const storageLayer = this.getStorageLayer();
-    const serviceProvider = this.getServiceProvider({ shareB, serviceProviderType });
+    const serviceProvider = this.getServiceProvider({
+      shareB,
+      serviceProviderType,
+    });
 
     const shareStore = await storageLayer.getMetadata({ serviceProvider });
     const isNewUser = shareStore.message === this.KEY_NOT_FOUND;
@@ -256,23 +283,28 @@ export class UserLoginStore {
         });
 
         await tKey.reconstructKey(false);
-        await (tKey.modules[SECURITY_QUESTIONS_MODULE_NAME] as SecurityQuestionsModule).generateNewShareWithSecurityQuestions(
+        await (tKey.modules[
+          SECURITY_QUESTIONS_MODULE_NAME
+        ] as SecurityQuestionsModule).generateNewShareWithSecurityQuestions(
           password,
-          this.SECUTIRY_QUESTION,
+          this.SECUTIRY_QUESTION
         );
-        await (tKey.modules[SEED_PHRASE_MODULE_NAME] as SeedPhraseModule).setSeedPhrase(this.SEED_PHRASE_TYPE, validMnemonic);
+        await (tKey.modules[
+          SEED_PHRASE_MODULE_NAME
+        ] as SeedPhraseModule).setSeedPhrase(
+          this.SEED_PHRASE_TYPE,
+          validMnemonic
+        );
         await tKey.syncLocalMetadataTransitions();
         await tKey.reconstructKey(false);
-      }
-      else {
+      } else {
         await tKey.initialize();
-        await (tKey.modules[SECURITY_QUESTIONS_MODULE_NAME] as SecurityQuestionsModule).inputShareFromSecurityQuestions(
-          password,
-        );
+        await (tKey.modules[
+          SECURITY_QUESTIONS_MODULE_NAME
+        ] as SecurityQuestionsModule).inputShareFromSecurityQuestions(password);
         await tKey.reconstructKey(false);
       }
-    }
-    catch (e) {
+    } catch (e) {
       throw e;
     }
 
@@ -316,7 +348,10 @@ export class UserLoginStore {
     }
 
     const storageLayer = this.getStorageLayer();
-    const serviceProvider = this.getServiceProvider({ shareB, serviceProviderType });
+    const serviceProvider = this.getServiceProvider({
+      shareB,
+      serviceProviderType,
+    });
 
     const shareStore = await storageLayer.getMetadata({ serviceProvider });
     const isNewUser = shareStore.message === this.KEY_NOT_FOUND;
@@ -328,24 +363,24 @@ export class UserLoginStore {
   }
 
   async getSeedPhrase() {
-    const seedPhrases = await (
-      this._tKey?.modules[SEED_PHRASE_MODULE_NAME] as SeedPhraseModule
-    ).getSeedPhrases();
+    const seedPhrases = await (this._tKey?.modules[
+      SEED_PHRASE_MODULE_NAME
+    ] as SeedPhraseModule).getSeedPhrases();
     return seedPhrases[0].seedPhrase;
   }
 
   async getPassword() {
-    return (
-      this._tKey?.modules[SECURITY_QUESTIONS_MODULE_NAME] as SecurityQuestionsModule
-    ).getAnswer();
+    return (this._tKey?.modules[
+      SECURITY_QUESTIONS_MODULE_NAME
+    ] as SecurityQuestionsModule).getAnswer();
   }
 
   async updatePassword(password: string) {
-    await (
-      this._tKey?.modules[SECURITY_QUESTIONS_MODULE_NAME] as SecurityQuestionsModule
-    ).changeSecurityQuestionAndAnswer(
+    await (this._tKey?.modules[
+      SECURITY_QUESTIONS_MODULE_NAME
+    ] as SecurityQuestionsModule).changeSecurityQuestionAndAnswer(
       password,
-      this.SECUTIRY_QUESTION,
+      this.SECUTIRY_QUESTION
     );
   }
 
@@ -353,17 +388,13 @@ export class UserLoginStore {
     let validMnemonic;
     if (mnemonic) {
       validMnemonic = mnemonic;
-    }
-    else {
+    } else {
       validMnemonic = await Mnemonic.generateSeed((array) => {
         return Promise.resolve(crypto.getRandomValues(array));
-      })
+      });
     }
     const privateKey = Buffer.from(
-      Mnemonic.generateWalletFromMnemonic(
-        validMnemonic,
-        `m/44'/60'/0'/0/0`
-      )
+      Mnemonic.generateWalletFromMnemonic(validMnemonic, `m/44'/60'/0'/0/0`)
     );
 
     console.log("__mnemonic__", validMnemonic);
@@ -372,7 +403,7 @@ export class UserLoginStore {
     return {
       mnemonic: validMnemonic,
       privateKey,
-    }
+    };
   }
 
   protected getModules(): ModuleMap {
@@ -382,13 +413,15 @@ export class UserLoginStore {
     return {
       [SECURITY_QUESTIONS_MODULE_NAME]: new SecurityQuestionsModule(true),
       [SHARE_SERIALIZATION_MODULE_NAME]: new ShareSerializationModule(),
-      [SEED_PHRASE_MODULE_NAME]: new SeedPhraseModule([metamaskSeedPhraseFormat]),
+      [SEED_PHRASE_MODULE_NAME]: new SeedPhraseModule([
+        metamaskSeedPhraseFormat,
+      ]),
     };
   }
 
   protected getServiceProvider(params: {
-    shareB: string,
-    serviceProviderType: ServiceProviderType,
+    shareB: string;
+    serviceProviderType: ServiceProviderType;
   }) {
     const { shareB: postboxKey, serviceProviderType } = params;
     const { hostUrl } = this._serviceProviders[serviceProviderType];

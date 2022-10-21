@@ -4,7 +4,6 @@ import React, {
   useEffect,
   useRef,
 } from "react";
-import { PageWithScrollViewInBottomTabView } from "../../components/page";
 import {
   AppState,
   AppStateStatus,
@@ -14,20 +13,21 @@ import {
   Text,
   View,
 } from "react-native";
+import { PageWithScrollViewInBottomTabView } from "../../components/page";
 import { useStore } from "../../stores";
 import { useStyle } from "../../styles";
 
 import { observer } from "mobx-react-lite";
 
-import { usePrevious } from "../../hooks";
-import { RouteProp, useFocusEffect, useRoute } from "@react-navigation/native";
 import { ChainUpdaterService, KeyRingStatus } from "@keplr-wallet/background";
-import { AccountCardNew, ActionsCard, BalanceCard } from "./card";
-import { ScanIcon } from "../../components";
+import { RouteProp, useFocusEffect, useRoute } from "@react-navigation/native";
+import { useIntl } from "react-intl";
 import { TouchableOpacity } from "react-native-gesture-handler";
+import { ScanIcon } from "../../components";
+import { usePrevious } from "../../hooks";
 import { useSmartNavigation } from "../../navigation-util";
 import { useToastModal } from "../../providers/toast-modal";
-import { useIntl } from "react-intl";
+import { AccountCardNew, ActionsCard, BalanceCard } from "./card";
 
 export const MainScreen: FunctionComponent = observer(() => {
   const [refreshing, setRefreshing] = React.useState(false);

@@ -38,6 +38,7 @@ interface NormalInputProps {
     e: NativeSyntheticEvent<TextInputSubmitEditingEventData>
   ) => void;
   returnKeyType?: ReturnKeyTypeOptions;
+  editable?: boolean;
 }
 
 export const NormalInput: FunctionComponent<NormalInputProps> = observer(
@@ -63,6 +64,7 @@ export const NormalInput: FunctionComponent<NormalInputProps> = observer(
     inputRef,
     onSubmitEditting,
     returnKeyType = "done",
+    editable = true,
   }) => {
     const styleBuilder = useStyle();
 
@@ -211,6 +213,7 @@ export const NormalInput: FunctionComponent<NormalInputProps> = observer(
           ref={inputRef}
           onSubmitEditing={onSubmitEditting}
           returnKeyType={returnKeyType}
+          editable={editable}
         />
       </View>
     );

@@ -192,6 +192,8 @@ const {
       bip44HDPath: BIP44HDPath;
     };
     "Register.SetPincode": {
+      walletName?: string;
+      isSocialLogin?: boolean;
       registerType?: RegisterType;
       registerConfig: RegisterConfig;
       bip44HDPath: BIP44HDPath;

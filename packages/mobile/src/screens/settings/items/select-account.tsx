@@ -27,9 +27,7 @@ export const SettingsAccountItem: FunctionComponent = observer(() => {
     <React.Fragment>
       <RectButton
         style={style.flatten([
-          "padding-left-12",
-          "padding-right-8",
-          "padding-y-2",
+          "padding-x-page",
           "background-color-transparent",
           "flex-row",
           "items-center",
@@ -47,6 +45,7 @@ export const SettingsAccountItem: FunctionComponent = observer(() => {
             "text-center",
             "padding-right-10",
           ])}
+          numberOfLines={1}
         >
           {walletName}
         </Text>

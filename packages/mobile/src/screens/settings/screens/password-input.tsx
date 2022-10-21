@@ -1,15 +1,15 @@
+import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { observer } from "mobx-react-lite";
 import React, { FunctionComponent, useEffect, useState } from "react";
-import { Text, View } from "react-native";
-import { useStyle } from "../../../styles";
-import { NormalInput } from "../../../components/input/normal-input";
-import { AlertInline, Button } from "../../../components";
-import { useSmartNavigation } from "../../../navigation-util";
-import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
-import { useStore } from "../../../stores";
 import { useIntl } from "react-intl";
-import { AvoidingKeyboardBottomView } from "../../../components/avoiding-keyboard/avoiding-keyboard-bottom";
+import { Keyboard, Text, View } from "react-native";
 import { MIN_PASSWORD_LENGTH } from "../../../common/utils";
+import { AlertInline, Button } from "../../../components";
+import { AvoidingKeyboardBottomView } from "../../../components/avoiding-keyboard/avoiding-keyboard-bottom";
+import { NormalInput } from "../../../components/input/normal-input";
+import { useSmartNavigation } from "../../../navigation-util";
+import { useStore } from "../../../stores";
+import { useStyle } from "../../../styles";
 
 export declare type PasswordInputScreenType =
   | "updatePassword"
@@ -115,6 +115,8 @@ export const PasswordInputScreen: FunctionComponent = observer(() => {
   };
 
   const onProceed = async () => {
+    Keyboard.dismiss();
+
     setIsLoading(true);
     const index = keyRingStore.multiKeyStoreInfo.findIndex(
       (keyStore: any) => keyStore.selected
@@ -145,14 +147,19 @@ export const PasswordInputScreen: FunctionComponent = observer(() => {
 
     switch (type) {
       case "updatePassword":
+        setPassword("");
         setIsLoading(false);
+
         smartNavigation.navigate("Settings.NewPasswordInput", {
           currentPassword: password,
         });
         break;
       case "viewMnemonic":
         const privateData = await keyRingStore.showKeyRing(index, password);
+
+        setPassword("");
         setIsLoading(false);
+
         smartNavigation.replaceSmart("Setting.ViewPrivateData", {
           privateData,
           privateDataType: keyRingStore.keyRingType,
@@ -165,15 +172,15 @@ export const PasswordInputScreen: FunctionComponent = observer(() => {
           await keychainStore.reset();
 
           // Social Login
-          if (userLoginStore.isSocialLoginActive) {
-            await userLoginStore.clearLoginData();
-          }
+          await userLoginStore.clearLoginData();
 
           analyticsStore.setUserProperties({
             astra_hub_from_address: null,
           });
 
+          setPassword("");
           setIsLoading(false);
+
           smartNavigation.reset({
             index: 0,
             routes: [
@@ -183,6 +190,7 @@ export const PasswordInputScreen: FunctionComponent = observer(() => {
             ],
           });
         } else {
+          setPassword("");
           setIsLoading(false);
         }
         break;
@@ -302,6 +310,7 @@ export const PasswordInputScreen: FunctionComponent = observer(() => {
           onChangeText={setPassword}
           onBlur={validateInputData}
           autoFocus
+          editable={!isLoading}
         />
       </View>
       <View

@@ -251,10 +251,7 @@ export const RegisterNavigation: FunctionComponent = () => {
         name="Register.ImportFromExtension.SetPassword"
         component={ImportFromExtensionSetPasswordScreen}
       />
-      <Stack.Screen
-        name="Register.End"
-        component={RegisterEndScreen}
-      />
+      <Stack.Screen name="Register.End" component={RegisterEndScreen} />
       <Stack.Screen name="Register.SetPincode" component={NewPincodeScreen} />
       <Stack.Screen
         name="Register.SetupBiometrics"
@@ -745,7 +742,13 @@ export const MainTabNavigation: FunctionComponent = () => {
         <BlurredBottomTabBar {...props} enabledScreens={["Home"]} />
       )}
     >
-      <Tab.Screen name="NewMain" component={NewMainNavigation} />
+      <Tab.Screen
+        name="NewMain"
+        component={NewMainNavigation}
+        options={{
+          unmountOnBlur: true,
+        }}
+      />
       <Tab.Screen name="Stake" component={StakingNavigation} />
       {dappsEnabled && <Tab.Screen name="D-apps" component={WebNavigation} />}
       <Tab.Screen

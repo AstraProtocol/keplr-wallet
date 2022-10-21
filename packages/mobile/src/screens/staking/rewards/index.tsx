@@ -9,7 +9,11 @@ import { RewardDetails } from "./rewards";
 import { FeeType, useSendTxConfig } from "@keplr-wallet/hooks";
 import { EthereumEndpoint } from "../../../config";
 import { useIntl } from "react-intl";
-import { formatCoin, MIN_REWARDS_AMOUNT, TX_GAS_DEFAULT } from "../../../common/utils";
+import {
+  formatCoin,
+  MIN_REWARDS_AMOUNT,
+  TX_GAS_DEFAULT,
+} from "../../../common/utils";
 import { MsgWithdrawDelegatorReward } from "@keplr-wallet/proto-types/cosmos/distribution/v1beta1/tx";
 import {
   AccountStore,
@@ -17,7 +21,7 @@ import {
   CosmwasmAccount,
   SecretAccount,
 } from "@keplr-wallet/stores";
-import { CoinPretty, Dec, DecUtils } from "@keplr-wallet/unit";
+import { CoinPretty, Dec } from "@keplr-wallet/unit";
 
 export type StakableRewards = {
   delegatorAddress?: string;
@@ -40,7 +44,6 @@ export const StakingRewardScreen: FunctionComponent = () => {
 
   const style = useStyle();
   const intl = useIntl();
-  const smartNavigation = useSmartNavigation();
 
   const queryReward = queries.cosmos.queryRewards.getQueryBech32Address(
     account.bech32Address
@@ -86,10 +89,10 @@ export const StakingRewardScreen: FunctionComponent = () => {
 
   const stakingReward = stakableRewardsList
     ? stakableRewardsList
-      ?.map(({ rewards }) => rewards)
-      .reduce((oldRewards, newRewards) => {
-        return oldRewards.add(newRewards);
-      })
+        ?.map(({ rewards }) => rewards)
+        .reduce((oldRewards, newRewards) => {
+          return oldRewards.add(newRewards);
+        })
     : undefined;
 
   const validatorAddresses = stakableRewardsList?.map(
@@ -137,8 +140,8 @@ export const StakingRewardScreen: FunctionComponent = () => {
       const tx = account.cosmos.makeWithdrawDelegationRewardTx(
         validatorAddresses
       );
-      await tx.simulateAndSend(
-        { gasAdjustment: 1.3 },
+      await tx.sendWithGasPrice(
+        { gas: gasLimit },
         sendConfigs.memoConfig.memo,
         {
           preferNoSetMemo: true,
@@ -260,8 +263,7 @@ const simulateWithdrawRewardGasFee = (
       console.log("__DEBUG__ simulate gasUsed", gasUsed);
       console.log("__DEBUG__ simulate gasLimit", gasLimit);
       setGasLimit(gasLimit);
-    }
-    catch (e) {
+    } catch (e) {
       console.log("simulateWithdrawRewardGasFee error", e);
       setGasLimit(TX_GAS_DEFAULT.withdraw); // default gas
     }
@@ -269,9 +271,14 @@ const simulateWithdrawRewardGasFee = (
 
   const feeType = "average" as FeeType;
   var gasPrice = 1000000000; // default 1 gwei = 1 nano aastra
-  const feeConfig = chainStore.current.feeCurrencies.filter((feeCurrency) => {
-    return feeCurrency.coinMinimalDenom === chainStore.current.stakeCurrency.coinMinimalDenom;
-  }).shift();
+  const feeConfig = chainStore.current.feeCurrencies
+    .filter((feeCurrency) => {
+      return (
+        feeCurrency.coinMinimalDenom ===
+        chainStore.current.stakeCurrency.coinMinimalDenom
+      );
+    })
+    .shift();
   if (feeConfig?.gasPriceStep) {
     const { [feeType]: wei } = feeConfig.gasPriceStep;
     gasPrice = wei;

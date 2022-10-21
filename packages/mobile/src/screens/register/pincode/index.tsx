@@ -1,20 +1,20 @@
-import React, { FunctionComponent, useEffect, useRef, useState } from "react";
-import { View } from "react-native";
-import { useStyle } from "../../../styles";
-import { Button } from "../../../components/button";
-import { RouteProp, useRoute } from "@react-navigation/native";
-import { useSmartNavigation } from "../../../navigation-util";
-import { RegisterConfig } from "@keplr-wallet/hooks";
-import { observer } from "mobx-react-lite";
 import { BIP44HDPath } from "@keplr-wallet/background";
-import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-import { NormalInput } from "../../../components/input/normal-input";
+import { RegisterConfig } from "@keplr-wallet/hooks";
+import { RouteProp, useRoute } from "@react-navigation/native";
+import { observer } from "mobx-react-lite";
+import React, { FunctionComponent, useEffect, useRef, useState } from "react";
 import { useIntl } from "react-intl";
-import { useStore } from "../../../stores";
-import { useToastModal } from "../../../providers/toast-modal";
-import { AvoidingKeyboardBottomView } from "../../../components/avoiding-keyboard/avoiding-keyboard-bottom";
-import { RegisterType } from "../../../stores/user-login";
+import { Keyboard, View } from "react-native";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { MIN_PASSWORD_LENGTH } from "../../../common/utils";
+import { AvoidingKeyboardBottomView } from "../../../components/avoiding-keyboard/avoiding-keyboard-bottom";
+import { Button } from "../../../components/button";
+import { NormalInput } from "../../../components/input/normal-input";
+import { useSmartNavigation } from "../../../navigation-util";
+import { useToastModal } from "../../../providers/toast-modal";
+import { useStore } from "../../../stores";
+import { RegisterType } from "../../../stores/user-login";
+import { useStyle } from "../../../styles";
 
 export const NewPincodeScreen: FunctionComponent = observer(() => {
   const route = useRoute<
@@ -22,6 +22,8 @@ export const NewPincodeScreen: FunctionComponent = observer(() => {
       Record<
         string,
         {
+          walletName?: string;
+          isSocialLogin?: boolean;
           registerType?: RegisterType;
           registerConfig: RegisterConfig;
           mnemonic?: string;
@@ -40,9 +42,16 @@ export const NewPincodeScreen: FunctionComponent = observer(() => {
 
   const smartNavigation = useSmartNavigation();
 
-  const { registerType, registerConfig, mnemonic, bip44HDPath } = route.params;
+  const {
+    walletName = "",
+    isSocialLogin = false,
+    registerType,
+    registerConfig,
+    mnemonic,
+    bip44HDPath,
+  } = route.params;
 
-  const [name, setName] = useState(userLoginStore.socialLoginData?.email || "");
+  const [name, setName] = useState(walletName);
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -53,9 +62,6 @@ export const NewPincodeScreen: FunctionComponent = observer(() => {
   const [confirmPasswordErrorText, setConfirmPasswordErrorText] = useState("");
 
   const [canVerify, setCanVerify] = useState(false);
-
-  // Social Login
-  const [checkingSocialLogin, setCheckingSocialLogin] = useState(false);
 
   const passwordInputRef = useRef<any>();
   const confirmPasswordInputRef = useRef<any>();
@@ -70,7 +76,7 @@ export const NewPincodeScreen: FunctionComponent = observer(() => {
     let registerPassword = confirmPassword;
 
     // Social Login
-    if (userLoginStore.socialLoginData && !userLoginStore.isSocialLoginActive) {
+    if (isSocialLogin) {
       try {
         await userLoginStore.reconstructSocialLoginData({
           password: confirmPassword,
@@ -124,6 +130,11 @@ export const NewPincodeScreen: FunctionComponent = observer(() => {
 
     userLoginStore.updateRegisterType(RegisterType.unknown);
 
+    // Clear social login data
+    if (!isSocialLogin) {
+      await userLoginStore.clearLoginData();
+    }
+
     smartNavigation.reset({
       index: 0,
       routes: [
@@ -153,27 +164,12 @@ export const NewPincodeScreen: FunctionComponent = observer(() => {
 
   useEffect(() => {
     // Social Login
-    if (
-      userLoginStore.socialLoginData &&
-      !userLoginStore.isSocialLoginActive &&
-      !checkingSocialLogin
-    ) {
-      checkSocialLogin();
-    }
-  }, [checkingSocialLogin]);
-
-  useEffect(() => {
-    // Social Login
-    if (
-      userLoginStore.socialLoginData &&
-      !userLoginStore.isSocialLoginActive &&
-      userLoginStore.registerType !== RegisterType.unknown
-    ) {
+    if (isSocialLogin && registerType !== RegisterType.unknown) {
       toastModal.makeToast({
         title: intl.formatMessage(
           {
             id:
-              userLoginStore.registerType !== RegisterType.recover
+              registerType !== RegisterType.recover
                 ? "register.alert.socialLogin.newAccount"
                 : "register.alert.socialLogin.existedAccount",
           },
@@ -182,26 +178,20 @@ export const NewPincodeScreen: FunctionComponent = observer(() => {
               userLoginStore.selectedServiceProviderType?.toString() || "",
           }
         ),
-        type:
-          userLoginStore.registerType !== RegisterType.recover
-            ? "success"
-            : "infor",
+        type: registerType !== RegisterType.recover ? "success" : "infor",
+        bottomOffset: 60,
       });
     }
-  }, [userLoginStore.registerType]);
+  }, [registerType]);
 
   const actionButtonTitle =
-    registerType === RegisterType.recover ||
-    userLoginStore.registerType === RegisterType.recover
+    registerType === RegisterType.recover
       ? intl.formatMessage({ id: "register.button.restoreAccount" })
       : intl.formatMessage({ id: "register.button.createAccount" });
 
   function updateNavigationTitle() {
     let textId;
-    if (
-      registerType === RegisterType.recover ||
-      userLoginStore.registerType === RegisterType.recover
-    ) {
+    if (registerType === RegisterType.recover) {
       textId = "register.recoverMnemonic.title";
     } else {
       textId = "register.setPincode.title";
@@ -213,6 +203,8 @@ export const NewPincodeScreen: FunctionComponent = observer(() => {
   }
 
   const onSubmitEditing = async () => {
+    Keyboard.dismiss();
+
     await validateInputData();
     setCanVerify(inputDataValid);
     showErrors();
@@ -252,25 +244,6 @@ export const NewPincodeScreen: FunctionComponent = observer(() => {
     setConfirmPasswordErrorText("");
   };
 
-  function checkSocialLogin() {
-    // Social Login
-    if (userLoginStore.socialLoginData && !userLoginStore.isSocialLoginActive) {
-      setCheckingSocialLogin(true);
-
-      userLoginStore
-        .checkSocialLogin()
-        .then((info) => {
-          setName(info.socialLoginData.email);
-          userLoginStore.updateRegisterType(
-            info.isNewUser ? RegisterType.new : RegisterType.recover
-          );
-        })
-        .catch((e) => {
-          console.log("__info__error", e);
-        });
-    }
-  }
-
   return (
     <View style={style.flatten(["flex-1", "background-color-background"])}>
       <KeyboardAwareScrollView
@@ -281,20 +254,20 @@ export const NewPincodeScreen: FunctionComponent = observer(() => {
         ])}
         enableOnAndroid
       >
-        {!userLoginStore.socialLoginData &&
-          !userLoginStore.isSocialLoginActive && (
-            <NormalInput
-              returnKeyType="next"
-              autoFocus
-              value={name}
-              label={intl.formatMessage({ id: "common.text.accountHolder" })}
-              onChangeText={setName}
-              style={{ marginBottom: 24 }}
-              onSubmitEditting={() => {
-                passwordInputRef.current.focus();
-              }}
-            />
-          )}
+        {!isSocialLogin && (
+          <NormalInput
+            returnKeyType="next"
+            autoFocus
+            value={name}
+            label={intl.formatMessage({ id: "common.text.accountHolder" })}
+            onChangeText={setName}
+            style={{ marginBottom: 24 }}
+            onSubmitEditting={() => {
+              passwordInputRef.current.focus();
+            }}
+            editable={!isCreating}
+          />
+        )}
 
         <NormalInput
           returnKeyType="next"
@@ -312,6 +285,7 @@ export const NewPincodeScreen: FunctionComponent = observer(() => {
           onSubmitEditting={() => {
             confirmPasswordInputRef.current.focus();
           }}
+          editable={!isCreating}
         />
 
         <NormalInput
@@ -340,6 +314,7 @@ export const NewPincodeScreen: FunctionComponent = observer(() => {
           }}
           inputRef={confirmPasswordInputRef}
           onSubmitEditting={onSubmitEditing}
+          editable={!isCreating}
         />
       </KeyboardAwareScrollView>
       <View style={style.flatten(["flex-1", "justify-end", "margin-bottom-0"])}>

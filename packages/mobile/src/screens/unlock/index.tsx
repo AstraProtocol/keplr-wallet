@@ -14,6 +14,7 @@ import {
   Text,
   Platform,
   SafeAreaView,
+  Keyboard,
 } from "react-native";
 import Animated, { Easing } from "react-native-reanimated";
 import { observer } from "mobx-react-lite";
@@ -209,6 +210,8 @@ export const UnlockScreen: FunctionComponent = observer(() => {
 
   const tryUnlock = async () => {
     try {
+      Keyboard.dismiss();
+
       setIsLoading(true);
       // Decryption needs slightly huge computation.
       // Because javascript is synchronous language, the loadnig state change would not delivered to the UI thread
@@ -276,6 +279,8 @@ export const UnlockScreen: FunctionComponent = observer(() => {
   };
 
   const forgotPasswordHandler = () => {
+    setPassword("");
+
     navigation.navigate("Register", {
       screen: "Register.RecoverMnemonic",
       params: {
@@ -293,13 +298,6 @@ export const UnlockScreen: FunctionComponent = observer(() => {
       isSplashEnd &&
       keyRingStore.status === KeyRingStatus.EMPTY
     ) {
-      if (
-        userLoginStore.isSocialLoginActive &&
-        userLoginStore.socialLoginData
-      ) {
-        return;
-      }
-
       if (userLoginStore.registerType === RegisterType.recover) {
         return;
       }
@@ -387,6 +385,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
           onChangeText={setPassword}
           onSubmitEditting={tryUnlock}
           style={{ marginBottom: isFailed ? 24 : 0 }}
+          editable={!isLoading}
         />
 
         <TextLink
@@ -408,6 +407,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
                 justifyContent: "center",
                 marginBottom: 24,
               }}
+              activeOpacity={0}
             >
               <BiometricsIcon
                 color={style.get("color-gray-10").color}
@@ -430,9 +430,9 @@ export const UnlockScreen: FunctionComponent = observer(() => {
                     keychainStore.isBiometryType === BIOMETRY_TYPE.FACE ||
                     keychainStore.isBiometryType === BIOMETRY_TYPE.FACE_ID
                       ? "settings.unlockBiometrics.face"
-                      : (Platform.OS === "ios"
+                      : Platform.OS === "ios"
                       ? "settings.unlockBiometrics.touch"
-                      : "settings.unlockBiometrics.fingerprint"),
+                      : "settings.unlockBiometrics.fingerprint",
                 })}
               </Text>
             </TouchableOpacity>

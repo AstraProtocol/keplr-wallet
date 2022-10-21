@@ -1,5 +1,5 @@
 {
-  "staking.dashboard.learnMore": "View details about this program",
+  "staking.dashboard.learnMore": "View more information",
   "staking.dashboard.rewards.follow": "View details",
   "staking.dashboard.rewards.invest": "Stake",
   "staking.dashboard.rewards.totalInvestment": "Total staked",
@@ -7,7 +7,7 @@
   "staking.dashboard.rewards.totalWithdrawals": "Unstaking {denom} amount",
   "staking.dashboard.rewards.withdrawProfit": "Claim",
   "staking.dashboard.title": "Stake and claim rewards",
-  "staking.delegate.empty": "There is no \bstaking activity",
+  "staking.delegate.empty": "There is no staking activity",
   "staking.delegate.invested": "Staked",
   "staking.delegate.label": "My staking validators",
   "staking.delegate.profit": "Rewards",
@@ -20,6 +20,6 @@
   "staking.unbonding.nameAndAmount": "Activities",
   "staking.unbonding.noticeWithdrawalPeriod": "You will receive {coin} {days}",
   "staking.unbonding.receiveAfter": "Receive in",
-  "staking.unbonding.totalAmount": "Claiming amount",
+  "staking.unbonding.totalAmount": "Unstaking amount",
   "staking.unbonding.viewHistoryGuide": "View claimed ASA in "
 }
