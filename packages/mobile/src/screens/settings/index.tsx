@@ -1,27 +1,27 @@
-import React, { FunctionComponent, useEffect, useState } from "react";
-import { PageWithScrollViewInBottomTabView } from "../../components/page";
-import { useSmartNavigation } from "../../navigation-util";
+import { RouteProp, useRoute } from "@react-navigation/native";
 import { observer } from "mobx-react-lite";
-import { useStore } from "../../stores";
-import { useStyle } from "../../styles";
-import { View, SafeAreaView, ImageBackground, Linking } from "react-native";
+import React, { FunctionComponent, useEffect, useState } from "react";
+import { useIntl } from "react-intl";
+import { ImageBackground, Linking, SafeAreaView, View } from "react-native";
 import {
   AllIcon,
-  KeyIcon,
-  FaqIcon,
-  SocialIcon,
   ConnectIcon,
+  FaqIcon,
+  KeyIcon,
   LockIcon,
+  SocialIcon,
 } from "../../components/icon";
-import { SettingsAccountItem } from "./items/select-account";
+import { PageWithScrollViewInBottomTabView } from "../../components/page";
+import { useSmartNavigation } from "../../navigation-util";
+import { useToastModal } from "../../providers/toast-modal";
+import { useStore } from "../../stores";
+import { useStyle } from "../../styles";
 import { AccountItem } from "./components";
+import { SettingsAccountItem } from "./items/select-account";
+import { AccountBiometricsItem } from "./items/select-biometrics";
+import { AccountLanguageItem } from "./items/select-language";
 import { AccountNetworkItem, RightView } from "./items/select-network";
 import { AccountVersionItem } from "./items/version-item";
-import { AccountLanguageItem } from "./items/select-language";
-import { useIntl } from "react-intl";
-import { RouteProp, useRoute } from "@react-navigation/native";
-import { useToastModal } from "../../providers/toast-modal";
-import { AccountBiometricsItem } from "./items/select-biometrics";
 
 export const SettingsScreen: FunctionComponent = observer(() => {
   const {
@@ -215,7 +215,7 @@ export const SettingsScreen: FunctionComponent = observer(() => {
                 type: "deleteWallet",
               });
             }}
-            labelStyle={style.flatten(["body3", "color-danger"])}
+            labelStyle={style.flatten(["color-negative-text"])}
           />
           <View style={style.get("height-32")} />
           <AccountVersionItem />

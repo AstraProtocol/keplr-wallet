@@ -29,7 +29,7 @@ export enum RegisterType {
   unknown,
 }
 
-export declare type ServiceProviderType = "apple" | "google" | "tiki";
+export declare type ServiceProviderType = "apple" | "google";
 
 export interface IServiceProvider {
   name: string;
@@ -100,11 +100,11 @@ export class UserLoginStore {
       hostUrl: "http://localhost:9000",
       loginPath: "/login",
     },
-    tiki: {
-      name: "tiki",
-      hostUrl: "http://localhost:9000",
-      loginPath: "/login",
-    },
+    // tiki: {
+    //   name: "tiki",
+    //   hostUrl: "http://localhost:9000",
+    //   loginPath: "/login",
+    // },
   };
 
   protected _tKey?: ThresholdKey;
@@ -175,8 +175,13 @@ export class UserLoginStore {
   async openLogin(params: {
     serviceProviderType: ServiceProviderType;
     redirectUrl?: string;
+    action?: "register" | { password: string; mnemonic?: string };
   }) {
-    const { serviceProviderType, redirectUrl = "app.astra.oauth://" } = params;
+    const {
+      serviceProviderType,
+      redirectUrl = "app.astra.oauth://",
+      action = "register",
+    } = params;
 
     var { hostUrl, loginPath = "" } = this._serviceProviders[
       serviceProviderType
@@ -233,6 +238,22 @@ export class UserLoginStore {
     this._socialLoginData = socialLoginData;
 
     const info = await this.checkSocialLogin();
+
+    if (action && action !== "register") {
+      if (info.isNewUser) {
+        try {
+          const params = action;
+          await this.reconstructSocialLoginData(params);
+        } catch (e) {
+          await this.clearLoginData();
+          return;
+        }
+      } else {
+        await this.clearLoginData();
+      }
+      return;
+    }
+
     this.updateRegisterType(
       info.isNewUser ? RegisterType.new : RegisterType.recover
     );

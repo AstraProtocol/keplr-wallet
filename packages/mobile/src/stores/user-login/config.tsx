@@ -11,11 +11,11 @@ export const SocialLoginConfigUAT = {
       hostUrl: "https://tkey-provider.tala.xyz",
       loginPath: "/google/login",
     },
-    tiki: {
-      name: "tiki",
-      hostUrl: "https://account.tala.xyz",
-      loginPath: "/login",
-    },
+    // tiki: {
+    //   name: "tiki",
+    //   hostUrl: "https://account.tala.xyz",
+    //   loginPath: "/login",
+    // },
   },
 };
 
@@ -32,10 +32,10 @@ export const SocialLoginConfigPROD = {
       hostUrl: "https://tkey-provider.tiki.vn",
       loginPath: "/google/login",
     },
-    tiki: {
-      name: "tiki",
-      hostUrl: "https://account.tiki.vn",
-      loginPath: "/login",
-    },
+    // tiki: {
+    //   name: "tiki",
+    //   hostUrl: "https://account.tiki.vn",
+    //   loginPath: "/login",
+    // },
   },
 };

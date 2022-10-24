@@ -19,12 +19,15 @@ export const UpdateWalletNameModal: FunctionComponent<{
   const { keyRingStore } = useStore();
 
   const [name, setName] = useState(value);
+  const [isLoading, setIsLoading] = useState(false);
 
   async function updateName() {
+    setIsLoading(true);
     const index = keyRingStore.multiKeyStoreInfo.findIndex((keyStore) => {
       return keyStore.selected;
     });
     await keyRingStore.updateNameKeyRing(index, name);
+    setIsLoading(false);
     Keyboard.dismiss();
     close();
   }
@@ -60,6 +63,7 @@ export const UpdateWalletNameModal: FunctionComponent<{
             marginHorizontal: 16,
           }}
           autoFocus
+          editable={!isLoading}
         />
         <View
           style={{
@@ -86,6 +90,7 @@ export const UpdateWalletNameModal: FunctionComponent<{
             text={intl.formatMessage({ id: "common.text.save" })}
             onPress={updateName}
             disabled={name.length == 0}
+            loading={isLoading}
             containerStyle={style.flatten(["flex-1", "margin-left-8"])}
           />
         </View>

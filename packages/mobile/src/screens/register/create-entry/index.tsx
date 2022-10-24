@@ -8,6 +8,7 @@ import { AllIcon, PageWithView } from "../../../components";
 import { InfoIcon } from "../../../components/icon/outlined";
 import { useSmartNavigation } from "../../../navigation-util";
 import { useStore } from "../../../stores";
+import { ServiceProviderType } from "../../../stores/user-login";
 import { useStyle } from "../../../styles";
 import { useBIP44Option } from "../bip44";
 import { AppleIcon, GoogleIcon, MnemonicIcon } from "./icons";
@@ -21,22 +22,16 @@ export const RegisterCreateEntryScreen: FunctionComponent = observer(() => {
   const bip44Option = useBIP44Option();
 
   async function registerWithGoogle() {
-    await userLoginStore.openLogin({
-      serviceProviderType: "google",
-    });
-
-    smartNavigation.pushSmart("Register.SetPincode", {
-      walletName: userLoginStore.socialLoginData?.email,
-      isSocialLogin: true,
-      registerType: userLoginStore.registerType,
-      registerConfig,
-      bip44HDPath: bip44Option.bip44HDPath,
-    });
+    registerWithSocial("google");
   }
 
   async function registerWithApple() {
+    registerWithSocial("apple");
+  }
+
+  async function registerWithSocial(serviceProviderType: ServiceProviderType) {
     await userLoginStore.openLogin({
-      serviceProviderType: "apple",
+      serviceProviderType,
     });
 
     smartNavigation.pushSmart("Register.SetPincode", {
@@ -89,7 +84,7 @@ export const RegisterCreateEntryScreen: FunctionComponent = observer(() => {
           })}
           onPress={registerWithGoogle}
         />
-        {/* {Platform.OS === "ios" && (
+        {Platform.OS === "ios" && (
           <EntryItem
             iconType="apple"
             title={intl.formatMessage({
@@ -97,7 +92,7 @@ export const RegisterCreateEntryScreen: FunctionComponent = observer(() => {
             })}
             onPress={registerWithApple}
           />
-        )} */}
+        )}
         <View style={{ height: 16 }} />
         <View style={{ flexDirection: "row" }}>
           <Text

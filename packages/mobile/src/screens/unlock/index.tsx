@@ -298,6 +298,13 @@ export const UnlockScreen: FunctionComponent = observer(() => {
       isSplashEnd &&
       keyRingStore.status === KeyRingStatus.EMPTY
     ) {
+      if (
+        userLoginStore.isSocialLoginActive &&
+        userLoginStore.socialLoginData
+      ) {
+        return;
+      }
+
       if (userLoginStore.registerType === RegisterType.recover) {
         return;
       }

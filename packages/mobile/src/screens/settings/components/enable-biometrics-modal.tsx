@@ -23,8 +23,10 @@ export const EnableBiometricsModal: FunctionComponent<{
   const [showPassword, setShowPassword] = useState(false);
   const [password, setPassword] = useState("");
   const [errorText, setErrorText] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const enableBiometrics = async () => {
+    setIsLoading(true);
     try {
       if (keychainStore.isBiometryOn) {
         await keychainStore.disableBiometrics();
@@ -32,11 +34,13 @@ export const EnableBiometricsModal: FunctionComponent<{
         await keychainStore.enableBiometrics(password);
       }
     } catch (e) {
+      setIsLoading(false);
       console.log("failed to verify Biometrics", e);
       setErrorText(intl.formatMessage({ id: "common.text.wrongPassword" }));
       return;
     }
 
+    setIsLoading(false);
     Keyboard.dismiss();
     close();
   };
@@ -68,9 +72,9 @@ export const EnableBiometricsModal: FunctionComponent<{
               keychainStore.isBiometryType === BIOMETRY_TYPE.FACE ||
               keychainStore.isBiometryType === BIOMETRY_TYPE.FACE_ID
                 ? "common.text.enableBiometrics.face"
-                : (Platform.OS === "ios"
+                : Platform.OS === "ios"
                 ? "common.text.enableBiometrics.touch"
-                : "common.text.enableBiometrics.fingerprint"),
+                : "common.text.enableBiometrics.fingerprint",
           })}
         </Text>
         <NormalInput
@@ -85,6 +89,7 @@ export const EnableBiometricsModal: FunctionComponent<{
             paddingBottom: errorText.length !== 0 ? 24 : 0,
           }}
           autoFocus
+          editable={!isLoading}
         />
         <View
           style={{
@@ -111,6 +116,7 @@ export const EnableBiometricsModal: FunctionComponent<{
             text={intl.formatMessage({ id: "common.text.enable" })}
             onPress={enableBiometrics}
             disabled={password.length == 0}
+            loading={isLoading}
             containerStyle={style.flatten(["flex-1", "margin-left-8"])}
           />
         </View>

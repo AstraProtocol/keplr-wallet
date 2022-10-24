@@ -1,15 +1,15 @@
+import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { observer } from "mobx-react-lite";
 import React, { FunctionComponent, useEffect, useRef, useState } from "react";
-import { View } from "react-native";
-import { useStyle } from "../../../styles";
-import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-import { NormalInput } from "../../../components/input/normal-input";
-import { Button } from "../../../components";
-import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
-import { useStore } from "../../../stores";
 import { useIntl } from "react-intl";
-import { AvoidingKeyboardBottomView } from "../../../components/avoiding-keyboard/avoiding-keyboard-bottom";
+import { Keyboard, View } from "react-native";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { MIN_PASSWORD_LENGTH } from "../../../common/utils";
+import { Button } from "../../../components";
+import { AvoidingKeyboardBottomView } from "../../../components/avoiding-keyboard/avoiding-keyboard-bottom";
+import { NormalInput } from "../../../components/input/normal-input";
+import { useStore } from "../../../stores";
+import { useStyle } from "../../../styles";
 
 export const NewPasswordInputScreen: FunctionComponent = observer(() => {
   const route = useRoute<
@@ -45,6 +45,7 @@ export const NewPasswordInputScreen: FunctionComponent = observer(() => {
     }
 
     setIsCreating(true);
+    Keyboard.dismiss();
 
     const currentPassword = route.params.currentPassword;
 
@@ -148,6 +149,7 @@ export const NewPasswordInputScreen: FunctionComponent = observer(() => {
             },
           ]}
           style={{ marginTop: 32, marginBottom: 24, paddingBottom: 24 }}
+          editable={!isCreating}
         />
 
         <NormalInput
@@ -174,6 +176,7 @@ export const NewPasswordInputScreen: FunctionComponent = observer(() => {
             },
           ]}
           style={{ marginBottom: 24, paddingBottom: 24 }}
+          editable={!isCreating}
         />
       </KeyboardAwareScrollView>
       <View
