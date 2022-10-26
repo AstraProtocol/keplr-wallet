@@ -2,27 +2,26 @@ import React, { FunctionComponent, useCallback, useEffect } from "react";
 import {
   AppState,
   AppStateStatus,
-  RefreshControl,
-  View,
-  Text,
   FlatList,
+  RefreshControl,
   SafeAreaView,
+  Text,
+  View,
 } from "react-native";
 import { useStore } from "../../stores";
 import { useStyle } from "../../styles";
 
 import { observer } from "mobx-react-lite";
 
-import { usePrevious } from "../../hooks";
-import { useFocusEffect } from "@react-navigation/native";
 import { ChainUpdaterService } from "@keplr-wallet/background";
-import { toUiItem } from "./transaction_adapter";
-import { TransactionItem } from "./transaction_history_item";
 import { TxResponse } from "@keplr-wallet/stores/build/query/cosmos/tx/types";
-import { useSmartNavigation } from "../../navigation-util";
+import { useFocusEffect } from "@react-navigation/native";
 import { FormattedMessage, useIntl } from "react-intl";
 import { RectButton } from "react-native-gesture-handler";
-import { ObservableQueryTxsInner } from "@keplr-wallet/stores";
+import { usePrevious } from "../../hooks";
+import { useSmartNavigation } from "../../navigation-util";
+import { toUiItem } from "./transaction_adapter";
+import { TransactionItem } from "./transaction_history_item";
 
 export type PageRequestInfo = {
   currentPage: number;
@@ -195,7 +194,9 @@ export const HistoryScreen: FunctionComponent = observer(() => {
 
     const histories = txResponses
       .sort((lh, rh) => rh.timestamp.localeCompare(lh.timestamp))
-      .map((txResponse) => toUiItem(intl, bech32Address, txResponse));
+      .map((txResponse) =>
+        toUiItem(chainStore, intl, bech32Address, txResponse)
+      );
     return histories;
   })();
 
@@ -268,7 +269,7 @@ export const HistoryScreen: FunctionComponent = observer(() => {
               }
             }}
           >
-            <TransactionItem item={item} chainStore={chainStore} />
+            <TransactionItem item={item} />
           </RectButton>
         )}
       />

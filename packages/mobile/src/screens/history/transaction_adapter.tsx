@@ -1,5 +1,9 @@
 import { TxResponse } from "@keplr-wallet/stores/build/query/cosmos/tx/types";
+import { CoinPretty } from "@keplr-wallet/unit";
+import moment from "moment";
 import { IntlShape } from "react-intl";
+import { formatCoin } from "../../common/utils";
+import { ChainStore } from "../../stores";
 import addresses from "../../utils/for-swap/addresses";
 
 export interface Coin {
@@ -10,7 +14,7 @@ export interface Coin {
 export interface TransactionItem<T> {
   raw?: T;
   action: string;
-  amount: Coin;
+  rightText: string;
   timestamp: string;
   status: "success" | "failure" | undefined;
 }
@@ -62,7 +66,28 @@ interface MsgWithdrawDelegatorReward {
   };
 }
 
+interface MsgGrant {
+  cosmos: {
+    grant: {
+      authorization: {
+        msg: string;
+      };
+      expiration: string;
+    };
+  };
+}
+
+interface MsgExec {
+  cosmos: {
+    msgs: {
+      "@type": string;
+      amount: Coin;
+    }[];
+  };
+}
+
 export function toUiItem(
+  chainStore: ChainStore,
   intl: IntlShape,
   bech32Address: string,
   txResponse: TxResponse
@@ -79,6 +104,7 @@ export function toUiItem(
   let amount = fromCoin(null);
   let status: TransactionItem<TxResponse>["status"] =
     txResponse?.code === 0 ? "success" : "failure";
+  let rightText = "";
 
   const getAmountFromRawLog = (
     rawLog: string,
@@ -192,6 +218,30 @@ export function toUiItem(
       amount = getAmountFromRawLog(txResponse?.raw_log, "withdraw_rewards");
       break;
     }
+    case "/cosmos.authz.v1beta1.MsgGrant": {
+      const msg = (msgRaw as unknown) as MsgGrant["cosmos"];
+      action = msg.grant.authorization.msg.split(".").pop() || "";
+      action = intl.formatMessage({
+        id: `history.action.MsgGrant.${action}`,
+      });
+      rightText =
+        intl.formatMessage({ id: "common.text.expire" }) +
+        ": " +
+        moment(msg.grant.expiration).format("DD/MM/YYYY");
+      break;
+    }
+    case "/cosmos.authz.v1beta1.MsgExec": {
+      const msg = (msgRaw as unknown) as MsgExec["cosmos"];
+      const execMsg = msg.msgs.shift();
+      if (execMsg && execMsg["@type"]) {
+        action = execMsg["@type"].split(".").pop() || "";
+        action = intl.formatMessage({
+          id: `history.action.MsgExec.${action}`,
+        });
+        amount = fromCoin(execMsg.amount);
+      }
+      break;
+    }
     case "/ethermint.evm.v1.MsgEthereumTx":
       const toAddress = msgRaw?.data?.to;
       if (routerAddresses.includes(toAddress)) {
@@ -211,12 +261,19 @@ export function toUiItem(
     }
   }
 
+  let currency = chainStore.current.currencies.find(
+    (cur) => cur.coinMinimalDenom == amount.denom
+  );
+  if (currency) {
+    rightText = formatCoin(new CoinPretty(currency, amount.amount));
+  }
+
   return {
     raw: txResponse,
     timestamp: txResponse.timestamp,
     action,
     status,
-    amount,
+    rightText,
   };
 }
 

@@ -183,6 +183,9 @@ const {
       upperScreenName: "Wallet",
     },
   }).withParams<{
+    NewHome: {
+      isRefresh?: boolean;
+    };
     "Register.NewMnemonic": {
       registerConfig: RegisterConfig;
     };

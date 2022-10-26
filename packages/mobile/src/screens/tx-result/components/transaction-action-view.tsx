@@ -1,9 +1,9 @@
-import { useNavigation } from "@react-navigation/native";
 import { observer } from "mobx-react-lite";
 import React, { FunctionComponent, useEffect, useState } from "react";
 import { useIntl } from "react-intl";
 import { View, ViewStyle } from "react-native";
 import { Button } from "../../../components";
+import { useSmartNavigation } from "../../../navigation-util";
 import { useStore } from "../../../stores";
 import { useStyle } from "../../../styles";
 
@@ -13,7 +13,7 @@ export const TransactionActionView: FunctionComponent<{
   const { transactionStore } = useStore();
   const styleBuilder = useStyle();
   const intl = useIntl();
-  const navigation = useNavigation();
+  const smartNavigation = useSmartNavigation();
 
   const [txState, setTxState] = useState(transactionStore.txState);
 
@@ -34,7 +34,7 @@ export const TransactionActionView: FunctionComponent<{
           color={txState == "failure" ? "neutral" : "primary"}
           containerStyle={styleBuilder.flatten(["flex-1"])}
           onPress={async () => {
-            navigation.navigate("NewHome", { isRefresh: true });
+            smartNavigation.navigateSmart("NewHome", { isRefresh: true });
           }}
         />
         {txState == "failure" && (
@@ -42,7 +42,7 @@ export const TransactionActionView: FunctionComponent<{
             text={intl.formatMessage({ id: "tx.result.action.reInvest" })}
             containerStyle={styleBuilder.flatten(["margin-left-8", "flex-1"])}
             onPress={async () => {
-              navigation.goBack();
+              smartNavigation.goBack();
             }}
           />
         )}

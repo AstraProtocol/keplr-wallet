@@ -1,5 +1,3 @@
-import { AccountSetBaseSuper, MsgOpt, WalletStatus } from "./base";
-import { AppCurrency, KeplrSignOptions } from "@keplr-wallet/types";
 import {
   BroadcastMode,
   makeSignDoc,
@@ -7,43 +5,51 @@ import {
   StdFee,
   StdSignDoc,
 } from "@cosmjs/launchpad";
+import { isAddress } from "@ethersproject/address";
 import { DenomHelper, escapeHTML } from "@keplr-wallet/common";
-import { Dec, DecUtils, Int } from "@keplr-wallet/unit";
-import { Any } from "@keplr-wallet/proto-types/google/protobuf/any";
-import {
-  AuthInfo,
-  TxRaw,
-  TxBody,
-  Fee,
-  SignerInfo,
-} from "@keplr-wallet/proto-types/cosmos/tx/v1beta1/tx";
-import { SignMode } from "@keplr-wallet/proto-types/cosmos/tx/signing/v1beta1/signing";
-import { PubKey } from "@keplr-wallet/proto-types/cosmos/crypto/secp256k1/keys";
-import { Coin } from "@keplr-wallet/proto-types/cosmos/base/v1beta1/coin";
-import { MsgSend } from "@keplr-wallet/proto-types/cosmos/bank/v1beta1/tx";
-import { MsgTransfer } from "@keplr-wallet/proto-types/ibc/applications/transfer/v1/tx";
-import {
-  MsgDelegate,
-  MsgUndelegate,
-  MsgBeginRedelegate,
-} from "@keplr-wallet/proto-types/cosmos/staking/v1beta1/tx";
-import { MsgWithdrawDelegatorReward } from "@keplr-wallet/proto-types/cosmos/distribution/v1beta1/tx";
-import { MsgVote } from "@keplr-wallet/proto-types/cosmos/gov/v1beta1/tx";
-import { VoteOption } from "@keplr-wallet/proto-types/cosmos/gov/v1beta1/gov";
 import {
   BaseAccount,
   Bech32Address,
   ChainIdHelper,
   TendermintTxTracer,
 } from "@keplr-wallet/cosmos";
-import { BondStatus } from "../query/cosmos/staking/types";
-import { QueriesSetBase, IQueriesStore, CosmosQueries } from "../query";
+import { GenericAuthorization } from "@keplr-wallet/proto-types/cosmos/authz/v1beta1/authz";
+import {
+  MsgExec,
+  MsgGrant,
+  MsgRevoke,
+} from "@keplr-wallet/proto-types/cosmos/authz/v1beta1/tx";
+import { MsgSend } from "@keplr-wallet/proto-types/cosmos/bank/v1beta1/tx";
+import { Coin } from "@keplr-wallet/proto-types/cosmos/base/v1beta1/coin";
+import { PubKey } from "@keplr-wallet/proto-types/cosmos/crypto/secp256k1/keys";
+import { MsgWithdrawDelegatorReward } from "@keplr-wallet/proto-types/cosmos/distribution/v1beta1/tx";
+import { VoteOption } from "@keplr-wallet/proto-types/cosmos/gov/v1beta1/gov";
+import { MsgVote } from "@keplr-wallet/proto-types/cosmos/gov/v1beta1/tx";
+import {
+  MsgBeginRedelegate,
+  MsgDelegate,
+  MsgUndelegate,
+} from "@keplr-wallet/proto-types/cosmos/staking/v1beta1/tx";
+import { SignMode } from "@keplr-wallet/proto-types/cosmos/tx/signing/v1beta1/signing";
+import {
+  AuthInfo,
+  Fee,
+  SignerInfo,
+  TxBody,
+  TxRaw,
+} from "@keplr-wallet/proto-types/cosmos/tx/v1beta1/tx";
+import { Any } from "@keplr-wallet/proto-types/google/protobuf/any";
+import { MsgTransfer } from "@keplr-wallet/proto-types/ibc/applications/transfer/v1/tx";
+import { AppCurrency, KeplrSignOptions } from "@keplr-wallet/types";
+import { Dec, DecUtils, Int } from "@keplr-wallet/unit";
+import Axios, { AxiosInstance } from "axios";
+import { Buffer } from "buffer/";
+import deepmerge from "deepmerge";
 import { DeepPartial, DeepReadonly } from "utility-types";
 import { ChainGetter } from "../common";
-import Axios, { AxiosInstance } from "axios";
-import deepmerge from "deepmerge";
-import { isAddress } from "@ethersproject/address";
-import { Buffer } from "buffer/";
+import { CosmosQueries, IQueriesStore, QueriesSetBase } from "../query";
+import { BondStatus } from "../query/cosmos/staking/types";
+import { AccountSetBaseSuper, MsgOpt, WalletStatus } from "./base";
 import { MakeTxResponse, ProtoMsgsOrWithAminoMsgs } from "./types";
 import { txEventsWithPreOnFulfill } from "./utils";
 
@@ -104,6 +110,10 @@ export interface CosmosMsgOpts {
   // The gas multiplication per rewards.
   readonly withdrawRewards: MsgOpt;
   readonly govVote: MsgOpt;
+  //
+  readonly grant: MsgOpt;
+  readonly exec: MsgOpt;
+  readonly revoke: MsgOpt;
 }
 
 /**
@@ -140,6 +150,19 @@ export const defaultCosmosMsgOpts: CosmosMsgOpts = {
   govVote: {
     type: "cosmos-sdk/MsgVote",
     gas: 250000,
+  },
+  //
+  grant: {
+    type: "cosmos-sdk/MsgGrant",
+    gas: 200000,
+  },
+  exec: {
+    type: "cosmos-sdk/MsgExec",
+    gas: 200000,
+  },
+  revoke: {
+    type: "cosmos-sdk/MsgRevoke",
+    gas: 200000,
   },
 };
 
@@ -524,12 +547,17 @@ export class CosmosAccountImpl {
       account.getSequence().toString()
     );
 
+    console.log("__useEthereumSign__", useEthereumSign);
+    console.log("__signDoc__", JSON.stringify(signDoc));
+
     const signResponse = await keplr.signAmino(
       this.chainId,
       this.base.bech32Address,
       signDoc,
       signOptions
     );
+
+    console.log("__signResponse__", JSON.stringify(signResponse));
 
     const signedTx = TxRaw.encode({
       bodyBytes: TxBody.encode(
@@ -1767,6 +1795,182 @@ export class CosmosAccountImpl {
     );
   }
 
+  async sendGrantTx(
+    granteeAddress: string,
+    msgTypeUrl: MsgTypeUrl,
+    stdFee: StdFee,
+    onTxEvents?:
+      | ((tx: any) => void)
+      | {
+          onBroadcasted?: (txHash: Uint8Array) => void;
+          onFulfill?: (tx: any) => void;
+        }
+  ) {
+    const msg = {
+      type: "/cosmos.authz.v1beta1.MsgGrant",
+      value: {
+        granter: this.base.bech32Address,
+        grantee: granteeAddress,
+        grant: {
+          authorization: {
+            msg: msgTypeUrl,
+          },
+          expiration: new Date(new Date().getTime() + 24 * 3600 * 1000),
+        },
+      },
+    };
+
+    return this.sendMsgs(
+      "grant",
+      {
+        aminoMsgs: [msg],
+        protoMsgs: [
+          {
+            typeUrl: msg.type,
+            value: MsgGrant.encode({
+              granter: msg.value.granter,
+              grantee: msg.value.grantee,
+              grant: {
+                authorization: {
+                  typeUrl: "/cosmos.authz.v1beta1.GenericAuthorization",
+                  value: GenericAuthorization.encode({
+                    msg: msg.value.grant.authorization.msg,
+                  }).finish(),
+                },
+                expiration: msg.value.grant.expiration,
+              },
+            }).finish(),
+          },
+        ],
+      },
+      "",
+      stdFee,
+      {
+        preferNoSetFee: true,
+        preferNoSetMemo: true,
+      },
+      onTxEvents
+    );
+  }
+
+  async sendExecTx(
+    validatorAddress: string,
+    granterAddress: string,
+    amount: number,
+    stdFee: StdFee,
+    onTxEvents?:
+      | ((tx: any) => void)
+      | {
+          onBroadcasted?: (txHash: Uint8Array) => void;
+          onFulfill?: (tx: any) => void;
+        }
+  ) {
+    const currency = this.chainGetter.getChain(this.chainId).stakeCurrency;
+
+    let dec = new Dec(amount);
+    dec = dec.mulTruncate(DecUtils.getPrecisionDec(currency.coinDecimals));
+
+    const msg = {
+      type: "/cosmos.authz.v1beta1.MsgExec",
+      value: {
+        grantee: this.base.bech32Address,
+        msgs: [
+          {
+            type: this.msgOpts.delegate.type,
+            value: {
+              delegator_address: granterAddress,
+              validator_address: validatorAddress,
+              amount: {
+                denom: currency.coinMinimalDenom,
+                amount: dec.truncate().toString(),
+              },
+            },
+          },
+        ],
+      },
+    };
+
+    return this.sendMsgs(
+      "exec",
+      {
+        aminoMsgs: [msg],
+        protoMsgs: [
+          {
+            typeUrl: msg.type,
+            value: MsgExec.encode({
+              grantee: msg.value.grantee,
+              msgs: [
+                {
+                  typeUrl: "/cosmos.staking.v1beta1.MsgDelegate",
+                  value: MsgDelegate.encode({
+                    delegatorAddress: granterAddress,
+                    validatorAddress: validatorAddress,
+                    amount: {
+                      denom: currency.coinMinimalDenom,
+                      amount: dec.truncate().toString(),
+                    },
+                  }).finish(),
+                },
+              ],
+            }).finish(),
+          },
+        ],
+      },
+      "",
+      stdFee,
+      {
+        preferNoSetFee: true,
+        preferNoSetMemo: true,
+      },
+      onTxEvents
+    );
+  }
+
+  async sendRevokeTx(
+    granteeAddress: string,
+    msgTypeUrl: MsgTypeUrl,
+    stdFee: StdFee,
+    onTxEvents?:
+      | ((tx: any) => void)
+      | {
+          onBroadcasted?: (txHash: Uint8Array) => void;
+          onFulfill?: (tx: any) => void;
+        }
+  ) {
+    const msg = {
+      type: "/cosmos.authz.v1beta1.MsgRevoke",
+      value: {
+        granter: this.base.bech32Address,
+        grantee: granteeAddress,
+        msg_type_url: msgTypeUrl,
+      },
+    };
+
+    return this.sendMsgs(
+      "revoke",
+      {
+        aminoMsgs: [msg],
+        protoMsgs: [
+          {
+            typeUrl: msg.type,
+            value: MsgRevoke.encode({
+              granter: msg.value.granter,
+              grantee: msg.value.grantee,
+              msgTypeUrl: msg.value.msg_type_url,
+            }).finish(),
+          },
+        ],
+      },
+      "",
+      stdFee,
+      {
+        preferNoSetFee: true,
+        preferNoSetMemo: true,
+      },
+      onTxEvents
+    );
+  }
+
   protected get queries(): DeepReadonly<QueriesSetBase & CosmosQueries> {
     return this.queriesStore.get(this.chainId);
   }
@@ -1778,4 +1982,10 @@ export class CosmosAccountImpl {
         .features?.includes("eth-address-gen") ?? false
     );
   }
+}
+
+export enum MsgTypeUrl {
+  send = "/cosmos.bank.v1beta1.MsgSend",
+  delegate = "/cosmos.staking.v1beta1.MsgDelegate",
+  withdrawRewards = "/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward",
 }

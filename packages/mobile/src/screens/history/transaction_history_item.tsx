@@ -1,29 +1,17 @@
 import { observer } from "mobx-react-lite";
+import moment from "moment";
 import React, { FunctionComponent } from "react";
-import { View, Text } from "react-native";
-import { TransactionItem as ITransactionItem } from "./transaction_adapter";
+import { useIntl } from "react-intl";
+import { Text, View } from "react-native";
 import { RightArrowIcon } from "../../components/icon";
 import { useStyle } from "../../styles";
-import { CoinPretty } from "@keplr-wallet/unit";
-import { ChainStore } from "../../stores/chain";
-import moment from "moment";
-import { formatCoin } from "../../common/utils";
-import { useIntl } from "react-intl";
+import { TransactionItem as ITransactionItem } from "./transaction_adapter";
 
 export const TransactionItem: FunctionComponent<{
   item?: ITransactionItem<any>;
-  chainStore: ChainStore;
-}> = observer(({ item, chainStore }) => {
+}> = observer(({ item }) => {
   const style = useStyle();
   const intl = useIntl();
-
-  let currency = chainStore.current.currencies.find(
-    (cur) => cur.coinMinimalDenom == item?.amount.denom
-  );
-  var amountText = item?.amount.amount;
-  if (currency && item) {
-    amountText = formatCoin(new CoinPretty(currency, item?.amount.amount));
-  }
 
   var statusTextColor = style.get("color-yellow-50");
   var statusText = intl.formatMessage({ id: "history.status.unknown" });
@@ -53,7 +41,7 @@ export const TransactionItem: FunctionComponent<{
             "text-right",
           ])}
         >
-          {amountText}
+          {item?.rightText}
         </Text>
         <View
           style={style.flatten([

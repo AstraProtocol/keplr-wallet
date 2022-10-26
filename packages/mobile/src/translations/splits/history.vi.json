@@ -3,6 +3,8 @@
   "history.action.MsgBeginRedelegate.sender": "Chuyển đổi gói tích luỹ",
   "history.action.MsgDelegate.receiver": "Nhận đầu tư",
   "history.action.MsgDelegate.sender": "Tích luỹ",
+  "history.action.MsgExec.MsgDelegate": "Tích luỹ ủy thác",
+  "history.action.MsgGrant.MsgDelegate": "Ủy thác quyền tích luỹ",
   "history.action.MsgMultiSend.receiver": "Nhận theo nhóm",
   "history.action.MsgMultiSend.sender": "Gửi theo nhóm",
   "history.action.MsgSend.receiver": "Nhận",

@@ -403,6 +403,22 @@ export class KeyRingService {
     }
 
     try {
+      let updatedSignDoc = JSON.parse(JSON.stringify(newSignDoc));
+      updatedSignDoc["msgs"] = updatedSignDoc["msgs"].map((msg: any) => {
+        if (
+          msg["type"] === "/cosmos.authz.v1beta1.MsgGrant" ||
+          msg["type"] === "/cosmos.authz.v1beta1.MsgExec" ||
+          msg["type"] === "/cosmos.authz.v1beta1.MsgRevoke"
+        ) {
+          return msg["value"];
+        }
+        return msg;
+      });
+
+      newSignDoc = {
+        ...updatedSignDoc,
+      };
+
       const signature = await this.keyRing.sign(
         env,
         chainId,
