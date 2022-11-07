@@ -28,9 +28,11 @@ import { usePrevious } from "../../hooks";
 import { useSmartNavigation } from "../../navigation-util";
 import { useToastModal } from "../../providers/toast-modal";
 import { AccountCardNew, ActionsCard, BalanceCard } from "./card";
+import { useErc721Contract } from "../../contracts/Erc721Manager";
 
 export const MainScreen: FunctionComponent = observer(() => {
   const [refreshing, setRefreshing] = React.useState(false);
+  const { getNFTInfo, getBalanceOf } = useErc721Contract();
 
   const {
     chainStore,
@@ -224,8 +226,15 @@ export const MainScreen: FunctionComponent = observer(() => {
             </Text>
             <TouchableOpacity
               style={style.flatten(["width-44", "height-44", "justify-center"])}
-              onPress={() => {
-                smartNavigation.navigateSmart("Camera", {});
+              onPress={async () => {
+                const info = await getNFTInfo(
+                  "0xf7ccc44e94f0961a816d80de86842612ece5cfa7",
+                  2022
+                );
+                console.log("__DEBUG__ info", info);
+                const bal = await getBalanceOf("0xf7ccc44e94f0961a816d80de86842612ece5cfa7")
+                console.log("__DEBUG__ bal", bal);
+                // smartNavigation.navigateSmart("Camera", {});
               }}
             >
               <ScanIcon size={32} color={style.get("color-gray-10").color} />
