@@ -9,15 +9,6 @@ import { useStore } from "../stores";
 import Erc721ABI from "./abis/erc721.json";
 import { Erc721 } from "./types/Erc721";
 
-// TODO: khanh.vo: Cap nhat
-// Wallet: privateKey, hexAddress
-// Sample Blockchain sdk: mintedContractAddress, ticketId
-// const privateKey =
-//   "306067cff8bbd7cdb8374c589b32deedf6c2b9c4b66d8f8618e53e9712b873b8";
-// const hexAddress = "0x1f6183b9b06a90c4df957bcb4cbfa8a1d72d82e3";
-// const mintedContractAddress = "0xf7ccc44e94f0961a816d80de86842612ece5cfa7";
-// const ticketId = 2022;
-
 export const useErc721Contract = () => {
   const { keyRingStore } = useStore();
 
@@ -37,7 +28,6 @@ export const useErc721Contract = () => {
       wallet,
       getContract,
     };
-    // return new Erc721Manager(EthereumEndpoint, privateKey);
   }, [keyRingStore]);
 
   const getNFTInfo = async (
@@ -63,19 +53,3 @@ export const useErc721Contract = () => {
     getBalanceOf,
   };
 };
-
-// export class Erc721Manager {
-//   static shared = new Erc721Manager(EthereumEndpoint, privateKey);
-
-//   readonly provider: Web3Provider;
-//   readonly wallet: ethers.Wallet;
-
-//   constructor(rpc: string, privateKey: string) {
-//     this.provider = new Web3Provider(new (Web3HttpProvider as any)(rpc));
-//     this.wallet = new ethers.Wallet(privateKey, this.provider);
-//   }
-
-//   getContract = (contractAddress: string): Erc721 => {
-//     return new Contract(contractAddress, Erc721ABI, this.wallet) as Erc721;
-//   };
-// }
