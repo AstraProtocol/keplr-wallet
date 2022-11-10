@@ -105,10 +105,10 @@ export const TransactionStateView: FunctionComponent<{
 
     return mainText[txStateString] ?? "";
   }
-  const typeMsg =
-    msgs[0].type !== "sign/MsgSignData"
-      ? msgs[0].type
-      : transactionStore.rawData?.type || "";
+  let typeMsg = transactionStore.rawData?.type || "";
+  if (msgs && msgs.length != 0 && msgs[0].type !== "sign/MsgSignData") {
+    typeMsg = msgs[0].type;
+  }
 
   const isShowStep = typeMsg !== "wallet-swap";
   const mainText = getMainText(typeMsg, txState);

@@ -176,6 +176,9 @@ const {
     "Tx.Result": {
       upperScreenName: "Tx",
     },
+    "Tx.EvmResult": {
+      upperScreenName: "Tx",
+    },
     Camera: {
       upperScreenName: "Wallet",
     },

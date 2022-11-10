@@ -4,33 +4,24 @@ import { Keyboard, View } from "react-native";
 import { useStyle } from "../../../styles";
 import { AddressInput, AmountInput } from "../components";
 
-import { ChainStore, useStore } from "../../../stores";
-import { Button } from "../../../components/button";
-import { FeeType, IAmountConfig, useSendTxConfig } from "@keplr-wallet/hooks";
-import { EthereumEndpoint } from "../../../config";
+import { useSendTxConfig } from "@keplr-wallet/hooks";
+import { CoinPretty, Dec, DecUtils } from "@keplr-wallet/unit";
 import { RouteProp, useRoute } from "@react-navigation/native";
 import { useIntl } from "react-intl";
-import { AvoidingKeyboardBottomView } from "../../../components/avoiding-keyboard/avoiding-keyboard-bottom";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import { FEE_RESERVATION, MIN_AMOUNT } from "../../../common/utils";
 import {
   buildLeftColumn,
   buildRightColumn,
   IRow,
   ListRowView,
 } from "../../../components";
-import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-import {
-  FEE_RESERVATION,
-  MIN_AMOUNT,
-  TX_GAS_DEFAULT,
-} from "../../../common/utils";
-import { MsgSend } from "@keplr-wallet/proto-types/cosmos/bank/v1beta1/tx";
-import { CoinPretty, Dec, DecUtils } from "@keplr-wallet/unit";
-import {
-  AccountStore,
-  CosmosAccount,
-  CosmwasmAccount,
-  SecretAccount,
-} from "@keplr-wallet/stores";
+import { AvoidingKeyboardBottomView } from "../../../components/avoiding-keyboard/avoiding-keyboard-bottom";
+import { Button } from "../../../components/button";
+import { EthereumEndpoint } from "../../../config";
+import { useWeb3Transfer } from "../../../hooks/use-web3-transfer";
+import { useSmartNavigation } from "../../../navigation-util";
+import { useStore } from "../../../stores";
 
 export const SendTokenScreen: FunctionComponent = observer(() => {
   const {
@@ -55,6 +46,8 @@ export const SendTokenScreen: FunctionComponent = observer(() => {
       string
     >
   >();
+
+  const { estimateGas, transfer } = useWeb3Transfer();
 
   const chainId = route.params.chainId
     ? route.params.chainId
@@ -90,17 +83,11 @@ export const SendTokenScreen: FunctionComponent = observer(() => {
     }
   }, [route.params.recipient, sendConfigs.recipientConfig]);
 
-  const { gasPrice, gasLimit, feeType } = simulateSendGasFee(
-    chainStore,
-    accountStore,
-    sendConfigs.amountConfig
-  );
-  sendConfigs.gasConfig.setGas(gasLimit);
-  sendConfigs.feeConfig.setFeeType(feeType);
   const feeText = `${FEE_RESERVATION} ${sendConfigs.amountConfig.sendCurrency.coinDenom}`;
 
   const style = useStyle();
   const intl = useIntl();
+  const smartNavigation = useSmartNavigation();
 
   const [addressIsValid, setAddressIsValid] = useState(false);
   const [amountIsValid, setAmountIsValid] = useState(false);
@@ -134,11 +121,25 @@ export const SendTokenScreen: FunctionComponent = observer(() => {
   const onSendHandler = async () => {
     Keyboard.dismiss();
 
-    if (account.isReadyToSendTx && amountIsValid && addressIsValid) {
+    if (amountIsValid && addressIsValid) {
+      const { gasLimit: gas, gasPrice: price } = await estimateGas(
+        sendConfigs.amountConfig
+      );
+
+      const gasLimit = parseInt(gas.toHexString().slice(2), 16);
+      const gasPrice = parseInt(price.slice(2), 16);
+      let feeDec = new Dec(gasLimit).mul(new Dec(gasPrice));
+
       const params = {
         token: sendConfigs.amountConfig.sendCurrency?.coinDenom,
         amount: Number(sendConfigs.amountConfig.amount),
-        fee: Number(sendConfigs.feeConfig.fee?.toDec() ?? "0"),
+        fee: Number(
+          feeDec.mulTruncate(
+            DecUtils.getTenExponentN(
+              -sendConfigs.amountConfig.sendCurrency.coinDecimals
+            )
+          ) ?? "0"
+        ),
         gas: gasLimit,
         gas_price: gasPrice,
         receiver_address: sendConfigs.recipientConfig.recipient,
@@ -160,29 +161,26 @@ export const SendTokenScreen: FunctionComponent = observer(() => {
           type: account.cosmos.msgOpts.send.native.type,
           value: {
             amount,
-            fee: sendConfigs.feeConfig.fee,
+            fee: new CoinPretty(sendConfigs.amountConfig.sendCurrency, feeDec),
             recipient: sendConfigs.recipientConfig.recipient,
           },
         });
 
-        await account.sendToken(
-          sendConfigs.amountConfig.amount,
-          sendConfigs.amountConfig.sendCurrency,
+        await transfer(
           sendConfigs.recipientConfig.recipient,
-          sendConfigs.memoConfig.memo,
-          sendConfigs.feeConfig.toStdFee(),
-          {
-            preferNoSetFee: true,
-            preferNoSetMemo: true,
-          },
+          sendConfigs.amountConfig,
           {
             onBroadcasted: (txHash) => {
               analyticsStore.logEvent("astra_hub_transfer_token", {
                 ...params,
-                tx_hash: Buffer.from(txHash).toString("hex"),
+                tx_hash: "0x" + Buffer.from(txHash).toString("hex"),
                 success: true,
               });
               transactionStore.updateTxHash(txHash);
+
+              smartNavigation.navigate("Tx", {
+                screen: "Tx.EvmResult",
+              });
             },
           }
         );
@@ -257,7 +255,7 @@ export const SendTokenScreen: FunctionComponent = observer(() => {
             disabled={
               amountErrorText.length !== 0 || addressErrorText.length !== 0
             }
-            loading={account.txTypeInProgress === "send"}
+            loading={transactionStore.rawData !== undefined}
             onPress={onSendHandler}
             containerStyle={style.flatten(["margin-x-page", "margin-top-12"])}
           />
@@ -267,87 +265,3 @@ export const SendTokenScreen: FunctionComponent = observer(() => {
     </View>
   );
 });
-
-const simulateSendGasFee = (
-  chainStore: ChainStore,
-  accountStore: AccountStore<[CosmosAccount, CosmwasmAccount, SecretAccount]>,
-  amountConfig: IAmountConfig
-) => {
-  useEffect(() => {
-    simulate();
-  }, [amountConfig.amount]);
-
-  const chainId = chainStore.current.chainId;
-  const [gasLimit, setGasLimit] = useState(TX_GAS_DEFAULT.send);
-
-  const simulate = async () => {
-    const account = accountStore.getAccount(chainId);
-
-    const amount = amountConfig.amount || "0";
-    const actualAmount = (() => {
-      let dec = new Dec(amount);
-      dec = dec.mul(
-        DecUtils.getTenExponentN(amountConfig.sendCurrency.coinDecimals)
-      );
-      return dec.truncate().toString();
-    })();
-
-    const msg = {
-      type: account.cosmos.msgOpts.send.native.type,
-      value: {
-        from_address: account.bech32Address,
-        to_address: account.bech32Address,
-        amount: [
-          {
-            denom: amountConfig.sendCurrency.coinMinimalDenom,
-            amount: actualAmount,
-          },
-        ],
-      },
-    };
-    try {
-      const { gasUsed } = await account.cosmos.simulateTx(
-        [
-          {
-            typeUrl: "/cosmos.bank.v1beta1.MsgSend",
-            value: MsgSend.encode({
-              fromAddress: msg.value.from_address,
-              toAddress: msg.value.to_address,
-              amount: msg.value.amount,
-            }).finish(),
-          },
-        ],
-        { amount: [] }
-      );
-
-      const gasLimit = Math.ceil(gasUsed * 1.3);
-      console.log("__DEBUG__ simulate gasUsed", gasUsed);
-      console.log("__DEBUG__ simulate gasLimit", gasLimit);
-      setGasLimit(gasLimit);
-    } catch (e) {
-      console.log("simulateSendGasFee error", e);
-      setGasLimit(TX_GAS_DEFAULT.send); // default gas
-    }
-  };
-
-  const feeType = "average" as FeeType;
-  var gasPrice = 1000000000; // default 1 gwei = 1 nano aastra
-  const feeConfig = chainStore.current.feeCurrencies
-    .filter((feeCurrency) => {
-      return (
-        feeCurrency.coinMinimalDenom ===
-        amountConfig.sendCurrency.coinMinimalDenom
-      );
-    })
-    .shift();
-  if (feeConfig?.gasPriceStep) {
-    const { [feeType]: wei } = feeConfig.gasPriceStep;
-    gasPrice = wei;
-  }
-
-  return {
-    gasPrice,
-    gasLimit,
-    feeType,
-  };
-};

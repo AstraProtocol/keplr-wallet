@@ -7,7 +7,6 @@ import { useSmartNavigation } from "../../../navigation-util";
 import { useStore } from "../../../stores";
 import { useStyle } from "../../../styles";
 import { renderAminoMessages } from "../models/amino";
-import { renderDirectMessages } from "../models/direct";
 import { MsgSwap } from "../models/messages";
 
 export const TransactionDetailsView: FunctionComponent<{
@@ -18,13 +17,12 @@ export const TransactionDetailsView: FunctionComponent<{
   const { chainStore, transactionStore, accountStore } = useStore();
 
   const [hasData] = useState(() => {
-    if (transactionStore.txMsgsMode && transactionStore.txMsgs) {
+    if (transactionStore.rawData) {
       return true;
     }
     return false;
   });
 
-  const mode = transactionStore.txMsgsMode;
   const chainId = chainStore.current.chainId;
   const chainInfo = chainStore.getChain(chainId);
   const rawData = transactionStore.rawData;
@@ -34,46 +32,38 @@ export const TransactionDetailsView: FunctionComponent<{
 
   let rows: IRow[] = [];
   if (hasData) {
-    if (mode === "amino") {
-      console.log("__DEBUG__ render amino");
-      rows = renderAminoMessages(
-        chainStore.current.chainId,
-        accountStore,
-        transactionStore
-      );
-    } else if (mode === "direct") {
-      rows = renderDirectMessages();
-    }
+    rows = renderAminoMessages(
+      chainStore.current.chainId,
+      accountStore,
+      transactionStore
+    );
   }
 
   const viewDetailsHandler = () => {
-    if (chainInfo.raw.txExplorer && transactionStore.txHash) {
-      const txHash = Buffer.from(transactionStore.txHash)
-        .toString("hex")
-        .toUpperCase();
-      const url = chainInfo.raw.txExplorer.txUrl.replace("{txHash}", txHash);
-
-      smartNavigation.pushSmart("WebView", {
-        url: url,
-      });
-    }
-  };
-
-  const viewOnAstraExplorer = () => {
-    if (chainInfo.raw.txExplorer && transactionStore.rawData) {
+    let txHash = "";
+    if (transactionStore.txHash) {
+      txHash =
+        (rawData?.type === "cosmos-sdk/MsgSend" ? "0x" : "") +
+        Buffer.from(transactionStore.txHash).toString("hex").toUpperCase();
+    } else if (
+      rawData &&
+      rawData.type === "wallet-swap" &&
+      transactionStore.txState !== "failure"
+    ) {
       const rawDataValue = transactionStore.rawData.value;
-      const transactionHash = (rawDataValue as MsgSwap).transactionHash;
-      const url = "https://explorer.astranaut.dev/tx/" + transactionHash;
-      smartNavigation.pushSmart("WebView", {
-        url,
-      });
+      txHash = (rawDataValue as MsgSwap).transactionHash || "";
     }
+
+    const url = chainInfo.raw.txExplorer?.txUrl.replace("{txHash}", txHash);
+    smartNavigation.pushSmart("WebView", {
+      url: url,
+    });
   };
 
   return (
     <View style={style}>
       {hasData && <ListRowView rows={rows} />}
-      {chainInfo && chainInfo.raw.txExplorer && transactionStore.txHash && (
+      {chainInfo.raw.txExplorer && (
         <TextLink
           size="medium"
           onPress={viewDetailsHandler}
@@ -85,20 +75,6 @@ export const TransactionDetailsView: FunctionComponent<{
           )}
         </TextLink>
       )}
-      {rawData &&
-        rawData.type === "wallet-swap" &&
-        transactionStore.txState !== "failure" && (
-          <TextLink
-            size="medium"
-            onPress={viewOnAstraExplorer}
-            style={styleBuilder.flatten(["margin-y-16"])}
-          >
-            {intl.formatMessage(
-              { id: "tx.result.viewDetails" },
-              { page: "Astra Explorer" }
-            )}
-          </TextLink>
-        )}
     </View>
   );
 };

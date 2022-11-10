@@ -1,3 +1,4 @@
+import { AccountStore, CosmosAccount, CosmwasmAccount, SecretAccount } from "@keplr-wallet/stores";
 import { TxResponse } from "@keplr-wallet/stores/build/query/cosmos/tx/types";
 import { CoinPretty } from "@keplr-wallet/unit";
 import moment from "moment";
@@ -88,10 +89,14 @@ interface MsgExec {
 
 export function toUiItem(
   chainStore: ChainStore,
+  accountStore: AccountStore<[CosmosAccount, CosmwasmAccount, SecretAccount]>,
   intl: IntlShape,
-  bech32Address: string,
   txResponse: TxResponse
 ): TransactionItem<TxResponse> {
+  const account = accountStore.getAccount(chainStore.current.chainId);
+  const bech32Address = account.bech32Address;
+  const hexAddress = account.ethereumHexAddress;
+
   const msgs = txResponse?.tx?.body?.messages || [];
   const msgRaw = firstOrNull(msgs);
   const routerAddresses = Object.values(addresses.ROUTER);
@@ -243,13 +248,18 @@ export function toUiItem(
       break;
     }
     case "/ethermint.evm.v1.MsgEthereumTx":
+      console.log("__RAW__", JSON.stringify(msgRaw));
       const toAddress = msgRaw?.data?.to;
       if (routerAddresses.includes(toAddress)) {
         action = intl.formatMessage({ id: "history.action.swap" });
       } else {
-        action = intl.formatMessage({ id: "history.action.approve" });
+        action = toAddress === hexAddress ? "receiver" : "sender";
+        action = intl.formatMessage({ id: `history.action.MsgSend.${action}` });
       }
-      amount = getAmountFromRawLog(txResponse?.raw_log, "coinbase");
+      amount = fromCoin({
+        amount: msgRaw?.data?.value,
+        denom: chainStore.current.currencies[0].coinMinimalDenom,
+      });
       break;
     case undefined:
     case null:

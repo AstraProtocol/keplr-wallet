@@ -65,7 +65,7 @@ import {
 import { TokensScreen } from "./screens/tokens";
 import { CameraScreen } from "./screens/camera";
 import { FocusedScreenProvider } from "./providers/focused-screen";
-import { TxResultScreen } from "./screens/tx-result";
+import { TxEvmResultScreen, TxResultScreen } from "./screens/tx-result";
 import { TorusSignInScreen } from "./screens/register/torus";
 import { HeaderAddIcon } from "./components/header/icon";
 import { BlurredBottomTabBar } from "./components/bottom-tabbar";
@@ -285,6 +285,13 @@ export const TransactionNavigation: FunctionComponent = () => {
       <Stack.Screen
         name="Tx.Result"
         component={TxResultScreen}
+        options={{
+          headerShown: false,
+        }}
+      />
+      <Stack.Screen
+        name="Tx.EvmResult"
+        component={TxEvmResultScreen}
         options={{
           headerShown: false,
         }}

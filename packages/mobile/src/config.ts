@@ -85,8 +85,8 @@ export const EmbedChainInfos: AppChainInfo[] = [
     chainSymbolImageUrl:
       "https://salt.tikicdn.com/ts/upload/2a/74/6d/1000f0249fd530a9313a07fc3e13c1b2.png",
     txExplorer: {
-      name: "Astra Scan",
-      txUrl: "https://scan.astranaut.dev/transactions/{txHash}",
+      name: "Astra Explorer",
+      txUrl: "https://explorer.astranaut.dev/tx/{txHash}",
     },
     wcInfor: {
       relayUrl: "wss://wc-relay.astranaut.dev",
