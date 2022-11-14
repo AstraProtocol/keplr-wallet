@@ -1,6 +1,6 @@
 /* eslint-disable react/display-name */
 import React, { FunctionComponent, useEffect, useRef } from "react";
-import { Text, View } from "react-native";
+import { Text, View, Linking } from "react-native";
 import { KeyRingStatus } from "@keplr-wallet/background";
 import {
   NavigationContainer,
@@ -797,9 +797,25 @@ export const AppNavigation: FunctionComponent = observer(() => {
 
   const navigationRef = useRef<NavigationContainerRef | null>(null);
   const routeNameRef = useRef<string | null>(null);
+  const pendingUri = useRef<string>(null);
+
+  const linking = {
+    prefixes: ["astrawallet://"],
+    config: {
+      screens: {
+        MainTabNavigation: {
+          screens: {
+            History: "/history",
+            Setting: "/setting",
+            Stake: "/stake",
+          },
+        },
+      },
+    },
+  };
+
   useEffect(() => {
     if (signInteractionStore.waitingData) {
-      console.log("__DEBUG__ waitingdata :", signInteractionStore.waitingData);
       console.log("__navigationRef.current__", navigationRef.current);
       console.log(
         "__navigationRef.current__route",
@@ -820,12 +836,12 @@ export const AppNavigation: FunctionComponent = observer(() => {
       <FocusedScreenProvider>
         <SmartNavigatorProvider>
           <BugsnagNavigationContainer
+            linking={linking}
             ref={navigationRef}
             onReady={() => {
               const routerName = navigationRef.current?.getCurrentRoute();
               if (routerName) {
                 routeNameRef.current = routerName.name;
-
                 analyticsStore.logPageView(routerName.name);
               }
             }}
@@ -834,11 +850,9 @@ export const AppNavigation: FunctionComponent = observer(() => {
               if (routerName) {
                 const previousRouteName = routeNameRef.current;
                 const currentRouteName = routerName.name;
-
                 if (previousRouteName !== currentRouteName) {
                   analyticsStore.logPageView(currentRouteName);
                 }
-
                 routeNameRef.current = currentRouteName;
               }
             }}
@@ -847,7 +861,7 @@ export const AppNavigation: FunctionComponent = observer(() => {
               initialRouteName={
                 keyRingStore.status !== KeyRingStatus.UNLOCKED
                   ? "Unlock"
-                  : "MainTabDrawer"
+                  : "MainTabNavigation"
               }
               screenOptions={{
                 headerShown: false,
@@ -857,7 +871,7 @@ export const AppNavigation: FunctionComponent = observer(() => {
             >
               <Stack.Screen name="Unlock" component={UnlockScreen} />
               <Stack.Screen
-                name="MainTabDrawer"
+                name="MainTabNavigation"
                 component={MainTabNavigation}
               />
               <Stack.Screen name="Register" component={RegisterNavigation} />

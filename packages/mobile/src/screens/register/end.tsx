@@ -47,7 +47,7 @@ export const RegisterEndScreen: FunctionComponent = observer(() => {
   };
 
   const onContinueHandler = () => {
-    let nextRoute = { name: "MainTabDrawer", params: {} };
+    let nextRoute = { name: "MainTabNavigation", params: {} };
     if (keychainStore.isBiometrySupported) {
       nextRoute = {
         name: "Register.SetupBiometrics",

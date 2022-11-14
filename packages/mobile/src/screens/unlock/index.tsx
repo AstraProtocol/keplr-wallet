@@ -136,7 +136,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
     if (!navigateToHomeOnce.current) {
       // Wait the account of selected chain is loaded.
       await waitAccountLoad(accountStore, chainStore.current.chainId);
-      navigation.dispatch(StackActions.replace("MainTabDrawer"));
+      navigation.dispatch(StackActions.replace("MainTabNavigation"));
     }
     navigateToHomeOnce.current = true;
   }, [accountStore, chainStore, navigation]);
