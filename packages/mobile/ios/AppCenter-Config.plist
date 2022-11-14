@@ -4,7 +4,5 @@
     <dict>
     <key>AppSecret</key>
     <string>a973523b-3d72-4cb5-9d73-b4191f8a19a9</string>
-    <key>FIXME</key>
-    <string>FIXME AppSecret should be in env</string>
     </dict>
 </plist>

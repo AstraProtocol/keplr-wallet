@@ -123,6 +123,7 @@ export const SendTokenScreen: FunctionComponent = observer(() => {
 
     if (amountIsValid && addressIsValid) {
       const { gasLimit: gas, gasPrice: price } = await estimateGas(
+        sendConfigs.recipientConfig.recipient,
         sendConfigs.amountConfig
       );
 

@@ -12,7 +12,6 @@ import { LoadingScreenProvider } from "./providers/loading-screen";
 import * as SplashScreen from "./screens/splash";
 import { ConfirmModalProvider } from "./providers/confirm-modal";
 import { ToastModalProvider } from "./providers/toast-modal";
-import Bugsnag from "@bugsnag/react-native";
 import { AppIntlProvider } from "./translations";
 import { autoUpdateBody, withAutoDownloadUI } from "./providers/auto-update";
 import { NetworkConnectionProvider } from "./providers/network-connection";
@@ -122,19 +121,6 @@ const AppBody: FunctionComponent = () => {
   );
 };
 
-const ErrorBoundaryPlugin = Bugsnag.getPlugin("react");
-const ErrorBoundary = (() => {
-  if (ErrorBoundaryPlugin) {
-    console.log("ErrorBoundaryPlugin found");
-    return ErrorBoundaryPlugin.createErrorBoundary(React);
-  } else {
-    console.log(
-      "WARNING: ErrorBoundaryPlugin is null. Fallback to use basic AppBody"
-    );
-    return;
-  }
-})();
-
 // should only use codePush in release version,
 // other versions like dev and RC, UAT should use local code
 // set below value = true to use codePush from AppCenter
@@ -146,11 +132,5 @@ const useCodePush = (() => {
 const CodePushAppBody = autoUpdateBody(AppBody, useCodePush);
 
 export const App: FunctionComponent = () => {
-  return ErrorBoundary ? (
-    <ErrorBoundary>
-      <CodePushAppBody />
-    </ErrorBoundary>
-  ) : (
-    <CodePushAppBody />
-  );
+  return <CodePushAppBody />;
 };

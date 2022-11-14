@@ -26,11 +26,17 @@ export const useWeb3Transfer = () => {
     };
   }, [keyRingStore]);
 
-  const estimateGas = async (amountConfig: IAmountConfig) => {
+  const estimateGas = async (
+    toAddress: string,
+    amountConfig: IAmountConfig
+  ) => {
     const manager = await asyncManager;
-    const txData = await buildTxData(amountConfig);
 
-    const estimateGas = await manager.provider.estimateGas(txData);
+    const estimateGas = await manager.provider.estimateGas({
+      from: manager.wallet.address,
+      to: toAddress,
+      value: getTxAmount(amountConfig),
+    });
     const gasPrice = await manager.provider.getGasPrice();
 
     return {
@@ -53,7 +59,7 @@ export const useWeb3Transfer = () => {
 
     const manager = await asyncManager;
 
-    const { gasLimit, gasPrice } = await estimateGas(amountConfig);
+    const { gasLimit, gasPrice } = await estimateGas(toAddress, amountConfig);
     console.log("__DEBUG__ estimateGas", gasLimit.toHexString());
     let txData = await buildTxData(amountConfig);
     txData = {
@@ -98,7 +104,7 @@ export const useWeb3Transfer = () => {
     }
   };
 
-  const buildTxData = async (amountConfig: IAmountConfig) => {
+  const getTxAmount = (amountConfig: IAmountConfig) => {
     const actualAmount = (() => {
       let dec = new Dec(amountConfig.amount);
       dec = dec.mul(
@@ -107,7 +113,10 @@ export const useWeb3Transfer = () => {
       return dec.truncate().toString();
     })();
     const amount = BigNumber.from(actualAmount);
+    return amount;
+  };
 
+  const buildTxData = async (amountConfig: IAmountConfig) => {
     const manager = await asyncManager;
     const nonce = await manager.provider.getTransactionCount(
       manager.wallet.address
@@ -117,7 +126,7 @@ export const useWeb3Transfer = () => {
     const txData: TransactionRequest = {
       chainId: chainId,
       from: manager.wallet.address,
-      value: amount,
+      value: getTxAmount(amountConfig),
       nonce,
       type: 2,
       maxPriorityFeePerGas: gaastra1,
