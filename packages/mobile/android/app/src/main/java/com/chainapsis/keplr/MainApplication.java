@@ -19,7 +19,6 @@ import org.unimodules.adapters.react.ModuleRegistryAdapter;
 import org.unimodules.adapters.react.ReactModuleRegistryProvider;
 
 import com.microsoft.codepush.react.CodePush;
-import com.bugsnag.android.Bugsnag;
 import vn.tiki.app.astra.wallet.BuildConfig;
 
 public class MainApplication extends Application implements ReactApplication {
@@ -67,7 +66,6 @@ public class MainApplication extends Application implements ReactApplication {
   @Override
   public void onCreate() {
     super.onCreate();
-    Bugsnag.start(this);
     SoLoader.init(this, /* native exopackage */ false);
     initializeFlipper(this, getReactNativeHost().getReactInstanceManager());
   }

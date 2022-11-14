@@ -83,7 +83,6 @@ import {
 } from "./screens/register/import-from-extension";
 import { DappsWebpageScreen } from "./screens/web/webpages";
 import { WebpageScreenScreenOptionsPreset } from "./screens/web/components/webpage-screen";
-import Bugsnag from "@bugsnag/react-native";
 import { MainScreen } from "./screens/main";
 import {
   ReceiveScreen,
@@ -770,23 +769,6 @@ export const MainTabNavigation: FunctionComponent = () => {
   );
 };
 
-const BugsnagNavigationContainerPlugin = Bugsnag.getPlugin("reactNavigation");
-// The returned BugsnagNavigationContainer has exactly the same usage
-// except now it tracks route information to send with your error reports
-const BugsnagNavigationContainer = (() => {
-  if (BugsnagNavigationContainerPlugin) {
-    console.log("BugsnagNavigationContainerPlugin found");
-    return BugsnagNavigationContainerPlugin.createNavigationContainer(
-      NavigationContainer
-    );
-  } else {
-    console.log(
-      "WARNING: BugsnagNavigationContainerPlugin is null. Fallback to use basic NavigationContainer"
-    );
-    return NavigationContainer;
-  }
-})();
-
 export const AppNavigation: FunctionComponent = observer(() => {
   const {
     keyRingStore,
@@ -819,7 +801,7 @@ export const AppNavigation: FunctionComponent = observer(() => {
     <PageScrollPositionProvider>
       <FocusedScreenProvider>
         <SmartNavigatorProvider>
-          <BugsnagNavigationContainer
+          <NavigationContainer
             ref={navigationRef}
             onReady={() => {
               const routerName = navigationRef.current?.getCurrentRoute();
@@ -871,7 +853,7 @@ export const AppNavigation: FunctionComponent = observer(() => {
               />
               <Stack.Screen name="ChainList" component={ChainListStackScreen} />
             </Stack.Navigator>
-          </BugsnagNavigationContainer>
+          </NavigationContainer>
           {/* <ModalsRenderer /> */}
         </SmartNavigatorProvider>
       </FocusedScreenProvider>
