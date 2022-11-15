@@ -18,7 +18,7 @@ export class LinkStore {
     this.initDeepLink();
 
     this.eventListener.addEventListener("keplr_keystoreunlock", () =>
-      this.sendAccountMayChangedEventToClients()
+      this.handlePendingUri()
     );
   }
 
@@ -105,7 +105,7 @@ export class LinkStore {
     this._needGoBackToBrowser = false;
   }
 
-  protected async sendAccountMayChangedEventToClients() {
+  protected async handlePendingUri() {
     await this.waitInitStores();
   }
   protected async saveDeepLink(uri: string): Promise<void> {
