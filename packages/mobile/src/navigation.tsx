@@ -1,6 +1,6 @@
 /* eslint-disable react/display-name */
-import React, { FunctionComponent, useEffect, useRef } from "react";
-import { Text, View, Linking } from "react-native";
+import React, { FunctionComponent, useEffect, useRef, useState } from "react";
+import { Text, View, Linking, AppState, AppStateStatus } from "react-native";
 import { KeyRingStatus } from "@keplr-wallet/background";
 import {
   NavigationContainer,
@@ -102,7 +102,7 @@ import { HistoryScreen } from "./screens/history";
 import { WebViewScreen } from "./screens/web/default";
 import { SessionProposalScreen } from "./screens/wallet-connect";
 import { useIntl } from "react-intl";
-import { SmartNavigatorProvider } from "./navigation-util";
+import { SmartNavigatorProvider, useSmartNavigation } from "./navigation-util";
 import { RegisterCreateEntryScreen } from "./screens/register/create-entry";
 import { SwapConfirmScreen } from "./screens/main/screens/swap-confirm";
 import { SwapProvider } from "./providers/swap/provider";
@@ -652,8 +652,37 @@ export const WebNavigation: FunctionComponent = () => {
 export const MainTabNavigation: FunctionComponent = () => {
   const style = useStyle();
   const intl = useIntl();
-  const { remoteConfigStore } = useStore();
+  const { remoteConfigStore, keyRingStore, linkStore } = useStore();
+  const smartNavigation = useSmartNavigation();
   const dappsEnabled = remoteConfigStore.getBool("feature_dapps_enabled");
+  const appState = useRef(AppState.currentState);
+
+  useEffect(() => {
+    AppState.addEventListener("change", _handleAppStateChange);
+    return () => {
+      AppState.removeEventListener("change", _handleAppStateChange);
+    };
+  }, []);
+
+  const _handleAppStateChange = async (nextAppState: AppStateStatus) => {
+    console.log(
+      `App has change from ${appState.current} to the ${nextAppState}!, status: `,
+      keyRingStore.status
+    );
+    if (
+      linkStore.canLock &&
+      nextAppState === "background" &&
+      keyRingStore.status === KeyRingStatus.UNLOCKED
+    ) {
+      await keyRingStore.lock();
+      smartNavigation.reset({
+        index: 0,
+        routes: [{ name: "Unlock" }],
+      });
+    }
+    appState.current = nextAppState;
+    console.log("AppState", appState.current);
+  };
 
   return (
     <Tab.Navigator
@@ -805,9 +834,9 @@ export const AppNavigation: FunctionComponent = observer(() => {
       screens: {
         MainTabNavigation: {
           screens: {
-            History: "/history",
-            Setting: "/setting",
-            Stake: "/stake",
+            History: "/internal-history",
+            Setting: "/internal-setting",
+            Stake: "/internal-stake",
           },
         },
       },

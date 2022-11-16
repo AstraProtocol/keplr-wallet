@@ -17,10 +17,13 @@ export class LinkStore {
 
     this.initDeepLink();
 
-    this.eventListener.addEventListener("keplr_keystoreunlock", () =>
-      this.handlePendingUri()
-    );
+    this.eventListener.addEventListener("keplr_keystorechange", () => {
+      console.log("__DEBUG__ handlePendingUri after keplr_keystorechange");
+      this.handlePendingUri();
+    });
   }
+
+  protected _canLock = false;
 
   protected pendingLinkUri: string = "";
 
@@ -48,7 +51,13 @@ export class LinkStore {
   get needGoBackToBrowser(): boolean {
     return this._needGoBackToBrowser;
   }
+
+  get canLock(): boolean {
+    return this._canLock;
+  }
+
   protected async initDeepLink() {
+    console.log("__DEBUG__ initDeepLink");
     await this.checkInitialURL();
 
     Linking.addEventListener("url", (e) => {
@@ -70,6 +79,7 @@ export class LinkStore {
   }
 
   protected async checkInitialURL() {
+    console.log("__DEBUG__ checkInitialURL");
     const initialURL = await Linking.getInitialURL();
     if (initialURL) {
       this.processDeepLinkURL(initialURL);
@@ -77,19 +87,11 @@ export class LinkStore {
   }
 
   protected processDeepLinkURL(_url: string) {
-    console.log("__DEBUG__ linkStore:", _url);
     try {
       const url = new URL(_url);
       if (url.protocol === "astrawallet:") {
-        let params = url.search;
-        if (params) {
-          if (params.startsWith("?")) {
-            params = params.slice(1);
-          }
-          this.pendingLinkUri = _url;
-          this.saveDeepLink(_url);
-          console.log("__DEBUG__ linkStore:", _url);
-        }
+        this.saveDeepLink(_url);
+        console.log("__DEBUG__ linkStore:", _url);
       }
     } catch (e) {
       console.log(e);
@@ -107,18 +109,26 @@ export class LinkStore {
 
   protected async handlePendingUri() {
     await this.waitInitStores();
+    this._canLock = true;
+    console.log("__DEBUG__ got pendingUrl: ", this.pendingLinkUri);
+    if (this.pendingLinkUri.length > 0) {
+      const internalDeeplink = this.pendingLinkUri.replace(
+        "astrawallet://",
+        "astrawallet://internal-"
+      );
+      console.log("url: ", internalDeeplink);
+      const supported = await Linking.canOpenURL(internalDeeplink);
+      if (supported) {
+        await Linking.openURL(internalDeeplink);
+      }
+      this.pendingLinkUri = "";
+    }
   }
   protected async saveDeepLink(uri: string): Promise<void> {
     this.pendingLinkUri = uri;
     await this.kvStore.set("aw_pending_link_uri", uri);
   }
 
-  protected async restore(): Promise<void> {
-    const _pendingUri = await this.kvStore.get<string>("aw_pending_link_uri");
-    if (_pendingUri) {
-      this.pendingLinkUri = _pendingUri;
-    }
-  }
   protected async waitInitStores(): Promise<void> {
     // Wait until the chain store and account store is ready.
     if (this.keyRingStore.status !== KeyRingStatus.UNLOCKED) {
