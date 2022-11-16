@@ -83,7 +83,6 @@ import {
 } from "./screens/register/import-from-extension";
 import { DappsWebpageScreen } from "./screens/web/webpages";
 import { WebpageScreenScreenOptionsPreset } from "./screens/web/components/webpage-screen";
-import Bugsnag from "@bugsnag/react-native";
 import { MainScreen } from "./screens/main";
 import {
   ReceiveScreen,
