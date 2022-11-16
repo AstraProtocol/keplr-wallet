@@ -1,4 +1,9 @@
-import { AccountStore, CosmosAccount, CosmwasmAccount, SecretAccount } from "@keplr-wallet/stores";
+import {
+  AccountStore,
+  CosmosAccount,
+  CosmwasmAccount,
+  SecretAccount,
+} from "@keplr-wallet/stores";
 import { TxResponse } from "@keplr-wallet/stores/build/query/cosmos/tx/types";
 import { CoinPretty } from "@keplr-wallet/unit";
 import moment from "moment";
@@ -83,6 +88,14 @@ interface MsgExec {
     msgs: {
       "@type": string;
       amount: Coin;
+    }[];
+  };
+}
+
+interface MsgRevoke {
+  cosmos: {
+    msgs: {
+      "@type": string;
     }[];
   };
 }
@@ -244,6 +257,17 @@ export function toUiItem(
           id: `history.action.MsgExec.${action}`,
         });
         amount = fromCoin(execMsg.amount);
+      }
+      break;
+    }
+    case "/cosmos.authz.v1beta1.MsgRevoke": {
+      const msg = (msgRaw as unknown) as MsgRevoke["cosmos"];
+      const revokeMsg = msg.msgs.shift();
+      if (revokeMsg && revokeMsg["@type"]) {
+        action = revokeMsg["@type"].split(".").pop() || "";
+        action = intl.formatMessage({
+          id: `history.action.MsgExec.${action}`,
+        });
       }
       break;
     }

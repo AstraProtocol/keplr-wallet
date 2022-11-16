@@ -7,6 +7,7 @@
   "history.action.MsgGrant.MsgDelegate": "Grant stake authorization",
   "history.action.MsgMultiSend.receiver": "",
   "history.action.MsgMultiSend.sender": "",
+  "history.action.MsgRevoke.MsgDelegate": "Revoke stake authorization",
   "history.action.MsgSend.receiver": "Receive",
   "history.action.MsgSend.sender": "Send",
   "history.action.MsgUndelegate.receiver": "",

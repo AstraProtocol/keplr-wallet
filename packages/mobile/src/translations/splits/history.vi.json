@@ -7,6 +7,7 @@
   "history.action.MsgGrant.MsgDelegate": "Ủy thác quyền tích luỹ",
   "history.action.MsgMultiSend.receiver": "Nhận theo nhóm",
   "history.action.MsgMultiSend.sender": "Gửi theo nhóm",
+  "history.action.MsgRevoke.MsgDelegate": "Hủy ủy thác quyền tích luỹ",
   "history.action.MsgSend.receiver": "Nhận",
   "history.action.MsgSend.sender": "Gửi",
   "history.action.MsgUndelegate.receiver": "Bị rút đầu tư",

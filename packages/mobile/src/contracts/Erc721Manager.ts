@@ -9,8 +9,8 @@ import { useStore } from "../stores";
 import Erc721ABI from "./abis/erc721.json";
 import { Erc721 } from "./types/Erc721";
 
-export const useErc721Contract = () => {
-  const { keyRingStore } = useStore();
+export const useNFTContract = () => {
+  const { keyRingStore, transactionStore } = useStore();
 
   const asyncManager = useMemo(async () => {
     const privateKey = await keyRingStore.exportPrivateKey();
@@ -40,16 +40,61 @@ export const useErc721Contract = () => {
     return (await Axios.get(uri)).data;
   };
 
-  const getBalanceOf = async (mintedContractAddress: string) => {
+  const transferNFTOwner = async (
+    toAddress: string,
+    mintedContractAddress: string,
+    ticketId: BigNumberish,
+    onTxEvents?:
+      | ((tx: any) => void)
+      | {
+          onBroadcasted?: (txHash: Uint8Array) => void;
+          onFulfill?: (tx: any) => void;
+        }
+  ) => {
+    transactionStore.updateTxState("pending");
+
     const manager = await asyncManager;
-    const balance = await manager
+    const response = await manager
       .getContract(mintedContractAddress)
-      .balanceOf(manager.wallet.address);
-    return balance;
+      .transferFrom(manager.wallet.address, toAddress, ticketId);
+
+    let onBroadcasted: ((txHash: Uint8Array) => void) | undefined;
+    let onFulfill: ((tx: any) => void) | undefined;
+
+    if (onTxEvents) {
+      if (typeof onTxEvents === "function") {
+        onFulfill = onTxEvents;
+      } else {
+        onBroadcasted = onTxEvents.onBroadcasted;
+        onFulfill = onTxEvents.onFulfill;
+      }
+    }
+
+    if (onBroadcasted) {
+      onBroadcasted(Buffer.from(response.hash.slice(2), "hex"));
+    }
+
+    const receipt = await response.wait();
+    if (onFulfill) {
+      onFulfill(receipt);
+    }
+    transactionStore.updateTxState("success");
+  };
+
+  const estimateGasTransferNFTOwner = async (
+    toAddress: string,
+    mintedContractAddress: string,
+    ticketId: BigNumberish
+  ) => {
+    const manager = await asyncManager;
+    return await manager
+      .getContract(mintedContractAddress)
+      .estimateGas.transferFrom(manager.wallet.address, toAddress, ticketId);
   };
 
   return {
     getNFTInfo,
-    getBalanceOf,
+    transferNFTOwner,
+    estimateGasTransferNFTOwner,
   };
 };
