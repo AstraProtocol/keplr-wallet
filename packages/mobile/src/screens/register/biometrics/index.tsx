@@ -50,7 +50,7 @@ export const SetupBiometricsScreen: FunctionComponent = () => {
       index: 0,
       routes: [
         {
-          name: "MainTabDrawer",
+          name: "MainTabNavigation",
         },
       ],
     });
@@ -71,7 +71,7 @@ export const SetupBiometricsScreen: FunctionComponent = () => {
       index: 0,
       routes: [
         {
-          name: "MainTabDrawer",
+          name: "MainTabNavigation",
         },
       ],
     });

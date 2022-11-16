@@ -38,6 +38,7 @@ import { SignClientStore } from "./wallet-connect-v2";
 import { RemoteConfigStore } from "./remote-config";
 import { UserLoginStore } from "./user-login";
 import { initializeAnalyticsStore, StackityAnalyticsStore } from "./analytics";
+import { LinkStore } from "./link";
 export class RootStore {
   public readonly chainStore: ChainStore;
   public readonly keyRingStore: KeyRingStore;
@@ -72,6 +73,7 @@ export class RootStore {
   public readonly transactionStore: TransactionStore;
   public readonly remoteConfigStore: RemoteConfigStore;
   public readonly userLoginStore: UserLoginStore;
+  public readonly linkStore: LinkStore;
 
   constructor() {
     const router = new RNRouterUI(RNEnv.produceEnv);
@@ -344,6 +346,18 @@ export class RootStore {
     this.analyticsStore = initializeAnalyticsStore();
     this.analyticsStore.setup(
       this.remoteConfigStore.getString("feature_stackity_env")
+    );
+    this.linkStore = new LinkStore(
+      new AsyncKVStore("store_wallet_link"),
+      {
+        addEventListener: (type: string, fn: () => void) => {
+          eventEmitter.addListener(type, fn);
+        },
+        removeEventListener: (type: string, fn: () => void) => {
+          eventEmitter.removeListener(type, fn);
+        },
+      },
+      this.keyRingStore
     );
   }
 }

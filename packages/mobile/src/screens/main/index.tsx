@@ -74,9 +74,9 @@ export const MainScreen: FunctionComponent = observer(() => {
       if (state === "active") {
         checkAndUpdateChainInfo();
       }
-      if (state === "background") {
-        autoLock();
-      }
+      // if (state === "background") {
+      //   autoLock();
+      // }
     };
 
     AppState.addEventListener("change", appStateHandler);
@@ -111,16 +111,16 @@ export const MainScreen: FunctionComponent = observer(() => {
     showAccessTestnetToast();
   }, [chainStore.current.chainId]);
 
-  async function autoLock() {
-    if (keyRingStore.status === KeyRingStatus.UNLOCKED) {
-      await keyRingStore.lock();
+  // async function autoLock() {
+  //   if (keyRingStore.status === KeyRingStatus.UNLOCKED) {
+  //     await keyRingStore.lock();
 
-      smartNavigation.reset({
-        index: 0,
-        routes: [{ name: "Unlock" }],
-      });
-    }
-  }
+  //     smartNavigation.reset({
+  //       index: 0,
+  //       routes: [{ name: "Unlock" }],
+  //     });
+  //   }
+  // }
 
   const onRefresh = React.useCallback(async () => {
     const account = accountStore.getAccount(chainStore.current.chainId);
