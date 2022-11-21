@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "712303797758",
+    "firebase_url": "https://tiki-ios-dev.firebaseio.com",
+    "project_id": "tiki-ios-dev",
+    "storage_bucket": "tiki-ios-dev.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:712303797758:android:e277e3e9f4fcc91e8dccaf",
+        "android_client_info": {
+          "package_name": "io.astranaut.app.wallet"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "712303797758-ufdms1lphfv1l5f15m00leqfovl6h1mh.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCy4Ce0gwXS1Q-aDTAMTTsxmSToCFJugj8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "712303797758-ot8t428a349dg9qns6tjg0l4kb32psvs.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "712303797758-201r5rb9ptpqornf1el9nhu5nrqi8jga.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "io.astranaut.wallet.app"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

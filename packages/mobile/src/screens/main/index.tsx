@@ -19,7 +19,7 @@ import { useStyle } from "../../styles";
 
 import { observer } from "mobx-react-lite";
 
-import { ChainUpdaterService, KeyRingStatus } from "@keplr-wallet/background";
+import { ChainUpdaterService } from "@keplr-wallet/background";
 import { RouteProp, useFocusEffect, useRoute } from "@react-navigation/native";
 import { useIntl } from "react-intl";
 import { TouchableOpacity } from "react-native-gesture-handler";
@@ -38,7 +38,6 @@ export const MainScreen: FunctionComponent = observer(() => {
     queriesStore,
     priceStore,
     analyticsStore,
-    keyRingStore,
   } = useStore();
 
   const style = useStyle();

@@ -1,8 +1,17 @@
+import messaging from "@react-native-firebase/messaging";
 import { RouteProp, useRoute } from "@react-navigation/native";
 import { observer } from "mobx-react-lite";
 import React, { FunctionComponent, useEffect, useState } from "react";
 import { useIntl } from "react-intl";
-import { ImageBackground, Linking, SafeAreaView, View } from "react-native";
+import {
+  Clipboard,
+  ImageBackground,
+  Linking,
+  SafeAreaView,
+  Text,
+  View,
+} from "react-native";
+import { Button } from "../../components";
 import {
   AllIcon,
   ConnectIcon,
@@ -92,6 +101,22 @@ export const SettingsScreen: FunctionComponent = observer(() => {
     }
   }, [displayFloatAlert]);
 
+  const debugEnabled = remoteConfigStore.getBool("feature_debug_enabled");
+  const [fcmToken, setFcmToken] = useState("");
+
+  useEffect(() => {
+    if (debugEnabled) {
+      messaging()
+        .getToken()
+        .then((token) => {
+          setFcmToken(token);
+        })
+        .catch((e) => {
+          console.log("__DEBUG__ failed to get fcm token:", e);
+        });
+    }
+  }, []);
+
   async function lock() {
     await keyRingStore.lock();
 
@@ -112,6 +137,10 @@ export const SettingsScreen: FunctionComponent = observer(() => {
       displayTime: 3000,
       bottomOffset: 44,
     });
+  };
+
+  const requestUserPermission = async () => {
+    const authorizationStatus = await messaging().requestPermission();
   };
 
   return (
@@ -193,7 +222,9 @@ export const SettingsScreen: FunctionComponent = observer(() => {
               label={intl.formatMessage({ id: "settings.connectedApps" })}
               left={<ConnectIcon />}
               right={<RightView paragraph={connect.toString()} />}
-              onPress={() => {
+              onPress={async () => {
+                await requestUserPermission();
+
                 smartNavigation.navigate("Others", {
                   screen: "ManageWalletConnect",
                 });
@@ -219,6 +250,24 @@ export const SettingsScreen: FunctionComponent = observer(() => {
           />
           <View style={style.get("height-32")} />
           <AccountVersionItem />
+          {debugEnabled && fcmToken.length !== 0 && (
+            <View style={style.flatten(["flex-row", "margin-page", "items-center"])}>
+              <Text
+                numberOfLines={1}
+                ellipsizeMode="middle"
+                style={style.flatten(["color-white", "margin-right-8", "flex-1"])}
+              >
+                FCM Token: {fcmToken}
+              </Text>
+              <Button
+                size="medium"
+                text="Copy"
+                onPress={() => {
+                  Clipboard.setString(fcmToken);
+                }}
+              />
+            </View>
+          )}
         </PageWithScrollViewInBottomTabView>
       </ImageBackground>
     </View>

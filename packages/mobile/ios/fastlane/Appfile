@@ -1,1 +1,1 @@
-app_identifier("io.astranaut.app.walle") # The bundle identifier of your app
+app_identifier("io.astranaut.wallet.app") # The bundle identifier of your app

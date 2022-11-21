@@ -1,21 +1,23 @@
 import * as React from "react";
 import { FunctionComponent } from "react";
+import { Platform, StatusBar } from "react-native";
+import { ModalsProvider } from "./modals/base";
+import { AppNavigation } from "./navigation";
 import { StoreProvider } from "./stores";
 import { StyleProvider } from "./styles";
-import { AppNavigation } from "./navigation";
-import { ModalsProvider } from "./modals/base";
-import { Platform, StatusBar } from "react-native";
 
-import { InteractionModalsProvider } from "./providers/interaction-modals-provider";
+import messaging from "@react-native-firebase/messaging";
+import { Alert } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
-import { LoadingScreenProvider } from "./providers/loading-screen";
-import * as SplashScreen from "./screens/splash";
-import { ConfirmModalProvider } from "./providers/confirm-modal";
-import { ToastModalProvider } from "./providers/toast-modal";
-import { AppIntlProvider } from "./translations";
-import { autoUpdateBody, withAutoDownloadUI } from "./providers/auto-update";
-import { NetworkConnectionProvider } from "./providers/network-connection";
 import { AlertModalProvider } from "./providers/alert-modal";
+import { autoUpdateBody, withAutoDownloadUI } from "./providers/auto-update";
+import { ConfirmModalProvider } from "./providers/confirm-modal";
+import { InteractionModalsProvider } from "./providers/interaction-modals-provider";
+import { LoadingScreenProvider } from "./providers/loading-screen";
+import { NetworkConnectionProvider } from "./providers/network-connection";
+import { ToastModalProvider } from "./providers/toast-modal";
+import * as SplashScreen from "./screens/splash";
+import { AppIntlProvider } from "./translations";
 
 if (Platform.OS === "android") {
   // https://github.com/web-ridge/react-native-paper-dates/releases/tag/v0.2.15
@@ -71,6 +73,16 @@ const AppNavigationWithAutoUI = withAutoDownloadUI(AppNavigation);
 
 const AppBody: FunctionComponent = () => {
   const additionalMessages = {};
+
+  React.useEffect(() => {
+    const unsubscribe = messaging().onMessage(async (remoteMessage) => {
+    });
+
+    messaging().registerDeviceForRemoteMessages();
+
+    return unsubscribe;
+  }, []);
+
   return (
     <StyleProvider>
       <StoreProvider>

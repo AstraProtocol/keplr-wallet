@@ -1,3 +1,5 @@
+source 'https://github.com/CocoaPods/Specs.git'
+
 require File.join(File.dirname(`node --print "require.resolve('react-native/package.json')"`), "scripts/react_native_pods")
 require File.join(File.dirname(`node --print "require.resolve('@react-native-community/cli-platform-ios/package.json')"`), "native_modules")
 require File.join(File.dirname(`node --print "require.resolve('react-native-unimodules/package.json')"`), "cocoapods")
@@ -7,6 +9,11 @@ platform :ios, '13.0'
 target 'mobile' do
   use_unimodules!
   config = use_native_modules!
+
+  pod 'Firebase', '10.1.0'
+  pod 'Firebase/Messaging'
+  pod 'FirebaseCore', :modular_headers => true
+  pod 'GoogleUtilities', '7.8.0', :modular_headers => true
 
   use_react_native!(:path => config[:reactNativePath])
 
