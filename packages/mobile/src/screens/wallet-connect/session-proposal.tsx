@@ -16,6 +16,7 @@ import FastImage from "react-native-fast-image";
 import { CardDivider } from "../../components/card";
 import { useStore } from "../../stores";
 import { useIntl } from "react-intl";
+import { useUnmount } from "../../hooks";
 export const SessionProposalScreen: FunctionComponent = observer(() => {
   const route = useRoute<
     RouteProp<
@@ -50,6 +51,10 @@ export const SessionProposalScreen: FunctionComponent = observer(() => {
     smartNavigation.goBack();
   };
 
+  useUnmount(() => {
+    signClientStore.rejectProposal();
+  });
+  
   return (
     <PageWithScrollView
       backgroundColor={style.get("color-background").color}
