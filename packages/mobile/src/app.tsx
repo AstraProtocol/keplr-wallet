@@ -1,6 +1,6 @@
 import * as React from "react";
 import { FunctionComponent } from "react";
-import { Platform, StatusBar } from "react-native";
+import { Linking, Platform, StatusBar } from "react-native";
 import { ModalsProvider } from "./modals/base";
 import { AppNavigation } from "./navigation";
 import { StoreProvider } from "./stores";
@@ -75,12 +75,40 @@ const AppBody: FunctionComponent = () => {
   const additionalMessages = {};
 
   React.useEffect(() => {
-    const unsubscribe = messaging().onMessage(async (remoteMessage) => {
-    });
+    const unsubscribe = messaging().onMessage(async (remoteMessage) => {});
 
     messaging().registerDeviceForRemoteMessages();
 
     return unsubscribe;
+  }, []);
+
+  React.useEffect(() => {
+    messaging().onNotificationOpenedApp(async (remoteMessage) => {
+      console.log(
+        "Notification caused app to open from background state:",
+        remoteMessage.notification,
+        remoteMessage.data
+      );
+      const deepLink = remoteMessage.data["deep_link"];
+      if (deepLink) {
+        const canOpen = await Linking.canOpenURL(deepLink);
+        if (canOpen) {
+          Linking.openURL(deepLink);
+        }
+      }
+    });
+
+    // Check whether an initial notification is available
+    messaging()
+      .getInitialNotification()
+      .then((remoteMessage) => {
+        if (remoteMessage) {
+          console.log(
+            "Notification caused app to open from quit state:",
+            remoteMessage.notification
+          );
+        }
+      });
   }, []);
 
   return (

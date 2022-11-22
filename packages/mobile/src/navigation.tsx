@@ -841,6 +841,7 @@ export const AppNavigation: FunctionComponent = observer(() => {
       });
     }
   }, [signInteractionStore.waitingData, transactionStore]);
+
   return (
     <PageScrollPositionProvider>
       <FocusedScreenProvider>

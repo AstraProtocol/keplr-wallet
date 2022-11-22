@@ -1,7 +1,7 @@
 import { KeyRingStatus } from "@keplr-wallet/background";
 import { KVStore } from "@keplr-wallet/common";
 import { KeyRingStore } from "@keplr-wallet/stores";
-import { action, autorun, makeObservable, observable, runInAction } from "mobx";
+import { action, autorun, makeObservable, observable } from "mobx";
 import { AppState, Linking } from "react-native";
 
 export class LinkStore {
@@ -124,7 +124,7 @@ export class LinkStore {
       this.pendingLinkUri = "";
     }
   }
-  protected async saveDeepLink(uri: string): Promise<void> {
+  async saveDeepLink(uri: string): Promise<void> {
     this.pendingLinkUri = uri;
     await this.kvStore.set("aw_pending_link_uri", uri);
   }
