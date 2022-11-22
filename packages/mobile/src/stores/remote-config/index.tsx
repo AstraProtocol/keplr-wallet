@@ -8,8 +8,8 @@ export class RemoteConfigStore {
     remoteConfig()
       .setDefaults({
         feature_stackity_env: "uat",
-        feature_dapps_enabled: false,
-        feature_swap_enabled: false,
+        feature_dapps_enabled: true,
+        feature_swap_enabled: true,
         feature_socialLogin_enabled: true,
         feature_debug_enabled: false,
         feature_wallet_connect: true,

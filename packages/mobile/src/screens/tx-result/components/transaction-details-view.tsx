@@ -40,6 +40,7 @@ export const TransactionDetailsView: FunctionComponent<{
   }
 
   const viewDetailsHandler = () => {
+    console.log("__DEBUG__txHash:::", transactionStore.txHash);
     let txHash = "";
     if (transactionStore.txHash) {
       txHash =
