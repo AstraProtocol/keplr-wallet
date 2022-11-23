@@ -38,6 +38,7 @@ export const PasswordInputScreen: FunctionComponent = observer(() => {
     keychainStore,
     userLoginStore,
     analyticsStore,
+    signClientStore,
   } = useStore();
   const smartNavigation = useSmartNavigation();
 
@@ -167,6 +168,7 @@ export const PasswordInputScreen: FunctionComponent = observer(() => {
         break;
       case "deleteWallet":
         await keyRingStore.deleteKeyRing(index, password);
+        await signClientStore.clear();
 
         if (keyRingStore.multiKeyStoreInfo.length === 0) {
           await keychainStore.reset();

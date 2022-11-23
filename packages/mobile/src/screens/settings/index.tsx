@@ -109,6 +109,7 @@ export const SettingsScreen: FunctionComponent = observer(() => {
       messaging()
         .getToken()
         .then((token) => {
+          console.log("__DEBUG__ fcm token:", token);
           setFcmToken(token);
         })
         .catch((e) => {
@@ -251,11 +252,17 @@ export const SettingsScreen: FunctionComponent = observer(() => {
           <View style={style.get("height-32")} />
           <AccountVersionItem />
           {debugEnabled && fcmToken.length !== 0 && (
-            <View style={style.flatten(["flex-row", "margin-page", "items-center"])}>
+            <View
+              style={style.flatten(["flex-row", "margin-page", "items-center"])}
+            >
               <Text
                 numberOfLines={1}
                 ellipsizeMode="middle"
-                style={style.flatten(["color-white", "margin-right-8", "flex-1"])}
+                style={style.flatten([
+                  "color-white",
+                  "margin-right-8",
+                  "flex-1",
+                ])}
               >
                 FCM Token: {fcmToken}
               </Text>

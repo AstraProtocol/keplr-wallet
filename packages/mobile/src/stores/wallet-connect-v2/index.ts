@@ -16,7 +16,7 @@ import { KeyRingStatus } from "@keplr-wallet/background";
 import { SessionTypes, SignClientTypes } from "@walletconnect/types";
 import { Keplr } from "@keplr-wallet/provider";
 import { RNMessageRequesterInternal } from "../../router";
-import { AminoSignResponse, makeSignDoc } from "@cosmjs/launchpad";
+import { makeSignDoc } from "@cosmjs/launchpad";
 import { EthSignType } from "@keplr-wallet/types";
 
 export type SessionConnectInfor = {
@@ -203,17 +203,13 @@ export class SignClientStore extends SignClientManager {
     const params = request.params;
     if (params.request.method === "sign") {
       const requestParams = params.request.params;
-      console.log("__WC V2__ requestParams: ", requestParams);
       const messages = requestParams.messages;
-      console.log("__WC V2__ messsage: ", messages);
       const fee = requestParams.fee;
-      console.log("__WC V2__ fee: ", fee);
       const signerData = requestParams.signerData;
       console.log("__WC V2__ signerData: ", signerData);
       await this.waitInitStores();
       const keplr = this.createKeplrAPI();
       const key = await keplr.getKey(this.chainStore.current.chainId);
-      console.log("__DEBUG__ key", key);
       if (messages && fee && signerData) {
         const signDoc = makeSignDoc(
           messages,
@@ -224,7 +220,6 @@ export class SignClientStore extends SignClientManager {
           signerData.sequence
         );
         console.log("__WC V2__ onSessionRequest with signDoc: ", signDoc);
-
         const result = await keplr.signAmino(
           signerData.chainId,
           key.bech32Address,
@@ -404,5 +399,14 @@ export class SignClientStore extends SignClientManager {
   // eslint-disable-next-line @typescript-eslint/adjacent-overload-signatures
   onSessionChange(callback: { (infor: SessionConnectInfor): void }) {
     this._onSessionChange = callback;
+  }
+
+  async clear() {
+    if (this.sessions) {
+      console.log(this.sessions);
+      this.sessions.forEach((session) => {
+        this.disconnect(session);
+      });
+    }
   }
 }
