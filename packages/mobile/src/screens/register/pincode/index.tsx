@@ -34,7 +34,7 @@ export const NewPincodeScreen: FunctionComponent = observer(() => {
     >
   >();
 
-  const { userLoginStore, keyRingStore } = useStore();
+  const { userLoginStore, keyRingStore, signClientStore } = useStore();
   const style = useStyle();
   const intl = useIntl();
 
@@ -108,6 +108,7 @@ export const NewPincodeScreen: FunctionComponent = observer(() => {
     });
     if (index !== -1) {
       await keyRingStore.forceDeleteKeyRing(index);
+      await signClientStore.clear();
     }
 
     await registerConfig.createMnemonic(
