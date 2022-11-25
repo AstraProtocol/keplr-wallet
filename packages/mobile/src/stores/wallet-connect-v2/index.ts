@@ -144,6 +144,7 @@ export class SignClientStore extends SignClientManager {
     super(chainStore, keyRingStore);
     makeObservable(this);
     this.initSignClient();
+    this.restore();
   }
 
   onAndroidActivityKilled() {
@@ -403,9 +404,25 @@ export class SignClientStore extends SignClientManager {
 
   async clear() {
     if (this.sessions) {
-      console.log(this.sessions);
       this.sessions.forEach((session) => {
         this.disconnect(session);
+      });
+    }
+  }
+
+  protected async restore(): Promise<void> {
+    console.log("__DEBUG__ restore");
+    if (this.sessions) {
+      this.sessions.forEach((session) => {
+        this.extend(session);
+      });
+    }
+  }
+
+  async extend(session: SessionTypes.Struct): Promise<void> {
+    if (this.client) {
+      await this.client.extend({
+        topic: session.topic,
       });
     }
   }
