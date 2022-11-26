@@ -5,10 +5,10 @@ import { useIntl } from "react-intl";
 import { Text, View } from "react-native";
 import { RightArrowIcon } from "../../components/icon";
 import { useStyle } from "../../styles";
-import { TransactionItem as ITransactionItem } from "./transaction_adapter";
+import { ITransactionItem } from "./hook/use-transaction-history";
 
 export const TransactionItem: FunctionComponent<{
-  item?: ITransactionItem<any>;
+  item?: ITransactionItem;
 }> = observer(({ item }) => {
   const style = useStyle();
   const intl = useIntl();

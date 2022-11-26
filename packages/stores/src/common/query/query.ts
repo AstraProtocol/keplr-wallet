@@ -793,16 +793,19 @@ export class ObservableQuery<
 
   @observable
   protected _url: string = "";
+  protected _customBaseUrl?: string;
 
   constructor(
     protected readonly kvStore: KVStore,
     instance: AxiosInstance,
     url: string,
-    options: Partial<QueryOptions> = {}
+    options: Partial<QueryOptions> = {},
+    customBaseUrl: string | undefined = undefined
   ) {
     super(instance, options);
     makeObservable(this);
 
+    this._customBaseUrl = customBaseUrl;
     this.setUrl(url);
   }
 
@@ -829,6 +832,10 @@ export class ObservableQuery<
     }
   };
 
+  get customBaseUrl(): string | undefined {
+    return this._customBaseUrl;
+  }
+
   get url(): string {
     return this._url;
   }
@@ -846,6 +853,7 @@ export class ObservableQuery<
   ): Promise<{ response: QueryResponse<T>; headers: any }> {
     const result = await this.instance.get<T>(this.url, {
       signal: abortController.signal,
+      baseURL: this.customBaseUrl
     });
     return {
       headers: result.headers,

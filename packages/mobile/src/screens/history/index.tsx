@@ -1,4 +1,9 @@
-import React, { FunctionComponent, useCallback, useEffect } from "react";
+import React, {
+  FunctionComponent,
+  useCallback,
+  useEffect,
+  useState,
+} from "react";
 import {
   AppState,
   AppStateStatus,
@@ -14,31 +19,37 @@ import { useStyle } from "../../styles";
 import { observer } from "mobx-react-lite";
 
 import { ChainUpdaterService } from "@keplr-wallet/background";
-import { TxResponse } from "@keplr-wallet/stores/build/query/cosmos/tx/types";
 import { useFocusEffect } from "@react-navigation/native";
 import { FormattedMessage, useIntl } from "react-intl";
 import { RectButton } from "react-native-gesture-handler";
 import { usePrevious } from "../../hooks";
 import { useSmartNavigation } from "../../navigation-util";
-import { toUiItem } from "./transaction_adapter";
+import {
+  ITransactionItem,
+  useTransactionHistory,
+} from "./hook/use-transaction-history";
 import { TransactionItem } from "./transaction_history_item";
 
 export type PageRequestInfo = {
+  totalRecord: number;
+  totalPage: number;
   currentPage: number;
-  maxPage: number;
   limit: number;
 };
 
 export const HistoryScreen: FunctionComponent = observer(() => {
-  const [refreshing, setRefreshing] = React.useState(false);
-  const [loading, setLoading] = React.useState(false);
-  const [pageInfo, setPageInfo] = React.useState({
+  const [refreshing, setRefreshing] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [pageInfo, setPageInfo] = useState({
+    totalRecord: 0,
+    totalPage: 0,
     currentPage: 0,
-    maxPage: 1,
-    limit: 100,
-  });
+    limit: 20,
+  } as PageRequestInfo);
+  const [histories, setHistories] = useState([] as ITransactionItem[]);
 
   const { chainStore, accountStore, queriesStore, priceStore } = useStore();
+  const { getTxs, parseTx } = useTransactionHistory();
 
   const style = useStyle();
   const intl = useIntl();
@@ -98,107 +109,72 @@ export const HistoryScreen: FunctionComponent = observer(() => {
     ])
   );
 
-  const queriesForPage = (
-    queries,
-    bech32Address: string,
-    page: number
-  ): any[] => {
-    const limit = pageInfo.limit;
-    const sent = queries.cosmos.queryTxs.getQueryBech32Address(
-      bech32Address,
-      true,
-      { offset: `${page * limit}`, limit: limit.toString() }
-    );
-    const received = queries.cosmos.queryTxs.getQueryBech32Address(
-      bech32Address,
-      false,
-      { offset: `${page * limit}`, limit: limit.toString() }
-    );
-    return [sent, received];
-  };
+  useEffect(() => {
+    if (pageInfo.currentPage == 0) {
+      refreshHandler();
+    }
+  }, [pageInfo]);
 
-  const fetchPageData = (pageQueries): Promise => {
-    return Promise.all(pageQueries.map((query) => query.waitFreshResponse()))
-      .catch(() => {})
-      .then(() => {});
-  };
+  const refreshHandler = async () => {
+    if (refreshing || loading) {
+      return;
+    }
 
-  const onRefresh = React.useCallback(async () => {
-    const chainId = chainStore.current.chainId;
-    const account = accountStore.getAccount(chainId);
-    const bech32Address = account.bech32Address;
-    // Because the components share the states related to the queries,
-    // fetching new query responses here would make query responses on all other components also refresh.
-    const pageQueries = queriesForPage(
-      queriesStore.get(chainId),
-      bech32Address,
-      0
-    );
+    setRefreshing(true);
 
-    await fetchPageData(pageQueries);
-    const max: number = pageQueries
-      .map((query) => query.total)
-      .reduce((max, current): number => {
-        const queryTotal = Number.parseInt(current) || 0;
-        return Math.max(max, queryTotal);
-      }, 0);
-    pageInfo.currentPage = 0;
-    pageInfo.maxPage = Math.floor(max / pageInfo.limit);
-    setPageInfo(pageInfo);
+    const { txs, pagination } = await getTxs(1, pageInfo.limit);
+    const firstPageHistories = txs.map((tx) =>
+      parseTx(tx)
+    ) as ITransactionItem[];
 
-    setRefreshing(false);
-  }, [accountStore, chainStore, priceStore, queriesStore]);
-
-  const handleLoadMore = React.useCallback(async () => {
-    if (loading || pageInfo.currentPage >= pageInfo.maxPage) return;
-    setLoading(true);
-    const chainId = chainStore.current.chainId;
-    const account = accountStore.getAccount(chainId);
-    const bech32Address = account.bech32Address;
-    const nextPage = pageInfo.currentPage + 1;
-    const pageQueries = queriesForPage(
-      queriesStore.get(chainId),
-      bech32Address,
-      nextPage
-    );
-
-    await fetchPageData(pageQueries).then(() => {
-      pageInfo.currentPage = nextPage;
+    setHistories(firstPageHistories);
+    setPageInfo({
+      totalRecord: pagination.total_record,
+      totalPage: pagination.total_page,
+      currentPage: pagination.current_page,
+      limit: pagination.limit,
     });
-    setPageInfo(pageInfo);
+    setRefreshing(false);
+  };
+
+  const onRefresh = useCallback(refreshHandler, [
+    accountStore,
+    chainStore,
+    priceStore,
+    queriesStore,
+  ]);
+
+  const handleLoadMore = useCallback(async () => {
+    if (loading || pageInfo.currentPage >= pageInfo.totalPage) {
+      return;
+    }
+
+    setLoading(true);
+
+    const { txs, pagination } = await getTxs(
+      pageInfo.currentPage + 1,
+      pageInfo.limit
+    );
+    const nextPageHistories = txs.map((tx) =>
+      parseTx(tx)
+    ) as ITransactionItem[];
+
+    let newestHistories = [] as ITransactionItem[];
+    if (pagination.total_record > pageInfo.totalRecord) {
+      const limit = pagination.total_record - pageInfo.totalRecord;
+      const { txs } = await getTxs(1, limit);
+      newestHistories = txs.map((tx) => parseTx(tx)) as ITransactionItem[];
+    }
+
+    setHistories([...newestHistories, ...histories, ...nextPageHistories]);
+    setPageInfo({
+      totalRecord: pagination.total_record,
+      totalPage: pagination.total_page,
+      currentPage: pagination.current_page,
+      limit: pagination.limit,
+    });
     setLoading(false);
   }, [accountStore, chainStore, priceStore, queriesStore, pageInfo]);
-
-  const chainId = chainStore.current.chainId;
-  const account = accountStore.getAccount(chainId);
-  const bech32Address = account.bech32Address;
-  const queries = queriesStore.get(chainId);
-
-  const histories = (() => {
-    const pageQueries: { txResponses: TxResponse[] }[] = [];
-    const txResponses: TxResponse[] = [];
-    for (let p = 0; p <= pageInfo.currentPage; p++) {
-      pageQueries.push(...queriesForPage(queries, bech32Address, p));
-    }
-    pageQueries.forEach((query) => {
-      return txResponses.push(
-        ...query.txResponses.filter((txResponse) => {
-          return (
-            txResponses
-              .map((txResponse) => txResponse.txhash)
-              .indexOf(txResponse.txhash) === -1
-          );
-        })
-      );
-    });
-
-    const histories = txResponses
-      .sort((lh, rh) => rh.timestamp.localeCompare(lh.timestamp))
-      .map((txResponse) =>
-        toUiItem(chainStore, accountStore, intl, txResponse)
-      );
-    return histories;
-  })();
 
   return (
     <View
@@ -256,8 +232,9 @@ export const HistoryScreen: FunctionComponent = observer(() => {
             style={style.flatten(["margin-y-16"])}
             activeOpacity={0}
             onPress={() => {
+              const chainId = chainStore.current.chainId;
               const txExplorer = chainStore.getChain(chainId).raw.txExplorer;
-              const txHash = item.raw?.txhash;
+              const txHash = item.hash;
               if (txExplorer && txHash) {
                 const url = txExplorer.txUrl.replace(
                   "{txHash}",

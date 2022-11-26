@@ -39,7 +39,7 @@ import {
 } from "./supply/osmosis";
 import { ObservableQueryDistributionParams } from "./distribution";
 import { ObservableQueryRPCStatus } from "./status";
-import { ObservableQueryTxs } from "./tx";
+import { ObservableQueryTxs } from "../chain-indexing/tx";
 import { ObservableQueryJunoAnnualProvisions } from "./supply/juno";
 import { ObservableQueryGrants } from "./authz";
 import { ObservableQueryAllowance, ObservableQueryAllowances } from "./feegrant";
