@@ -4,7 +4,6 @@ import {
   EthereumTxContent,
   ExecContent,
   GrantContent,
-  RevokeContent,
   SendContent,
   Tx,
   UndelegateContent,
@@ -153,9 +152,6 @@ export const useTransactionHistory = () => {
         (msg.content as DelegateContent).delegatorAddress === bech32Address
       );
     });
-    // if (msgs.length == 0) {
-    //   return {};
-    // }
 
     const amount = msgs
       .map((msg) => (msg.content as DelegateContent).amount)
@@ -173,8 +169,6 @@ export const useTransactionHistory = () => {
           denom: "",
         }
       );
-
-    // const content = msgs[0].content as DelegateContent;
 
     let actionMessageId = "history.action.MsgDelegate.sender";
     if (tx.messageTypes.indexOf(SupportedMsgs.MsgExec) != -1) {
@@ -282,15 +276,12 @@ export const useTransactionHistory = () => {
       return {};
     }
 
-    // const content = msg.content as RevokeContent;
-
     let action = intl.formatMessage({
       id: `history.action.MsgRevoke.MsgDelegate`,
     });
 
     return {
       action,
-      rightText: "",
     };
   };
 
@@ -304,7 +295,6 @@ export const useTransactionHistory = () => {
 
     return {
       action: content.msgName,
-      rightText: "",
     };
   };
 
@@ -318,10 +308,10 @@ export const useTransactionHistory = () => {
 
     const content = msg.content as EthereumTxContent;
 
-    let amount = {
+    let amountText = formatAmount({
       amount: content.params.data.value,
       denom: "aastra",
-    };
+    });
 
     let action = content.msgName;
     let actionMessageId = `history.action.MsgEthereumTx.${msg.evmType}`;
@@ -329,13 +319,14 @@ export const useTransactionHistory = () => {
     switch (msg.evmType) {
       case "swapExactTokensForETH":
         // swap USDT > ASA
-        amount = getAmountFromLog(tx);
+        amountText = formatAmount(getAmountFromLog(tx));
         break;
       case "swapExactETHForTokens":
         // swap ASA > USDT
         break;
       case "transferFrom":
         // transfer nft
+        amountText = "";
         action =
           content.params.from === account.ethereumHexAddress
             ? "sender"
@@ -355,7 +346,7 @@ export const useTransactionHistory = () => {
     return {
       hash: content.txHash,
       action: intl.formatMessage({ id: actionMessageId }),
-      rightText: formatAmount(amount),
+      rightText: amountText,
     };
   };
 
@@ -372,7 +363,9 @@ export const useTransactionHistory = () => {
       msgType =
         messageTypes.find((type) => {
           return (
-            type == SupportedMsgs.MsgGrant || type == SupportedMsgs.MsgDelegate
+            type === SupportedMsgs.MsgGrant ||
+            type === SupportedMsgs.MsgRevoke ||
+            type === SupportedMsgs.MsgDelegate
           );
         }) || msgType;
     }
@@ -396,6 +389,8 @@ export const useTransactionHistory = () => {
 
     return {
       hash: tx.hash,
+      action: "",
+      rightText: "",
       status: tx.success ? "success" : "failure",
       timestamp: tx.blockTime,
       ...params,

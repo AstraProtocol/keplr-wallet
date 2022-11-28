@@ -20,7 +20,7 @@ import { observer } from "mobx-react-lite";
 
 import { ChainUpdaterService } from "@keplr-wallet/background";
 import { useFocusEffect } from "@react-navigation/native";
-import { FormattedMessage, useIntl } from "react-intl";
+import { FormattedMessage } from "react-intl";
 import { RectButton } from "react-native-gesture-handler";
 import { usePrevious } from "../../hooks";
 import { useSmartNavigation } from "../../navigation-util";
@@ -48,11 +48,10 @@ export const HistoryScreen: FunctionComponent = observer(() => {
   } as PageRequestInfo);
   const [histories, setHistories] = useState([] as ITransactionItem[]);
 
-  const { chainStore, accountStore, queriesStore, priceStore } = useStore();
+  const { chainStore } = useStore();
   const { getTxs, parseTx } = useTransactionHistory();
 
   const style = useStyle();
-  const intl = useIntl();
 
   const currentChain = chainStore.current;
   const currentChainId = currentChain.chainId;
@@ -137,14 +136,7 @@ export const HistoryScreen: FunctionComponent = observer(() => {
     setRefreshing(false);
   };
 
-  const onRefresh = useCallback(refreshHandler, [
-    accountStore,
-    chainStore,
-    priceStore,
-    queriesStore,
-  ]);
-
-  const handleLoadMore = useCallback(async () => {
+  const loadMoreHandler = async () => {
     if (loading || pageInfo.currentPage >= pageInfo.totalPage) {
       return;
     }
@@ -174,7 +166,7 @@ export const HistoryScreen: FunctionComponent = observer(() => {
       limit: pagination.limit,
     });
     setLoading(false);
-  }, [accountStore, chainStore, priceStore, queriesStore, pageInfo]);
+  };
 
   return (
     <View
@@ -188,7 +180,7 @@ export const HistoryScreen: FunctionComponent = observer(() => {
         style={style.flatten(["flex-1"])}
         data={histories}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          <RefreshControl refreshing={refreshing} onRefresh={refreshHandler} />
         }
         ListEmptyComponent={
           <Text
@@ -225,7 +217,7 @@ export const HistoryScreen: FunctionComponent = observer(() => {
             )}
           </View>
         }
-        onEndReached={handleLoadMore}
+        onEndReached={loadMoreHandler}
         keyExtractor={(_item, index) => `transaction_${index}`}
         renderItem={({ item }) => (
           <RectButton
