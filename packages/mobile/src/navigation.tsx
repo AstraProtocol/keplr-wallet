@@ -1,10 +1,17 @@
 /* eslint-disable react/display-name */
-import React, { FunctionComponent, useEffect, useRef, useState } from "react";
-import { Text, View, Linking, AppState, AppStateStatus } from "react-native";
+import React, {
+  FunctionComponent,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
+import { Text, View, AppState, AppStateStatus } from "react-native";
 import { KeyRingStatus } from "@keplr-wallet/background";
 import {
   NavigationContainer,
   NavigationContainerRef,
+  StackActions,
   useNavigation,
 } from "@react-navigation/native";
 import { useStore } from "./stores";
@@ -106,6 +113,7 @@ import { RegisterCreateEntryScreen } from "./screens/register/create-entry";
 import { SwapConfirmScreen } from "./screens/main/screens/swap-confirm";
 import { SwapProvider } from "./providers/swap/provider";
 import { SetupBiometricsScreen } from "./screens/register/biometrics";
+import { link } from "fs";
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -652,36 +660,40 @@ export const MainTabNavigation: FunctionComponent = () => {
   const style = useStyle();
   const intl = useIntl();
   const { remoteConfigStore, keyRingStore, linkStore } = useStore();
-  const smartNavigation = useSmartNavigation();
+  
   const dappsEnabled = remoteConfigStore.getBool("feature_dapps_enabled");
   const appState = useRef(AppState.currentState);
+  const navigation = useNavigation();
+
+  const handleAppStateChange = useCallback(
+    async (nextAppState: AppStateStatus) => {
+      console.log(
+        `App has change from ${appState.current} to the ${nextAppState}!, status: `,
+        keyRingStore.status
+      );
+
+      if (
+        linkStore.canLock &&
+        nextAppState === "background" &&
+        keyRingStore.status === KeyRingStatus.UNLOCKED
+      ) {
+        // Wait the account of selected chain is loaded.
+        await keyRingStore.lock();
+        navigation.dispatch(StackActions.replace("Unlock"));
+      }
+    },
+    [keyRingStore, navigation, linkStore]
+  );
 
   useEffect(() => {
-    AppState.addEventListener("change", _handleAppStateChange);
+    const subscription = AppState.addEventListener(
+      "change",
+      handleAppStateChange
+    );
     return () => {
-      AppState.removeEventListener("change", _handleAppStateChange);
+      subscription.remove();
     };
   }, []);
-
-  const _handleAppStateChange = async (nextAppState: AppStateStatus) => {
-    console.log(
-      `App has change from ${appState.current} to the ${nextAppState}!, status: `,
-      keyRingStore.status
-    );
-    if (
-      linkStore.canLock &&
-      nextAppState === "background" &&
-      keyRingStore.status === KeyRingStatus.UNLOCKED
-    ) {
-      await keyRingStore.lock();
-      smartNavigation.reset({
-        index: 0,
-        routes: [{ name: "Unlock" }],
-      });
-    }
-    appState.current = nextAppState;
-    console.log("AppState", appState.current);
-  };
 
   return (
     <Tab.Navigator

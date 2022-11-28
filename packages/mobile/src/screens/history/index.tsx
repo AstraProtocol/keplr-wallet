@@ -83,10 +83,10 @@ export const HistoryScreen: FunctionComponent = observer(() => {
       }
     };
 
-    AppState.addEventListener("change", appStateHandler);
+    const subscriber = AppState.addEventListener("change", appStateHandler);
 
     return () => {
-      AppState.removeEventListener("change", appStateHandler);
+      subscriber.remove();
     };
   }, [checkAndUpdateChainInfo]);
 
