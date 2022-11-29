@@ -58,7 +58,7 @@
   "tabs.main": "Assets",
   "tabs.setting": "Setting",
   "tabs.stake": "Staking",
-  "unbonding.title": "Total staked",
+  "unbonding.title": "Unstaking amount",
   "undelegate.title": "Unstake {coin}",
   "validator.details.new.title": "Validator",
   "validator.list.new.title": "Select staking validator",

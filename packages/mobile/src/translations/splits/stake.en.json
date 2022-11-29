@@ -18,7 +18,7 @@
   "stake.undelegate.amountLabel": "Amount",
   "stake.undelegate.available": "Available",
   "stake.undelegate.fee": "Transaction fee",
-  "stake.undelegate.noticeWithdrawalPeriod": "You will receive {coin} {days}",
+  "stake.undelegate.noticeWithdrawalPeriod": "You will receive {coin} in {days}",
   "stake.undelegate.undelegate": "Unstake",
   "stake.undelegate.validatorLabel": "From validator"
 }

@@ -125,39 +125,12 @@ export const UnbondingScreen: FunctionComponent = observer(() => {
         return (
           <React.Fragment key={unbondingIndex}>
             {entries.map((entry, i) => {
-              const remainingText = (() => {
-                const current = new Date().getTime();
+              const current = new Date().getTime();
 
-                const relativeEndTime =
-                  (new Date(entry.completionTime).getTime() - current) / 1000;
-                const relativeEndTimeDays = Math.floor(
-                  relativeEndTime / (3600 * 24)
-                );
-                const relativeEndTimeHours = Math.ceil(relativeEndTime / 3600);
+              const relativeEndTime =
+                (new Date(entry.completionTime).getTime() - current) / 1000;
 
-                if (relativeEndTimeDays) {
-                  return intl
-                    .formatRelativeTime(relativeEndTimeDays, "days", {
-                      numeric: "always",
-                    })
-                    .replace("in ", "")
-                    .replace("sau ", "")
-                    .replace(
-                      "days",
-                      intl.formatMessage({ id: "staking.unbonding.days" })
-                    );
-                } else if (relativeEndTimeHours) {
-                  return intl
-                    .formatRelativeTime(relativeEndTimeHours, "hours", {
-                      numeric: "always",
-                    })
-                    .replace("in ", "")
-                    .replace("sau ", "")
-                    .replace("hours", "h");
-                }
-
-                return "";
-              })();
+              const remainingText = formatUnbondingTime(relativeEndTime, intl);
 
               return (
                 <View style={style.flatten(["height-72"])} key={i}>

@@ -18,7 +18,7 @@
   "stake.undelegate.amountLabel": "Số lượng",
   "stake.undelegate.available": "Khả dụng",
   "stake.undelegate.fee": "Phí giao dịch",
-  "stake.undelegate.noticeWithdrawalPeriod": "{coin} sẽ được rút về {days}.",
+  "stake.undelegate.noticeWithdrawalPeriod": "{coin} sẽ được rút về sau {days}.",
   "stake.undelegate.undelegate": "Rút",
   "stake.undelegate.validatorLabel": "Rút từ gói tích lũy"
 }

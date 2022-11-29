@@ -13,35 +13,32 @@ export const LOCALE_FORMAT = {
   },
 };
 export const TX_GAS_DEFAULT = {
-  send: 200000,
   delegate: 250000,
   undelegate: 250000,
   redelegate: 250000,
   withdraw: 250000,
-}
+};
 
-export const formatCoin = (coin?: CoinPretty, hideDenom: boolean = false) => {
+export const formatCoin = (coin?: CoinPretty, hideDenom: boolean = false, maximumFractionDigits: number | undefined = undefined) => {
   if (!coin) {
     return "";
   }
 
   const value = Number(coin.toDec());
-  let formattedText = value.toLocaleString(
-    LOCALE_FORMAT.locale,
-    { minimumFractionDigits: 18 }
-  );
+  let formattedText = value.toLocaleString(LOCALE_FORMAT.locale, {
+    minimumFractionDigits: 18,
+  });
 
   // Prevent rounded value
-  const maximumFractionDigits = LOCALE_FORMAT.maximumFractionDigits(value);
+  const fractionDigits = maximumFractionDigits ?? LOCALE_FORMAT.maximumFractionDigits(value);
   const parts = formattedText.split(LOCALE_FORMAT.fractionDelimitter);
 
-  if (maximumFractionDigits != 0) {
+  if (fractionDigits != 0) {
     formattedText =
-      parts[0]
-      + LOCALE_FORMAT.fractionDelimitter
-      + parts[1].substring(0, maximumFractionDigits);
-  }
-  else {
+      parts[0] +
+      LOCALE_FORMAT.fractionDelimitter +
+      parts[1].substring(0, fractionDigits);
+  } else {
     formattedText = parts[0];
   }
 
@@ -69,9 +66,9 @@ export const formatTextNumber = (value: string) => {
   const idx = replacedValue.indexOf(LOCALE_FORMAT.fractionDelimitter);
   if (idx !== -1) {
     replacedValue =
-      replacedValue.substring(0, idx)
-      + LOCALE_FORMAT.fractionDelimitter
-      + replacedValue
+      replacedValue.substring(0, idx) +
+      LOCALE_FORMAT.fractionDelimitter +
+      replacedValue
         .substring(idx + 1, replacedValue.length)
         .split(LOCALE_FORMAT.fractionDelimitter)
         .join("");
@@ -91,25 +88,23 @@ export const formatPercent = (value: any, hideSymbol: boolean = false) => {
 };
 
 export const formatUnbondingTime = (sec: number, intl: IntlShape) => {
-  const relativeEndTimeDays = Math.floor(sec / (3600 * 24));
-  const relativeEndTimeHours = Math.ceil(sec / 3600);
+  const relativeEndTimeDays = sec / (3600 * 24);
+  const relativeEndTimeHours = sec / 3600;
 
-  if (relativeEndTimeDays) {
-    return intl
-      .formatRelativeTime(relativeEndTimeDays, "days", {
-        numeric: "always",
-      })
-      .replace("days", intl.formatMessage({ id: "staking.unbonding.days" }));
-  } else if (relativeEndTimeHours) {
-    return intl
-      .formatRelativeTime(relativeEndTimeHours, "hours", {
-        numeric: "always",
-      })
-      .replace("hours", "h");
+  if (relativeEndTimeDays >= 1) {
+    return intl.formatMessage(
+      { id: "validator.details.unbonding.days" },
+      { days: Math.round(relativeEndTimeDays) }
+    );
+  } else if (relativeEndTimeHours > 0) {
+    return intl.formatMessage(
+      { id: "validator.details.unbonding.hours" },
+      { hours: Math.round(relativeEndTimeHours) }
+    );
   }
 
   return "";
-}
+};
 
 export const removeZeroFractionDigits = (text: string) => {
   var formattedText = text;
@@ -122,4 +117,4 @@ export const removeZeroFractionDigits = (text: string) => {
     }
   }
   return formattedText;
-}
+};
