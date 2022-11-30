@@ -1,4 +1,4 @@
-package com.chainapsis.keplr.generated;
+package io.astranaut.app.wallet.generated;
 
 import java.util.Arrays;
 import java.util.List;

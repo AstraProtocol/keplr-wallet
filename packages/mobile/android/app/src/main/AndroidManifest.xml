@@ -1,4 +1,4 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="vn.tiki.app.astra.wallet">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="io.astranaut.app.wallet">
   <uses-permission android:name="android.permission.INTERNET"/>
   <uses-permission android:name="android.permission.USE_BIOMETRIC"/>
   <uses-permission android:name="android.permission.BLUETOOTH_SCAN"/>
@@ -8,7 +8,7 @@
   <uses-feature android:name="android.hardware.bluetooth_le"/>
   <uses-permission android:name="android.permission.VIBRATE"/>
   <application
-    android:name="com.chainapsis.keplr.MainApplication"
+    android:name=".MainApplication"
     android:label="@string/app_name"
     android:icon="@mipmap/ic_launcher"
     android:roundIcon="@mipmap/ic_launcher_round"
@@ -16,7 +16,7 @@
     android:theme="@style/AppTheme"
   >
     <activity
-      android:name="com.chainapsis.keplr.MainActivity"
+      android:name=".MainActivity"
       android:label="@string/app_name"
       android:configChanges="keyboard|keyboardHidden|orientation|screenSize|uiMode"
       android:screenOrientation="portrait"

@@ -1,1 +1,1 @@
-package_name("com.chainapsis.keplr") # e.g. com.krausefx.app
+package_name("io.astranaut.app.wallet") # e.g. com.krausefx.app

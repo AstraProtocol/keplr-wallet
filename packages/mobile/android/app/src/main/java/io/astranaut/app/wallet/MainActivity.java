@@ -1,4 +1,4 @@
-package com.chainapsis.keplr;
+package io.astranaut.app.wallet;
 
 import com.facebook.react.ReactActivity;
 import com.facebook.react.ReactActivityDelegate;
