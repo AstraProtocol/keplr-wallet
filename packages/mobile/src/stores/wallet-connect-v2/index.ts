@@ -145,6 +145,10 @@ export class SignClientStore extends SignClientManager {
     makeObservable(this);
     this.initSignClient();
     this.restore();
+    this.eventListener.addEventListener("keplr_keystorechange", () => {
+      console.log("__DEBUG__ reinitClient after keplr_keystorechange");
+      this.reinitClient();
+    });
   }
 
   onAndroidActivityKilled() {
@@ -424,6 +428,19 @@ export class SignClientStore extends SignClientManager {
       await this.client.extend({
         topic: session.topic,
       });
+    }
+  }
+
+  async close(): Promise<void> {
+    if (this.client) {
+      console.log("__DEBUG__ relayer close");
+      await this.client.core.relayer.transportClose();
+    }
+  }
+
+  protected async reinitClient() {
+    if (this.client) {
+      await this.client.core.relayer.transportOpen();
     }
   }
 }

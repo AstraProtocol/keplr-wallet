@@ -659,8 +659,13 @@ export const WebNavigation: FunctionComponent = () => {
 export const MainTabNavigation: FunctionComponent = () => {
   const style = useStyle();
   const intl = useIntl();
-  const { remoteConfigStore, keyRingStore, linkStore } = useStore();
-  
+  const {
+    remoteConfigStore,
+    keyRingStore,
+    linkStore,
+    signClientStore,
+  } = useStore();
+
   const dappsEnabled = remoteConfigStore.getBool("feature_dapps_enabled");
   const appState = useRef(AppState.currentState);
   const navigation = useNavigation();
@@ -679,10 +684,11 @@ export const MainTabNavigation: FunctionComponent = () => {
       ) {
         // Wait the account of selected chain is loaded.
         await keyRingStore.lock();
+        await signClientStore.close();
         navigation.dispatch(StackActions.replace("Unlock"));
       }
     },
-    [keyRingStore, navigation, linkStore]
+    [keyRingStore, linkStore.canLock, signClientStore, navigation]
   );
 
   useEffect(() => {
@@ -859,7 +865,11 @@ export const AppNavigation: FunctionComponent = observer(() => {
       <FocusedScreenProvider>
         <SmartNavigatorProvider>
           <NavigationContainer
-            linking={linking}
+            linking={
+              keyRingStore.status === KeyRingStatus.UNLOCKED
+                ? linking
+                : undefined
+            }
             ref={navigationRef}
             onReady={() => {
               const routerName = navigationRef.current?.getCurrentRoute();
