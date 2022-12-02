@@ -141,7 +141,7 @@ export const SettingsScreen: FunctionComponent = observer(() => {
   };
 
   const requestUserPermission = async () => {
-    const authorizationStatus = await messaging().requestPermission();
+    await messaging().requestPermission();
   };
 
   return (

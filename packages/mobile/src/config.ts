@@ -15,6 +15,7 @@ export interface AppChainInfo extends ChainInfo {
   };
   readonly wcInfor?: {
     readonly relayUrl: string;
+    readonly pushServerUrl?: string;
     readonly projectId: string;
     readonly metadata: {
       readonly name: string;
@@ -91,6 +92,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
     },
     wcInfor: {
       relayUrl: "wss://wc-relay.astranaut.dev",
+      pushServerUrl: "https://wc-push.astranaut.dev",
       projectId: "dd47fbeda006ccb670152d74136f846a",
       metadata: {
         name: "Astra Wallet",

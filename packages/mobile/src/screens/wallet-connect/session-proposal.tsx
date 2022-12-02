@@ -17,6 +17,7 @@ import { CardDivider } from "../../components/card";
 import { useStore } from "../../stores";
 import { useIntl } from "react-intl";
 import { useUnmount } from "../../hooks";
+import { useRemoteNotification } from "./hook/use-remote-notification";
 export const SessionProposalScreen: FunctionComponent = observer(() => {
   const route = useRoute<
     RouteProp<
@@ -31,6 +32,7 @@ export const SessionProposalScreen: FunctionComponent = observer(() => {
   >();
 
   const { signClientStore } = useStore();
+  const { registerRemoteNotification } = useRemoteNotification();
 
   const style = useStyle();
 
@@ -47,7 +49,19 @@ export const SessionProposalScreen: FunctionComponent = observer(() => {
   };
 
   const onApproveSession = async () => {
+    let topic: string | undefined = undefined;
+    let peerName: string | undefined = undefined;
+    if (signClientStore.pendingProposal) {
+      topic = signClientStore.pendingProposal?.params.pairingTopic;
+      peerName = signClientStore.pendingProposal?.params.proposer.metadata.name;
+    }
+
     await signClientStore.approveProposal();
+
+    if (topic && peerName) {
+      const responseData = await registerRemoteNotification(topic, peerName);
+    }
+
     smartNavigation.goBack();
   };
 
