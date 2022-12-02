@@ -357,7 +357,8 @@ export class RootStore {
           eventEmitter.removeListener(type, fn);
         },
       },
-      this.keyRingStore
+      this.keyRingStore,
+      this.signClientStore
     );
   }
 }

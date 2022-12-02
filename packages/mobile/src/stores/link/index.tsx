@@ -3,6 +3,7 @@ import { KVStore } from "@keplr-wallet/common";
 import { KeyRingStore } from "@keplr-wallet/stores";
 import { action, autorun, makeObservable, observable } from "mobx";
 import { AppState, Linking } from "react-native";
+import { SignClientStore } from "../wallet-connect-v2";
 
 export class LinkStore {
   constructor(
@@ -11,7 +12,8 @@ export class LinkStore {
       addEventListener: (type: string, fn: () => unknown) => void;
       removeEventListener: (type: string, fn: () => unknown) => void;
     },
-    protected readonly keyRingStore: KeyRingStore
+    protected readonly keyRingStore: KeyRingStore,
+    protected readonly signClientStore: SignClientStore
   ) {
     makeObservable(this);
 
@@ -112,18 +114,46 @@ export class LinkStore {
     this._canLock = true;
     console.log("__DEBUG__ got pendingUrl: ", this.pendingLinkUri);
     if (this.pendingLinkUri.length > 0) {
-      const internalDeeplink = this.pendingLinkUri.replace(
-        "astrawallet://",
-        "astrawallet://internal-"
-      );
-      console.log("url: ", internalDeeplink);
-      const supported = await Linking.canOpenURL(internalDeeplink);
-      if (supported) {
-        await Linking.openURL(internalDeeplink);
-      }
+      this.handleDeepLink(this.pendingLinkUri);
       this.pendingLinkUri = "";
     }
   }
+
+  public async handleDeepLink(link: string) {
+    if (this.keyRingStore.status === KeyRingStatus.UNLOCKED) {
+      const url = new URL(link);
+      if (url.protocol === "astrawallet:") {
+        if (url.host === "wcv2") {
+          let params = url.search;
+          if (params) {
+            if (params.startsWith("?")) {
+              params = params.slice(5); //?uri=
+              console.log("__DEBUG__ params:", params);
+              await this.signClientStore.pair(params);
+            }
+          }
+        } else {
+          const internalDeeplink = this.pendingLinkUri.replace(
+            "astrawallet://",
+            "astrawallet://internal-"
+          );
+          this.open(internalDeeplink);
+        }
+      } else {
+        this.open(link);
+      }
+    } else {
+      this.saveDeepLink(link);
+    }
+  }
+
+  protected async open(uri: string) {
+    const supported = await Linking.canOpenURL(uri);
+    if (supported) {
+      await Linking.openURL(uri);
+    }
+  }
+
   async saveDeepLink(uri: string): Promise<void> {
     this.pendingLinkUri = uri;
     await this.kvStore.set("aw_pending_link_uri", uri);

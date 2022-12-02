@@ -265,8 +265,8 @@ export class SignClientStore extends SignClientManager {
   }
 
   async pair(uri: string) {
-    console.log("pair with: ", uri, this.client);
     if (this.client) {
+      console.log("pair with: ", uri, this.client);
       await this.client.pair({ uri });
     }
   }
