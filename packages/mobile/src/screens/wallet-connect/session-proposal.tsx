@@ -49,17 +49,21 @@ export const SessionProposalScreen: FunctionComponent = observer(() => {
   };
 
   const onApproveSession = async () => {
-    let topic: string | undefined = undefined;
-    let peerName: string | undefined = undefined;
-    if (signClientStore.pendingProposal) {
-      topic = signClientStore.pendingProposal?.params.pairingTopic;
-      peerName = signClientStore.pendingProposal?.params.proposer.metadata.name;
-    }
 
     await signClientStore.approveProposal();
 
-    if (topic && peerName) {
-      const responseData = await registerRemoteNotification(topic, peerName);
+    if (signClientStore.sessions.length !== 0) {
+      const session =
+        signClientStore.sessions[signClientStore.sessions.length - 1];
+      const topic = session.topic;
+      const peerName = session.peer.metadata.name;
+
+      try {
+        const responseData = await registerRemoteNotification(topic, peerName);
+        console.log("__responseData echo__", responseData);
+      } catch (e) {
+        console.log("__responseData error__", e);
+      }
     }
 
     smartNavigation.goBack();

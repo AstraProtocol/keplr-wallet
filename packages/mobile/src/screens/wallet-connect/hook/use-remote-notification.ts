@@ -19,10 +19,13 @@ export const useRemoteNotification = () => {
     peerName: string,
     language: string = "en"
   ) => {
+    const token = await getFcmToken();
+
     if (
       !remoteConfigStore.getBool("feature_remote_notification") ||
       !pushServerUrl ||
-      !relayServerUrl
+      !relayServerUrl ||
+      token.length === 0
     ) {
       return;
     }
@@ -30,15 +33,20 @@ export const useRemoteNotification = () => {
     const axios = Axios.create({
       baseURL: pushServerUrl,
     });
-    const response = await axios.post("/new", {
-      bridge: relayServerUrl,
-      topic,
-      type: "fcm",
-      token: await getFcmToken(),
-      peerName,
-      language,
-    });
-    return response.data;
+
+    try {
+      const response = await axios.post("/new", {
+        bridge: relayServerUrl,
+        topic,
+        type: "fcm",
+        token,
+        peerName,
+        language,
+      });
+      return response.data;
+    } catch (e) {
+      throw e;
+    }
   };
 
   return { registerRemoteNotification };
