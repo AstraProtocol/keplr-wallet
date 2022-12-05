@@ -1,13 +1,12 @@
 import React, { FunctionComponent, useEffect, useState } from "react";
 import { View, Image, Text } from "react-native";
 import { ScrollView, TouchableOpacity } from "react-native-gesture-handler";
-import { CollapseIcon, ExpandIcon } from "../../../components";
-import { CardDivider } from "../../../components/card";
-import { useStore } from "../../../stores";
-import { useStyle } from "../../../styles";
-import { Button } from "../../../components";
 import { FormattedMessage, useIntl } from "react-intl";
 import FastImage from "react-native-fast-image";
+import { CollapseIcon, ExpandIcon, Button } from "../../components";
+import { CardDivider } from "../../components/card";
+import { useStore } from "../../stores";
+import { useStyle } from "../../styles";
 
 export const TransactionSignRequestView: FunctionComponent<{
   onApprove: (name?: string) => void;
@@ -168,10 +167,7 @@ export const TransactionSignRequestView: FunctionComponent<{
           ])}
         >
           <Button
-            containerStyle={style.flatten([
-              "margin-right-12",
-              "flex-1",
-            ])}
+            containerStyle={style.flatten(["margin-right-12", "flex-1"])}
             color="neutral"
             text={intl.formatMessage({ id: "common.text.reject" })}
             onPress={async () => {

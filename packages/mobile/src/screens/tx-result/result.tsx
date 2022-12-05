@@ -23,9 +23,9 @@ import { PageWithScrollView } from "../../components";
 import { useSmartNavigation } from "../../navigation-util";
 import { useToastModal } from "../../providers/toast-modal";
 import { useIntl } from "react-intl";
-import { TransactionSignRequestView } from "./components/transaction-sign-request";
 import { ScrollView, View, SafeAreaView } from "react-native";
 import { TransactionTitleView } from "./components/transaction-title-view";
+import { TransactionSignRequestView } from "../sign-request";
 
 export const TxResultScreen: FunctionComponent = observer(() => {
   const {
