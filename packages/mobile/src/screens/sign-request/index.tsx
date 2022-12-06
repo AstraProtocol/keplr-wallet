@@ -12,7 +12,7 @@ export const TransactionSignRequestView: FunctionComponent<{
   onApprove: (name?: string) => void;
   onReject: (name?: string, isWC?: boolean) => void;
 }> = ({ onApprove, onReject }) => {
-  const { signInteractionStore, signClientStore } = useStore();
+  const { signInteractionStore, signClientStore, chainStore } = useStore();
 
   const [isWC, setIsWC] = useState(false);
 
@@ -36,15 +36,19 @@ export const TransactionSignRequestView: FunctionComponent<{
 
   const [isOpen, setIsOpen] = useState(false);
   const style = useStyle();
-  const signDocWrapper = data?.signDocWrapper;
+
+  const signDocWrapper = signInteractionStore.waitingData?.data.signDocWrapper;
+  const mode = signDocWrapper ? signDocWrapper.mode : "none";
   const msgs = signDocWrapper
     ? signDocWrapper.mode === "amino"
       ? signDocWrapper.aminoSignDoc.msgs
       : signDocWrapper.protoSignDoc.txMsgs
     : [];
+  console.log("__DEBUG__ mode:", mode, " msgs:", msgs);
 
   const messsages = JSON.stringify(msgs, null, 2);
   const source = isWC ? session?.peer.metadata.name : data?.msgOrigin;
+  const sourceUrl = isWC ? session?.peer.metadata.url : data?.msgOrigin;
 
   const intl = useIntl();
   return (
@@ -81,7 +85,7 @@ export const TransactionSignRequestView: FunctionComponent<{
               />
             ) : (
               <Image
-                source={require("../../../assets/image/icon_verified.png")}
+                source={require("../../assets/image/icon_verified.png")}
                 resizeMode="contain"
                 style={style.flatten(["width-64", "height-64"])}
               />
@@ -100,9 +104,21 @@ export const TransactionSignRequestView: FunctionComponent<{
             "text-center",
             "body3",
             "margin-top-8",
+            "margin-right-4",
           ])}
         >
-          {source}
+          {sourceUrl}
+          <Text
+            style={style.flatten([
+              "color-gray-10",
+              "text-center",
+              "body3",
+              "background-color-blue-60",
+              "border-radius-22",
+            ])}
+          >
+            {chainStore.current.chainName}
+          </Text>
         </Text>
         <TouchableOpacity
           onPress={() => {
