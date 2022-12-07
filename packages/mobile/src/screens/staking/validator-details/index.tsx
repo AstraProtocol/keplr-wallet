@@ -128,10 +128,13 @@ export const ValidatorDetailsScreen: FunctionComponent = observer(() => {
           <DelegatedCard
             containerStyle={style.flatten([
               "background-color-transparent",
-              "padding-y-0",
+              "padding-x-8",
               "margin-top-24",
             ])}
             validatorAddress={validatorAddress}
+            followHandler={() => {
+              setIndex(1);
+            }}
           />
         ) : (
           [
@@ -197,6 +200,7 @@ export const ValidatorDetailsScreen: FunctionComponent = observer(() => {
         )}
       </ScrollView>
       <ValidatorHeaderCard
+        validatorAddress={validatorAddress}
         animOpacity={opacityAnim}
         containerStyle={{
           position: "absolute",

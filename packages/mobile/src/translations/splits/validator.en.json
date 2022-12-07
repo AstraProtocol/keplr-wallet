@@ -8,6 +8,7 @@
   "validator.details.delegated.invested": "Staked amount",
   "validator.details.delegated.profit": "Rewards",
   "validator.details.delegated.regelegate": "Change validator",
+  "validator.details.delegated.unbonding": "Unstaking amount",
   "validator.details.delegated.undelegate": "Unstake",
   "validator.details.emptyWithdrawHistory": "There is no transaction yet",
   "validator.details.invest": "Stake now",
