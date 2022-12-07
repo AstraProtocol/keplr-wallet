@@ -1,8 +1,3 @@
-import React, { FunctionComponent, useMemo } from "react";
-import { observer } from "mobx-react-lite";
-import { Card, CardBody, CardDivider } from "../../../components/card";
-import { Text, View, ViewStyle, Image } from "react-native";
-import { useStyle } from "../../../styles";
 import {
   AccountStore,
   CosmosAccount,
@@ -14,15 +9,26 @@ import {
   SecretQueries,
   Staking,
 } from "@keplr-wallet/stores";
-import { ChainStore } from "../../../stores/chain";
-import { RightArrowIcon } from "../../../components/icon";
-import { useSmartNavigation } from "../../../navigation-util";
-import { RectButton } from "../../../components/rect-button";
-import { PropertyView } from "../component/property";
-import { ValidatorItem } from "../../../components/input";
-import { FormattedMessage, useIntl } from "react-intl";
-import { formatCoin, formatPercent } from "../../../common/utils";
 import { KeplrETCQueries } from "@keplr-wallet/stores-etc";
+import { CoinPretty, Dec } from "@keplr-wallet/unit";
+import { observer } from "mobx-react-lite";
+import React, { FunctionComponent, useMemo } from "react";
+import { FormattedMessage, useIntl } from "react-intl";
+import { Image, Text, View, ViewStyle } from "react-native";
+import { formatCoin, formatPercent } from "../../../common/utils";
+import {
+  buildLeftColumn,
+  buildRightColumn,
+  IRow,
+  ListRowView,
+} from "../../../components";
+import { Card, CardBody, CardDivider } from "../../../components/card";
+import { RightArrowIcon } from "../../../components/icon";
+import { ValidatorItem } from "../../../components/input";
+import { RectButton } from "../../../components/rect-button";
+import { useSmartNavigation } from "../../../navigation-util";
+import { ChainStore } from "../../../stores/chain";
+import { useStyle } from "../../../styles";
 
 export const DelegationsItem: FunctionComponent<{
   containerStyle?: ViewStyle;
@@ -47,39 +53,24 @@ export const DelegationsItem: FunctionComponent<{
     return Number(b.balance.amount) - Number(a.balance.amount);
   });
 
-  const bondedValidators = queries.cosmos.queryValidators.getQueryStatus(
-    Staking.BondStatus.Bonded
+  const queryValidators = queries.cosmos.queryValidators.getQueryStatus(
+    Staking.BondStatus.Unspecified
   );
-  const unbondingValidators = queries.cosmos.queryValidators.getQueryStatus(
-    Staking.BondStatus.Unbonding
-  );
-  const unbondedValidators = queries.cosmos.queryValidators.getQueryStatus(
-    Staking.BondStatus.Unbonded
+  const unbondingsQuery = queries.cosmos.queryUnbondingDelegations.getQueryBech32Address(
+    account.bech32Address
   );
 
-  console.log("bondedValidators", bondedValidators);
-  console.log("unbondingValidators", unbondingValidators);
-  console.log("unbondedValidators", unbondedValidators);
-
-  const validators = useMemo(() => {
-    return bondedValidators.validators
-      .concat(unbondingValidators.validators)
-      .concat(unbondedValidators.validators);
-  }, [
-    bondedValidators.validators,
-    unbondingValidators.validators,
-    unbondedValidators.validators,
-  ]);
+  const unbondings = unbondingsQuery.unbondingBalances;
 
   const validatorsMap = useMemo(() => {
     const map: Map<string, Staking.Validator> = new Map();
 
-    for (const val of validators) {
+    for (const val of queryValidators.validators) {
       map.set(val.operator_address, val);
     }
 
     return map;
-  }, [validators]);
+  }, [queryValidators.validators]);
 
   const style = useStyle();
   const intl = useIntl();
@@ -108,10 +99,9 @@ export const DelegationsItem: FunctionComponent<{
               return null;
             }
 
-            const thumbnail =
-              bondedValidators.getValidatorThumbnail(val.operator_address) ||
-              unbondingValidators.getValidatorThumbnail(val.operator_address) ||
-              unbondedValidators.getValidatorThumbnail(val.operator_address);
+            const thumbnail = queryValidators.getValidatorThumbnail(
+              val.operator_address
+            );
 
             const amount = queryDelegations.getDelegationTo(
               val.operator_address
@@ -125,6 +115,56 @@ export const DelegationsItem: FunctionComponent<{
               return null;
             }
 
+            const zeroAmount = new CoinPretty(amount.currency, new Dec(0));
+            const unbonding = unbondings.find(
+              (unbonding) => val.operator_address === unbonding.validatorAddress
+            );
+            const unbondingAmount =
+              unbonding?.entries.reduce((coin, entry) => {
+                return coin.add(entry.balance);
+              }, zeroAmount) || zeroAmount;
+
+            const rows: IRow[] = [
+              {
+                type: "items",
+                cols: [
+                  buildLeftColumn({
+                    text: intl.formatMessage({
+                      id: "staking.delegate.invested",
+                    }),
+                  }),
+                  buildRightColumn({ text: formatCoin(amount, false, 2) }),
+                ],
+              },
+              {
+                type: "items",
+                cols: [
+                  buildLeftColumn({
+                    text: intl.formatMessage({
+                      id: "staking.delegate.profit",
+                    }),
+                  }),
+                  buildRightColumn({
+                    text: "+" + formatCoin(rewards, false, 4),
+                    textColor: style.get("color-rewards-text").color,
+                  }),
+                ],
+              },
+              {
+                type: "items",
+                cols: [
+                  buildLeftColumn({
+                    text: intl.formatMessage({
+                      id: "staking.unbonding.unbondingAmount",
+                    }),
+                  }),
+                  buildRightColumn({
+                    text: formatCoin(unbondingAmount, false, 2),
+                  }),
+                ],
+              },
+            ];
+
             return (
               <RectButton
                 key={del.delegation.validator_address}
@@ -133,20 +173,22 @@ export const DelegationsItem: FunctionComponent<{
                   "margin-x-16",
                   "margin-top-16",
                   "border-radius-16",
-                  "border-width-1",
-                  "border-color-gray-60",
+                  "background-color-card-background",
                 ])}
                 onPress={() => {
                   smartNavigation.navigateSmart("Validator.Details", {
                     validatorAddress: del.delegation.validator_address,
                   });
                 }}
+                underlayColor={style.get("color-transparent").color}
+                activeOpacity={0}
               >
                 <ValidatorItem
                   containerStyle={style.flatten([
-                    "background-color-card-background-header",
+                    "background-color-transparent",
                     "border-width-0",
                     "border-radius-0",
+                    "padding-y-16",
                   ])}
                   thumbnail={thumbnail}
                   name={val.description.moniker}
@@ -162,45 +204,27 @@ export const DelegationsItem: FunctionComponent<{
                   right={
                     <View
                       style={style.flatten([
-                        "width-16",
-                        "height-16",
+                        "width-24",
+                        "height-24",
                         "items-center",
                         "justify-center",
                       ])}
                     >
-                      <RightArrowIcon height={10} />
+                      <RightArrowIcon height={14} />
                     </View>
                   }
                 />
                 <CardDivider
-                  style={style.flatten([
-                    "margin-0",
-                    "background-color-gray-60",
-                  ])}
+                  style={style.flatten(["background-color-card-separator"])}
                 />
-                <View
-                  style={style.flatten([
-                    "background-color-card-background",
-                    "margin-0",
-                    "padding-16",
-                    "flex-row",
-                    "items-center",
-                  ])}
-                >
-                  <PropertyView
-                    label={intl.formatMessage({
-                      id: "staking.delegate.invested",
-                    })}
-                    value={formatCoin(amount)}
-                  />
-                  <PropertyView
-                    label={intl.formatMessage({
-                      id: "staking.delegate.profit",
-                    })}
-                    value={"+" + formatCoin(rewards)}
-                    valueStyle={style.get("color-rewards-text")}
-                  />
-                </View>
+                <ListRowView
+                  rows={rows}
+                  style={{
+                    paddingVertical: 8,
+                  }}
+                  hideBorder
+                  clearBackground
+                />
               </RectButton>
             );
           })}

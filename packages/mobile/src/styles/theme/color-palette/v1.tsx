@@ -167,6 +167,12 @@ export const V1StepViewColors = {
   "step-line-success-inactive": V1Colors["gray-90"],
 };
 
+export const V1StakingColors = {
+  "staking-staked-text": V1Colors["purple-40"],
+  "staking-rewards-text": V1Colors["green-50"],
+  "staking-unbonding-text": V1Colors["yellow-60"],
+};
+
 export const V1AllColors = {
   ...V1Colors,
   ...V1MainColors,
@@ -174,6 +180,7 @@ export const V1AllColors = {
   ...V1InputColors,
   ...V1ToggleColors,
   ...V1StepViewColors,
+  ...V1StakingColors,
   ...{
     "heading-text": "white",
     "link-text": V1Colors["purple-40"],
@@ -187,6 +194,7 @@ export const V1AllColors = {
     "card-border": V1Colors["gray-70"],
     "card-background-header": V1Colors["gray-80"],
     "card-background": V1Colors["gray-90"],
+    "card-separator": V1Colors["gray-80"],
 
     "tab-icon-active": V1Colors["purple-40"],
     "tab-text-active": V1Colors["gray-10"],

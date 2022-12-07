@@ -91,11 +91,11 @@ export const DelegateScreen: FunctionComponent = observer(() => {
     sendConfigs.recipientConfig.setRawRecipient(validatorAddress);
   }, [sendConfigs.recipientConfig, validatorAddress]);
 
-  const bondedValidators = queries.cosmos.queryValidators.getQueryStatus(
-    Staking.BondStatus.Bonded
+  const queryValidators = queries.cosmos.queryValidators.getQueryStatus(
+    Staking.BondStatus.Unspecified
   );
 
-  const validator = bondedValidators.getValidator(validatorAddress);
+  const validator = queryValidators.getValidator(validatorAddress);
 
   const balanceText = userBalanceStore.getBalanceString();
 

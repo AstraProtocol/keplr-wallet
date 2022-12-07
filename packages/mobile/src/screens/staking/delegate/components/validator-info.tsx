@@ -36,10 +36,12 @@ export const ValidatorInfo: FunctionComponent<
   const account = accountStore.getAccount(chainStore.current.chainId);
   const queries = queriesStore.get(chainStore.current.chainId);
 
-  const bondedValidators = queries.cosmos.queryValidators.getQueryStatus(
-    Staking.BondStatus.Bonded
+  const queryValidators = queries.cosmos.queryValidators.getQueryStatus(
+    Staking.BondStatus.Unspecified
   );
-  const validator = bondedValidators.getValidator(validatorAddress);
+
+  const validator = queryValidators.getValidator(validatorAddress);
+
   const staked = queries.cosmos.queryDelegations
     .getQueryBech32Address(account.bech32Address)
     .getDelegationTo(validatorAddress);
@@ -50,7 +52,7 @@ export const ValidatorInfo: FunctionComponent<
     .getStakableRewardOf(validatorAddress);
 
   const name = validator?.description.moniker ?? "";
-  const thumbnailUrl = bondedValidators.getValidatorThumbnail(validatorAddress);
+  const thumbnailUrl = queryValidators.getValidatorThumbnail(validatorAddress);
 
   const commissionText = intl.formatMessage(
     { id: "validator.details.commission.percent" },

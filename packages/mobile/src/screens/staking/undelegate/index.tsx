@@ -68,16 +68,9 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
   const account = accountStore.getAccount(chainStore.current.chainId);
   const queries = queriesStore.get(chainStore.current.chainId);
 
-  const validator =
-    queries.cosmos.queryValidators
-      .getQueryStatus(Staking.BondStatus.Bonded)
-      .getValidator(validatorAddress) ||
-    queries.cosmos.queryValidators
-      .getQueryStatus(Staking.BondStatus.Unbonding)
-      .getValidator(validatorAddress) ||
-    queries.cosmos.queryValidators
-      .getQueryStatus(Staking.BondStatus.Unbonded)
-      .getValidator(validatorAddress);
+  const validator = queries.cosmos.queryValidators
+    .getQueryStatus(Staking.BondStatus.Unspecified)
+    .getValidator(validatorAddress);
 
   const staked = queries.cosmos.queryDelegations
     .getQueryBech32Address(account.bech32Address)

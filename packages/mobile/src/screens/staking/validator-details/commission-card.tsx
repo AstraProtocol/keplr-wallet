@@ -25,27 +25,15 @@ export const CommissionsCard: FunctionComponent<{
 
   const queries = queriesStore.get(chainStore.current.chainId);
 
-  const bondedValidators = queries.cosmos.queryValidators.getQueryStatus(
-    Staking.BondStatus.Bonded
-  );
-  const unbondingValidators = queries.cosmos.queryValidators.getQueryStatus(
-    Staking.BondStatus.Unbonding
-  );
-  const unbondedValidators = queries.cosmos.queryValidators.getQueryStatus(
-    Staking.BondStatus.Unbonded
+  const queryValidators = queries.cosmos.queryValidators.getQueryStatus(
+    Staking.BondStatus.Unspecified
   );
 
   const validator = useMemo(() => {
-    return bondedValidators.validators
-      .concat(unbondingValidators.validators)
-      .concat(unbondedValidators.validators)
-      .find((val) => val.operator_address === validatorAddress);
-  }, [
-    bondedValidators.validators,
-    unbondingValidators.validators,
-    unbondedValidators.validators,
-    validatorAddress,
-  ]);
+    return queryValidators.validators.find(
+      (val) => val.operator_address === validatorAddress
+    );
+  }, [queryValidators.validators, validatorAddress]);
 
   let dateText = "";
   if (validator) {
@@ -67,9 +55,7 @@ export const CommissionsCard: FunctionComponent<{
   return (
     <Card style={containerStyle}>
       {validator ? (
-        <CardBody style={style.flatten([
-          "padding-y-0",
-        ])}>
+        <CardBody style={style.flatten(["padding-y-0"])}>
           {validator.description.details ? (
             <Text
               style={style.flatten([
@@ -89,10 +75,7 @@ export const CommissionsCard: FunctionComponent<{
               ) : null}
             </Text>
           ) : null}
-          <View style={style.flatten([
-            "flex-row",
-            "margin-top-24",
-          ])}>
+          <View style={style.flatten(["flex-row", "margin-top-24"])}>
             <View style={style.flatten(["items-center", "flex-1"])}>
               <TooltipLabel
                 text={intl.formatMessage({
@@ -136,9 +119,7 @@ export const CommissionsCard: FunctionComponent<{
           </View>
           {showStake ? (
             <Button
-              containerStyle={style.flatten([
-                "margin-top-24",
-              ])}
+              containerStyle={style.flatten(["margin-top-24"])}
               text={intl.formatMessage({ id: "validator.details.invest" })}
               onPress={() => {
                 smartNavigation.navigateSmart("Delegate", {
@@ -149,7 +130,11 @@ export const CommissionsCard: FunctionComponent<{
           ) : null}
 
           <View
-            style={style.flatten(["height-1", "background-color-border", "margin-top-24"])}
+            style={style.flatten([
+              "height-1",
+              "background-color-border",
+              "margin-top-24",
+            ])}
           />
           <View
             style={style.flatten([

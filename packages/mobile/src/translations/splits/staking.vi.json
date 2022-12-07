@@ -21,5 +21,6 @@
   "staking.unbonding.noticeWithdrawalPeriod": "Bạn sẽ nhận được {coin} sau {days} sau khi rút",
   "staking.unbonding.receiveAfter": "Sẽ nhận được sau",
   "staking.unbonding.totalAmount": "Tổng ASA đang rút",
+  "staking.unbonding.unbondingAmount": "Đang rút",
   "staking.unbonding.viewHistoryGuide": "Để xem số {coin} đã rút thành công vui lòng xem "
 }

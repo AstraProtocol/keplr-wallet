@@ -38,14 +38,16 @@ export const ValidatorListScreen: FunctionComponent = observer(() => {
 
   const [sort, setSort] = useState<Sort>("Voting Power");
   const bondedValidators = queries.cosmos.queryValidators.getQueryStatus(
-    Staking.BondStatus.Bonded
+    Staking.BondStatus.Unspecified
   );
 
   const style = useStyle();
   const intl = useIntl();
 
   const data = useMemo(() => {
-    const data = bondedValidators.validators;
+    const data = bondedValidators.validators.filter(
+      (validator) => validator.status === "BOND_STATUS_BONDED"
+    );
 
     switch (sort) {
       case "APY":
@@ -111,7 +113,12 @@ export const ValidatorListScreen: FunctionComponent = observer(() => {
         renderSectionHeader={() => {
           return (
             <View
-              style={style.flatten(["flex", "height-40", "padding-top-12", "background-color-background"])}
+              style={style.flatten([
+                "flex",
+                "height-40",
+                "padding-top-12",
+                "background-color-background",
+              ])}
             >
               <View
                 style={style.flatten([
@@ -156,7 +163,7 @@ const ValidatorItem: FunctionComponent<{
   const queries = queriesStore.get(chainStore.current.chainId);
 
   const bondedValidators = queries.cosmos.queryValidators.getQueryStatus(
-    Staking.BondStatus.Bonded
+    Staking.BondStatus.Unspecified
   );
 
   const style = useStyle();
@@ -241,7 +248,12 @@ const ValidatorItem: FunctionComponent<{
         <Text style={style.flatten(["text-caption2", "color-gray-30"])}>
           {intl.formatMessage(
             { id: "validator.details.commission.percent" },
-            { percent: formatPercent(validator.commission.commission_rates.rate, true) },
+            {
+              percent: formatPercent(
+                validator.commission.commission_rates.rate,
+                true
+              ),
+            }
           )}
         </Text>
       </View>

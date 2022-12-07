@@ -31,43 +31,43 @@ export const ValidatorItem: FunctionComponent<{
           containerStyle,
         ])}
       >
-        <View style={style.flatten(["flex-row", "justify-start", "items-center"])}>
+        <View
+          style={style.flatten(["flex-row", "justify-start", "items-center"])}
+        >
           <ValidatorThumbnail
             style={style.flatten(["margin-right-8"])}
             size={24}
             url={thumbnail}
           />
-          {name ? (
-            <Text
-              style={style.flatten([
-                "subtitle3",
-                "color-gray-10",
-                "max-width-160",
-              ])}
-              numberOfLines={1}
-              ellipsizeMode="tail"
-            >
-              {name}
-            </Text>
-          ) : null}
+          <View>
+            {name ? (
+              <Text
+                style={style.flatten([
+                  "text-base-medium",
+                  "color-label-text-1",
+                  "max-width-160",
+                ])}
+                numberOfLines={1}
+                ellipsizeMode="tail"
+              >
+                {name}
+              </Text>
+            ) : null}
+            {value ? (
+              <Text
+                style={StyleSheet.flatten([
+                  style.flatten(["text-small-regular", "color-label-text-2"]),
+                  valueStyle,
+                ])}
+                numberOfLines={1}
+                ellipsizeMode="tail"
+              >
+                {value}
+              </Text>
+            ) : null}
+          </View>
         </View>
-
-        <View style={style.flatten(["flex-row", "justify-end", "items-center"])}>
-          {value ? (
-            <Text
-              style={StyleSheet.flatten([
-                style.flatten(["text-caption2", "color-gray-10"]),
-                valueStyle,
-              ])}
-              numberOfLines={1}
-              ellipsizeMode="tail"
-            >
-              {value}
-            </Text>
-          ) : null}
-
-          {right ? right : null}
-        </View>
+        {right ? right : null}
       </View>
     );
   }

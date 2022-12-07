@@ -30,14 +30,8 @@ export const UnbondingScreen: FunctionComponent = observer(() => {
 
   const unbondings = unbondingsQuery.unbondingBalances;
   const balance = unbondingsQuery.total;
-  const bondedValidators = queries.cosmos.queryValidators.getQueryStatus(
-    Staking.BondStatus.Bonded
-  );
-  const unbondingValidators = queries.cosmos.queryValidators.getQueryStatus(
-    Staking.BondStatus.Unbonding
-  );
-  const unbondedValidators = queries.cosmos.queryValidators.getQueryStatus(
-    Staking.BondStatus.Unbonded
+  const queryValidators = queries.cosmos.queryValidators.getQueryStatus(
+    Staking.BondStatus.Unspecified
   );
 
   const style = useStyle();
@@ -110,16 +104,12 @@ export const UnbondingScreen: FunctionComponent = observer(() => {
         />
       </View>
       {unbondings.map((unbonding, unbondingIndex) => {
-        const validator = bondedValidators.validators
-          .concat(unbondingValidators.validators)
-          .concat(unbondedValidators.validators)
-          .find((val) => val.operator_address === unbonding.validatorAddress);
-        const thumbnail =
-          bondedValidators.getValidatorThumbnail(unbonding.validatorAddress) ||
-          unbondingValidators.getValidatorThumbnail(
-            unbonding.validatorAddress
-          ) ||
-          unbondedValidators.getValidatorThumbnail(unbonding.validatorAddress);
+        const validator = queryValidators.validators.find(
+          (val) => val.operator_address === unbonding.validatorAddress
+        );
+        const thumbnail = queryValidators.getValidatorThumbnail(
+          unbonding.validatorAddress
+        );
         const entries = unbonding.entries;
 
         return (
