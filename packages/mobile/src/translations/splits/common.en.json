@@ -22,6 +22,7 @@
   "common.text.enableBiometrics.fingerprint": "Enable Fingerprint authentication",
   "common.text.enableBiometrics.touch": "Enable Touch ID authentication",
   "common.text.expire": "Expire",
+  "common.text.follow": "Follow",
   "common.text.inputVerifyNewPassword": "Input new password",
   "common.text.inputVerifyPassword": "Confirm",
   "common.text.minimumCharacters": "Input minimum {number} characters",

@@ -22,6 +22,7 @@
   "common.text.enableBiometrics.fingerprint": "Bật xác thực vân tay",
   "common.text.enableBiometrics.touch": "Bật xác thực vân tay",
   "common.text.expire": "Hết hạn",
+  "common.text.follow": "Theo dõi",
   "common.text.inputVerifyNewPassword": "Nhập lại mật khẩu mới",
   "common.text.inputVerifyPassword": "Nhập lại mật khẩu",
   "common.text.minimumCharacters": "Ít nhất {number} ký tự",
