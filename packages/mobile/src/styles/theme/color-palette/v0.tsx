@@ -179,6 +179,12 @@ export const StepViewColors = {
   "step-line-success-inactive": Colors["gray-90"],
 };
 
+export const StakingColors = {
+  "staking-staked-text": Colors["blue-70"],
+  "staking-rewards-text": Colors["green-50"],
+  "staking-unbonding-text": Colors["yellow-50"],
+};
+
 export const AllColors = {
   ...Colors,
   ...MainColors,
@@ -186,6 +192,7 @@ export const AllColors = {
   ...InputColors,
   ...ToggleColors,
   ...StepViewColors,
+  ...StakingColors,
   ...{
     // Belows are for the button props and may not be used as styles.
     "rect-button-default-ripple": "#CCCCCC",
@@ -248,6 +255,7 @@ export const AllColors = {
     "card-border": Colors["gray-70"],
     "card-background-header": Colors["gray-80"],
     "card-background": Colors["gray-90"],
+    "card-separator": Colors["gray-80"],
 
     "tab-icon-active": MainColors["primary"],
     "tab-text-active": MainColors["primary"],

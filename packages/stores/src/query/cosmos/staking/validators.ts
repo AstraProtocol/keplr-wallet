@@ -111,7 +111,7 @@ export class ObservableQueryValidatorsInner extends ObservableChainQuery<Validat
           case BondStatus.Unbonding:
             return "BOND_STATUS_UNBONDING";
           default:
-            return "BOND_STATUS_UNSPECIFIED";
+            return "";
         }
       })()}`
     );

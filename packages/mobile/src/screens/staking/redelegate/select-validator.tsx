@@ -21,19 +21,11 @@ export const SelectValidatorItem: FunctionComponent<{
 
   const queries = queriesStore.get(chainStore.current.chainId);
 
-  const bondedValidators = queries.cosmos.queryValidators.getQueryStatus(
-    Staking.BondStatus.Bonded
-  );
-  const unbondingValidators = queries.cosmos.queryValidators.getQueryStatus(
-    Staking.BondStatus.Unbonding
-  );
-  const unbondedValidators = queries.cosmos.queryValidators.getQueryStatus(
-    Staking.BondStatus.Unbonded
+  const queryValidators = queries.cosmos.queryValidators.getQueryStatus(
+    Staking.BondStatus.Unspecified
   );
   const thumbnailUrl = validator?.operator_address
-    ? bondedValidators.getValidatorThumbnail(validator?.operator_address) ||
-      unbondingValidators.getValidatorThumbnail(validator?.operator_address) ||
-      unbondedValidators.getValidatorThumbnail(validator?.operator_address)
+    ? queryValidators.getValidatorThumbnail(validator?.operator_address)
     : undefined;
 
   const setSelectedValidator = (validator: Staking.Validator | undefined) => {

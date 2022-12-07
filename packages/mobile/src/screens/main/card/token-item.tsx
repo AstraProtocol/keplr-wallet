@@ -8,6 +8,7 @@ import FastImage from "react-native-fast-image";
 import { VectorCharacter } from "../../../components/vector-character";
 import { AppCurrency } from "@keplr-wallet/types";
 import { formatCoin } from "../../../common/utils";
+import { useStore } from "../../../stores";
 
 export const TokenItemNew: FunctionComponent<{
   containerStyle?: ViewStyle;
@@ -18,6 +19,10 @@ export const TokenItemNew: FunctionComponent<{
   balance: CoinPretty;
 }> = ({ containerStyle, balance }) => {
   const style = useStyle();
+  const { chainStore } = useStore();
+
+  const firstCurrency = chainStore.getChain(chainStore.current.chainId)
+    .currencies[0];
 
   return (
     <RectButton
@@ -63,7 +68,14 @@ export const TokenItemNew: FunctionComponent<{
             numberOfLines={1}
             ellipsizeMode="tail"
           >
-            {formatCoin(balance, true)}
+            {formatCoin(
+              balance,
+              true,
+              balance.currency.coinMinimalDenom ===
+                firstCurrency.coinMinimalDenom
+                ? 2
+                : 5
+            )}
           </Text>
         </View>
         {/* <View style={style.flatten(["flex-row", "justify-between", "margin-bottom-0"])}>

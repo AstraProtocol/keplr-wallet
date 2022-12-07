@@ -21,5 +21,6 @@
   "staking.unbonding.noticeWithdrawalPeriod": "You will receive {coin} in {days}",
   "staking.unbonding.receiveAfter": "Receive in",
   "staking.unbonding.totalAmount": "Unstaking amount",
+  "staking.unbonding.unbondingAmount": "Unstaking amount",
   "staking.unbonding.viewHistoryGuide": "View claimed ASA in "
 }

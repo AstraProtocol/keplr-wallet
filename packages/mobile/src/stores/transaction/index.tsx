@@ -187,16 +187,9 @@ export class TransactionStore {
     } = params;
 
     const queries = this.queriesStore.get(chainId);
-    const validator =
-      queries.cosmos.queryValidators
-        .getQueryStatus(Staking.BondStatus.Bonded)
-        .getValidator(validatorAddress) ||
-      queries.cosmos.queryValidators
-        .getQueryStatus(Staking.BondStatus.Unbonding)
-        .getValidator(validatorAddress) ||
-      queries.cosmos.queryValidators
-        .getQueryStatus(Staking.BondStatus.Unbonded)
-        .getValidator(validatorAddress);
+    const validator = queries.cosmos.queryValidators
+      .getQueryStatus(Staking.BondStatus.Unspecified)
+      .getValidator(validatorAddress);
 
     return validator;
   }

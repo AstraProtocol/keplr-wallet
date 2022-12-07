@@ -21,58 +21,45 @@ export const ValidatorNameCard: FunctionComponent<{
 
   const queries = queriesStore.get(chainStore.current.chainId);
 
-  const bondedValidators = queries.cosmos.queryValidators.getQueryStatus(
-    Staking.BondStatus.Bonded
-  );
-  const unbondingValidators = queries.cosmos.queryValidators.getQueryStatus(
-    Staking.BondStatus.Unbonding
-  );
-  const unbondedValidators = queries.cosmos.queryValidators.getQueryStatus(
-    Staking.BondStatus.Unbonded
+  const queryValidators = queries.cosmos.queryValidators.getQueryStatus(
+    Staking.BondStatus.Unspecified
   );
 
   const validator = useMemo(() => {
-    return bondedValidators.validators
-      .concat(unbondingValidators.validators)
-      .concat(unbondedValidators.validators)
-      .find((val) => val.operator_address === validatorAddress);
-  }, [
-    bondedValidators.validators,
-    unbondingValidators.validators,
-    unbondedValidators.validators,
-    validatorAddress,
-  ]);
+    return queryValidators.validators.find(
+      (val) => val.operator_address === validatorAddress
+    );
+  }, [queryValidators.validators, validatorAddress]);
 
-  const thumbnail =
-    bondedValidators.getValidatorThumbnail(validatorAddress) ||
-    unbondingValidators.getValidatorThumbnail(validatorAddress) ||
-    unbondedValidators.getValidatorThumbnail(validatorAddress);
+  const thumbnail = queryValidators.getValidatorThumbnail(validatorAddress);
 
   const style = useStyle();
   const intl = useIntl();
   const safeAreaInsets = useSafeAreaInsets();
 
   return (
-    <Card style={StyleSheet.flatten([
-      style.flatten(["background-color-transparent"]),
-      containerStyle
-    ])}>
-      <View style={{
-        height: safeAreaInsets.top + 44,
-      }} />
+    <Card
+      style={StyleSheet.flatten([
+        style.flatten(["background-color-transparent"]),
+        containerStyle,
+      ])}
+    >
+      <View
+        style={{
+          height: safeAreaInsets.top + 44,
+        }}
+      />
       {validator ? (
-        <CardBody style={style.flatten([
-          "items-center",
-          "padding-y-0",
-          "margin-top-16",
-        ])}>
+        <CardBody
+          style={style.flatten([
+            "items-center",
+            "padding-y-0",
+            "margin-top-16",
+          ])}
+        >
           <ValidatorThumbnail size={80} url={thumbnail} />
           <Text
-            style={style.flatten([
-              "subtitle1",
-              "color-white",
-              "margin-top-16",
-            ])}
+            style={style.flatten(["subtitle1", "color-white", "margin-top-16"])}
           >
             {validator.description.moniker}
           </Text>
@@ -81,7 +68,7 @@ export const ValidatorNameCard: FunctionComponent<{
             containerStyle={style.flatten(["margin-top-4"])}
             text={intl.formatMessage(
               { id: "validator.details.uptime" },
-              { percent: "100%" },
+              { percent: "100%" }
             )}
           />
         </CardBody>

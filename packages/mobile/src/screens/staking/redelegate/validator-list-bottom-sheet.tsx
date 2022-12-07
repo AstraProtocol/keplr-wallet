@@ -39,7 +39,7 @@ export const ValidatorsBottomSheet: FunctionComponent<{
     const intl = useIntl();
     const queries = queriesStore.get(chainStore.current.chainId);
     const bondedValidators = queries.cosmos.queryValidators.getQueryStatus(
-      Staking.BondStatus.Bonded
+      Staking.BondStatus.Unspecified
     );
 
     const [toValidator, setToValidator] = useState(selectedValidator);
@@ -48,7 +48,10 @@ export const ValidatorsBottomSheet: FunctionComponent<{
     const data = useMemo(() => {
       const data = bondedValidators.validators;
       return data.filter((validator) => {
-        return validator.operator_address !== currentValidatorAddress;
+        return (
+          validator.operator_address !== currentValidatorAddress &&
+          validator.status === "BOND_STATUS_BONDED"
+        );
       });
     }, [bondedValidators.validators, currentValidatorAddress]);
 

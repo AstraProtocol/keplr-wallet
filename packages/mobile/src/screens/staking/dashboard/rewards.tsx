@@ -21,12 +21,14 @@ import { useSmartNavigation } from "../../../navigation-util";
 import { ChainStore } from "../../../stores/chain";
 
 import { useStyle } from "../../../styles";
-import { PropertyView } from "../component/property";
+import { PropertyView, PropertyViewIconType } from "../component/property";
 
 export const RewardsItem: FunctionComponent<{
   chainStore: ChainStore;
   accountStore: AccountStore<[CosmosAccount, CosmwasmAccount, SecretAccount]>;
-  queriesStore: QueriesStore<[CosmosQueries, CosmwasmQueries, SecretQueries, KeplrETCQueries]>;
+  queriesStore: QueriesStore<
+    [CosmosQueries, CosmwasmQueries, SecretQueries, KeplrETCQueries]
+  >;
   containerStyle?: ViewStyle;
 }> = observer(({ chainStore, accountStore, queriesStore, containerStyle }) => {
   const smartNavigation = useSmartNavigation();
@@ -68,13 +70,11 @@ export const RewardsItem: FunctionComponent<{
     <View
       style={StyleSheet.flatten([
         style.flatten([
-          "padding-0",
+          // "padding-0",
           "margin-x-16",
-          "justify-between",
+          // "justify-between",
           "background-color-card-background",
           "border-radius-16",
-          "border-color-card-border",
-          "border-width-1",
         ]),
         containerStyle,
       ])}
@@ -82,17 +82,18 @@ export const RewardsItem: FunctionComponent<{
       <View
         style={style.flatten([
           "padding-y-16",
-          "margin-x-16",
-          "margin-y-1",
+          "margin-x-12",
           "flex-row",
           "items-center",
         ])}
       >
         <PropertyView
+          iconType={PropertyViewIconType.staked}
           label={intl.formatMessage({
             id: "staking.dashboard.rewards.totalInvestment",
           })}
-          value={formatCoin(delegated)}
+          value={formatCoin(delegated, false, 2)}
+          labelStyle={style.flatten(["color-staking-staked-text"])}
         />
         <Button
           containerStyle={style.flatten(["width-132"])}
@@ -103,22 +104,22 @@ export const RewardsItem: FunctionComponent<{
           size="medium"
         />
       </View>
-      <CardDivider style={style.flatten(["background-color-card-border"])} />
+      <CardDivider style={style.flatten(["background-color-card-separator"])} />
       <View
         style={style.flatten([
           "padding-y-16",
-          "margin-x-16",
-          "margin-y-1",
+          "margin-x-12",
           "flex-row",
           "items-center",
         ])}
       >
         <PropertyView
+          iconType={PropertyViewIconType.rewards}
           label={intl.formatMessage({
             id: "staking.dashboard.rewards.totalProfit",
           })}
-          value={"+" + formatCoin(pendingStakableReward)}
-          valueStyle={style.flatten(["color-rewards-text"])}
+          value={"+" + formatCoin(pendingStakableReward, false, 4)}
+          labelStyle={style.flatten(["color-staking-rewards-text"])}
         />
 
         <Button
@@ -126,7 +127,7 @@ export const RewardsItem: FunctionComponent<{
           text={intl.formatMessage({
             id: "staking.dashboard.rewards.withdrawProfit",
           })}
-          color="neutral"
+          color="primary"
           mode="outline"
           size="medium"
           disabled={!isRewardExist}
@@ -135,22 +136,23 @@ export const RewardsItem: FunctionComponent<{
           }}
         />
       </View>
-      <CardDivider style={style.flatten(["background-color-gray-70"])} />
+      <CardDivider style={style.flatten(["background-color-card-separator"])} />
       <View
         style={style.flatten([
           "padding-y-16",
-          "margin-x-16",
-          "margin-y-1",
+          "margin-x-12",
           "flex-row",
           "items-center",
         ])}
       >
         <PropertyView
+          iconType={PropertyViewIconType.unbonding}
           label={intl.formatMessage(
             { id: "staking.dashboard.rewards.totalWithdrawals" },
             { denom: unboding.denom }
           )}
-          value={formatCoin(unboding)}
+          value={formatCoin(unboding, false, 2)}
+          labelStyle={style.flatten(["color-staking-unbonding-text"])}
         />
 
         <Button
@@ -158,7 +160,7 @@ export const RewardsItem: FunctionComponent<{
           text={intl.formatMessage({
             id: "staking.dashboard.rewards.follow",
           })}
-          color="neutral"
+          color="primary"
           mode="outline"
           size="medium"
           disabled={!isPending}
