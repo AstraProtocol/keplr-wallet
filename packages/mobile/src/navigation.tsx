@@ -447,7 +447,6 @@ export const WalletNavigation: FunctionComponent = () => {
       />
       <Stack.Screen
         options={{
-          // title: intl.formatMessage({ id: "validator.details.new.title" }),
           headerShown: false,
         }}
         name="Validator.Details"
@@ -478,7 +477,7 @@ export const WalletNavigation: FunctionComponent = () => {
       />
       <Stack.Screen
         options={{
-          title: intl.formatMessage({ id: "unbonding.title" }),
+          headerShown: false,
         }}
         name="Unbonding"
         component={UnbondingScreen}

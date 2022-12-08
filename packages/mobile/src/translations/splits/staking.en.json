@@ -15,6 +15,7 @@
   "staking.rewards.details.label": "Validators",
   "staking.rewards.totalProfit": "Total rewards",
   "staking.rewards.withdrawRewards": "Claim",
+  "staking.unbonding.amount": "Unstaking amount",
   "staking.unbonding.days": "days",
   "staking.unbonding.history": "history ",
   "staking.unbonding.nameAndAmount": "Unstaking amount",
@@ -22,5 +23,6 @@
   "staking.unbonding.receiveAfter": "Receive in",
   "staking.unbonding.totalAmount": "Unstaking amount",
   "staking.unbonding.unbondingAmount": "Unstaking amount",
+  "staking.unbonding.validatorTotalAmount": "Unstaking from {name}",
   "staking.unbonding.viewHistoryGuide": "View claimed ASA in "
 }

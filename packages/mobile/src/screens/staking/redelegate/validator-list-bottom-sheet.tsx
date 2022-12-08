@@ -1,19 +1,19 @@
+import { Staking } from "@keplr-wallet/stores";
+import { CoinPretty, Dec } from "@keplr-wallet/unit";
 import React, { FunctionComponent, useMemo, useRef, useState } from "react";
+import { FormattedMessage, useIntl } from "react-intl";
 import { ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { RectButton } from "react-native-gesture-handler";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { formatCoin, formatPercent } from "../../../common/utils";
+import { Button } from "../../../components";
+import { CardDivider } from "../../../components/card";
+import { CloseLargeIcon } from "../../../components/icon/outlined";
+import { ValidatorThumbnail } from "../../../components/thumbnail";
 import { registerModal } from "../../../modals/base";
 import { useStore } from "../../../stores";
 import { useStyle } from "../../../styles";
-import { Staking } from "@keplr-wallet/stores";
-import { FormattedMessage, useIntl } from "react-intl";
 import { TooltipLabel } from "../component";
-import { CardDivider } from "../../../components/card";
-import { ValidatorThumbnail } from "../../../components/thumbnail";
-import { CoinPretty, Dec } from "@keplr-wallet/unit";
-import { formatCoin, formatPercent } from "../../../common/utils";
-import { Button } from "../../../components";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { CloseLargeIcon } from "../../../components/icon/outlined";
 
 export const ValidatorsBottomSheet: FunctionComponent<{
   label: string;
@@ -41,6 +41,8 @@ export const ValidatorsBottomSheet: FunctionComponent<{
     const bondedValidators = queries.cosmos.queryValidators.getQueryStatus(
       Staking.BondStatus.Unspecified
     );
+
+    console.log("__bondedValidators__", bondedValidators.validators);
 
     const [toValidator, setToValidator] = useState(selectedValidator);
     const safeAreaInsets = useSafeAreaInsets();
@@ -163,7 +165,7 @@ export const ValidatorsBottomSheet: FunctionComponent<{
               style={style.flatten([
                 "flex-1",
                 "text-medium-medium",
-                "color-gray-10",
+                "color-label-text-1",
                 "text-center",
               ])}
             >
@@ -174,7 +176,10 @@ export const ValidatorsBottomSheet: FunctionComponent<{
             />
           </View>
           <CardDivider
-            style={style.flatten(["background-color-gray-70", "margin-x-0"])}
+            style={style.flatten([
+              "background-color-card-separator",
+              "margin-x-0",
+            ])}
           />
           <View style={style.flatten(["flex", "height-40", "padding-top-12"])}>
             <View
@@ -185,7 +190,9 @@ export const ValidatorsBottomSheet: FunctionComponent<{
                 "margin-bottom-8",
               ])}
             >
-              <Text style={style.flatten(["color-gray-30", "text-caption2"])}>
+              <Text
+                style={style.flatten(["color-label-text-2", "text-caption2"])}
+              >
                 <FormattedMessage id="validator.list.name" />
               </Text>
               <TooltipLabel
@@ -196,7 +203,7 @@ export const ValidatorsBottomSheet: FunctionComponent<{
             </View>
             <CardDivider
               style={style.flatten([
-                "background-color-gray-70",
+                "background-color-card-separator",
                 "margin-bottom-0",
               ])}
             />
@@ -242,7 +249,7 @@ export const ValidatorsBottomSheet: FunctionComponent<{
                         <Text
                           style={style.flatten([
                             "text-base-medium",
-                            "color-gray-10",
+                            "color-label-text-1",
                             "max-width-160",
                           ])}
                           numberOfLines={1}
@@ -260,14 +267,16 @@ export const ValidatorsBottomSheet: FunctionComponent<{
                           <Text
                             style={style.flatten([
                               "text-base-medium",
-                              "color-gray-10",
+                              "color-label-text-1",
                             ])}
                           >
                             {formatCoin(
                               new CoinPretty(
                                 chainStore.current.stakeCurrency,
                                 new Dec(val.tokens)
-                              )
+                              ),
+                              false,
+                              0
                             )}
                           </Text>
                           {renderBall(
@@ -279,7 +288,7 @@ export const ValidatorsBottomSheet: FunctionComponent<{
                       <Text
                         style={style.flatten([
                           "text-small-regular",
-                          "color-gray-30",
+                          "color-label-text-2",
                         ])}
                       >
                         {intl.formatMessage(
@@ -296,7 +305,7 @@ export const ValidatorsBottomSheet: FunctionComponent<{
                   </RectButton>
                   <CardDivider
                     style={style.flatten([
-                      "background-color-gray-70",
+                      "background-color-card-separator",
                       "margin-bottom-0",
                       "margin-x-16",
                     ])}
@@ -306,7 +315,10 @@ export const ValidatorsBottomSheet: FunctionComponent<{
             })}
           </ScrollView>
           <View
-            style={style.flatten(["height-1", "background-color-gray-70"])}
+            style={style.flatten([
+              "height-1",
+              "background-color-card-separator",
+            ])}
           />
           <Button
             text={intl.formatMessage({ id: "common.text.confirm" })}

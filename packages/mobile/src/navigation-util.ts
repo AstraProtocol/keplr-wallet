@@ -255,6 +255,12 @@ const {
     Redelegate: {
       validatorAddress: string;
     };
+    Unbonding: {
+      validatorAddress?: string;
+    };
+    "Wallet.History": {
+      isNavigated?: boolean;
+    };
     "Governance Details": {
       proposalId: string;
     };

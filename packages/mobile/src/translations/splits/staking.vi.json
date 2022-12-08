@@ -15,12 +15,14 @@
   "staking.rewards.details.label": "Nhận từ gói tích lũy",
   "staking.rewards.totalProfit": "Tổng phần thưởng",
   "staking.rewards.withdrawRewards": "Nhận phần thưởng",
+  "staking.unbonding.amount": "Số ASA đang rút",
   "staking.unbonding.days": "ngày",
   "staking.unbonding.history": "lịch sử",
-  "staking.unbonding.nameAndAmount": "Gói tích lũy & số ASA đang rút",
+  "staking.unbonding.nameAndAmount": "Gói tích lũy và số ASA đang rút",
   "staking.unbonding.noticeWithdrawalPeriod": "Bạn sẽ nhận được {coin} sau {days} sau khi rút",
-  "staking.unbonding.receiveAfter": "Sẽ nhận được sau",
+  "staking.unbonding.receiveAfter": "Nhận sau",
   "staking.unbonding.totalAmount": "Tổng ASA đang rút",
   "staking.unbonding.unbondingAmount": "Đang rút",
+  "staking.unbonding.validatorTotalAmount": "Đang rút từ {name}",
   "staking.unbonding.viewHistoryGuide": "Để xem số {coin} đã rút thành công vui lòng xem "
 }

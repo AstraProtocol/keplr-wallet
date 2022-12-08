@@ -179,7 +179,7 @@ const ValidatorItem: FunctionComponent<{
       chainStore.current.stakeCurrency,
       new Dec(validator.tokens)
     );
-    totalStakingText = formatCoin(totalStaking);
+    totalStakingText = formatCoin(totalStaking, false, 0);
   }
   return validator ? (
     <RectButton

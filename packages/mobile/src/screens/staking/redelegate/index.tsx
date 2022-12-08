@@ -101,7 +101,7 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
   );
   sendConfigs.gasConfig.setGas(gasLimit);
   sendConfigs.feeConfig.setFeeType(feeType);
-  const feeText = formatCoin(sendConfigs.feeConfig.fee);
+  const feeText = formatCoin(sendConfigs.feeConfig.fee, false, 4);
 
   const [amountIsValid, setAmountIsValid] = useState(false);
   const [amountErrorText, setAmountErrorText] = useState("");

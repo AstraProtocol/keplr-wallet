@@ -1,179 +1,294 @@
 import { Staking } from "@keplr-wallet/stores";
+import { RouteProp, useRoute } from "@react-navigation/native";
 import { observer } from "mobx-react-lite";
-import React, { FunctionComponent } from "react";
+import React, { FunctionComponent, useCallback, useRef } from "react";
 import { useIntl } from "react-intl";
-import { Text, View } from "react-native";
+import { Animated, Text, View } from "react-native";
+import { ScrollView } from "react-native-gesture-handler";
 import { formatCoin, formatUnbondingTime } from "../../../common/utils";
-import { AlertInline, PageWithScrollView } from "../../../components";
+import { AlertInline } from "../../../components";
 import { CardDivider } from "../../../components/card";
 import { ValidatorThumbnail } from "../../../components/thumbnail";
 import { useSmartNavigation } from "../../../navigation-util";
 import { useStore } from "../../../stores";
 import { useStyle } from "../../../styles";
+import { AnimatedNavigationBar } from "./animated-navigation-bar";
+import { useQueryUnbonding } from "./hook/use-query-unbonding";
 
 export const UnbondingScreen: FunctionComponent = observer(() => {
+  const route = useRoute<
+    RouteProp<
+      Record<
+        string,
+        {
+          validatorAddress?: string;
+        }
+      >,
+      string
+    >
+  >();
+  const validatorAddress = route.params.validatorAddress;
+
   const intl = useIntl();
   const smartNavigation = useSmartNavigation();
 
-  const { chainStore, accountStore, queriesStore } = useStore();
+  const { chainStore, queriesStore } = useStore();
+  const {
+    getUnbondingTime,
+    getUnbondings,
+    getUnbondingOf,
+    getUnbondingsTotal,
+  } = useQueryUnbonding();
 
-  const account = accountStore.getAccount(chainStore.current.chainId);
   const queries = queriesStore.get(chainStore.current.chainId);
 
-  const unbondingTime =
-    queries.cosmos.queryStakingParams.unbondingTimeSec ?? 172800;
-  const unbondingTimeText = formatUnbondingTime(unbondingTime, intl);
+  const unbondingTimeText = formatUnbondingTime(getUnbondingTime(), intl);
 
-  const unbondingsQuery = queries.cosmos.queryUnbondingDelegations.getQueryBech32Address(
-    account.bech32Address
-  );
+  let unbondings = getUnbondings();
+  if (validatorAddress) {
+    const unbonding = getUnbondingOf(validatorAddress);
+    if (unbonding) {
+      unbondings = [unbonding];
+    }
+  }
 
-  const unbondings = unbondingsQuery.unbondingBalances;
-  const balance = unbondingsQuery.total;
+  const balance = getUnbondingsTotal(unbondings);
   const queryValidators = queries.cosmos.queryValidators.getQueryStatus(
     Staking.BondStatus.Unspecified
   );
 
+  const validator = validatorAddress
+    ? queryValidators.validators.find(
+        (val) => val.operator_address === validatorAddress
+      )
+    : undefined;
+
+  const title = validator
+    ? intl.formatMessage(
+        { id: "staking.unbonding.validatorTotalAmount" },
+        { name: validator.description.moniker }
+      )
+    : intl.formatMessage({ id: "staking.unbonding.totalAmount" });
+
   const style = useStyle();
 
-  return (
-    <PageWithScrollView
-      backgroundColor={style.get("color-background").color}
-      style={style.flatten(["padding-x-16"])}
-      stickyHeaderIndices={[2]}
-    >
-      <View style={style.flatten(["padding-16", "items-center"])}>
-        <Text style={style.flatten(["color-gray-30", "body3", "margin-top-0"])}>
-          {intl.formatMessage({ id: "staking.unbonding.totalAmount" })}
-        </Text>
-        <Text style={style.flatten(["color-gray-10", "title1", "margin-y-2"])}>
-          {formatCoin(balance)}
-        </Text>
-      </View>
-      <View style={style.flatten(["background-color-background"])}>
-        <AlertInline
-          type="info"
-          content={intl.formatMessage(
-            { id: "staking.unbonding.noticeWithdrawalPeriod" },
-            { coin: balance.denom, days: unbondingTimeText }
-          )}
-        />
-        <Text
-          style={style.flatten([
-            "margin-y-8",
-            "color-gray-30",
-            "text-center",
-            "text-caption2",
-          ])}
-        >
-          {intl.formatMessage(
-            { id: "staking.unbonding.viewHistoryGuide" },
-            { coin: chainStore.current.stakeCurrency.coinDenom }
-          )}
-          <Text
-            style={style.flatten(["text-underline", "color-primary"])}
-            onPress={() => {
-              smartNavigation.navigateSmart("Wallet.History", {});
-            }}
-          >
-            {intl.formatMessage({ id: "staking.unbonding.history" })}
-          </Text>
-        </Text>
-      </View>
-      <View
-        style={style.flatten([
-          "height-32",
-          "margin-top-16",
-          "padding-y-8",
-          "border-width-bottom-1",
-          "border-color-card-border",
-        ])}
-      >
+  const getSimpleItem = (
+    key: React.Key | null | undefined,
+    params: {
+      amount: string;
+      time: string;
+    }
+  ) => {
+    const { amount, time } = params;
+    return (
+      <View key={key}>
         <View
-          style={style.flatten(["flex-row", "justify-between", "height-16"])}
+          style={style.flatten(["flex-row", "justify-between", "margin-y-16"])}
         >
           <Text
-            style={style.flatten(["color-label-text-2", "text-small-medium"])}
+            style={style.flatten(["text-base-regular", "color-label-text-1"])}
           >
-            {intl.formatMessage({ id: "staking.unbonding.nameAndAmount" })}
+            {amount}
           </Text>
           <Text
-            style={style.flatten(["color-label-text-2", "text-small-medium"])}
+            style={style.flatten(["text-base-regular", "color-label-text-1"])}
           >
-            {intl.formatMessage({ id: "staking.unbonding.receiveAfter" })}
+            {time}
           </Text>
         </View>
+        <CardDivider
+          style={style.flatten([
+            "background-color-card-separator",
+            "margin-x-0",
+          ])}
+        />
       </View>
-      {unbondings.map((unbonding, unbondingIndex) => {
-        const validator = queryValidators.validators.find(
-          (val) => val.operator_address === unbonding.validatorAddress
-        );
-        const thumbnail = queryValidators.getValidatorThumbnail(
-          unbonding.validatorAddress
-        );
-        const entries = unbonding.entries;
+    );
+  };
 
-        return (
-          <React.Fragment key={unbondingIndex}>
-            {entries.map((entry, i) => {
-              const current = new Date().getTime();
+  const getItem = (
+    key: React.Key | null | undefined,
+    params: {
+      icon?: string;
+      name?: string;
+      amount: string;
+      time: string;
+    }
+  ) => {
+    const { icon, name, amount, time } = params;
+    return (
+      <View key={key}>
+        <View
+          style={style.flatten(["flex-row", "justify-between", "margin-y-16"])}
+        >
+          <View style={style.flatten(["flex-row", "justify-start"])}>
+            <ValidatorThumbnail size={24} url={icon} />
+            <View style={style.flatten(["padding-x-16", "flex"])}>
+              <Text
+                style={style.flatten([
+                  "text-base-regular",
+                  "color-label-text-1",
+                ])}
+              >
+                {name}
+              </Text>
+              <Text
+                style={style.flatten([
+                  "text-base-regular",
+                  "color-label-text-1",
+                  "margin-top-2",
+                ])}
+              >
+                {amount}
+              </Text>
+            </View>
+          </View>
+          <Text
+            style={style.flatten(["text-base-regular", "color-label-text-1"])}
+          >
+            {time}
+          </Text>
+        </View>
+        <CardDivider
+          style={style.flatten([
+            "background-color-card-separator",
+            "margin-x-0",
+          ])}
+        />
+      </View>
+    );
+  };
 
-              const relativeEndTime =
-                (new Date(entry.completionTime).getTime() - current) / 1000;
+  const getUnbondingItems = () => {
+    return unbondings.map((unbonding, unbondingIndex) => {
+      const validator = queryValidators.validators.find(
+        (val) => val.operator_address === unbonding.validatorAddress
+      );
+      const thumbnail = queryValidators.getValidatorThumbnail(
+        unbonding.validatorAddress
+      );
+      const entries = unbonding.entries;
 
-              const remainingText = formatUnbondingTime(relativeEndTime, intl);
+      return (
+        <React.Fragment key={unbondingIndex}>
+          {entries.map((entry, i) => {
+            const current = new Date().getTime();
 
-              return (
-                <View style={style.flatten(["height-72"])} key={i}>
-                  <View
-                    style={style.flatten([
-                      "flex-row",
-                      "justify-between",
-                      "margin-y-16",
-                    ])}
-                  >
-                    <View style={style.flatten(["flex-row", "justify-start"])}>
-                      <ValidatorThumbnail size={24} url={thumbnail} />
-                      <View style={style.flatten(["padding-x-16", "flex"])}>
-                        <Text
-                          style={style.flatten([
-                            "text-base-medium",
-                            "color-gray-10",
-                          ])}
-                        >
-                          {validator?.description.moniker ?? "..."}
-                        </Text>
-                        <Text
-                          style={style.flatten([
-                            "text-small-regular",
-                            "color-gray-10",
-                          ])}
-                        >
-                          {formatCoin(entry.balance)}
-                        </Text>
-                      </View>
-                    </View>
-                    <Text
-                      style={style.flatten([
-                        "text-base-medium",
-                        "color-gray-10",
-                      ])}
-                    >
-                      {remainingText}
-                    </Text>
-                  </View>
-                  <CardDivider
-                    style={style.flatten([
-                      "background-color-gray-70",
-                      "margin-x-0",
-                    ])}
-                  />
-                </View>
-              );
-            })}
-          </React.Fragment>
-        );
-      })}
-    </PageWithScrollView>
+            const relativeEndTime =
+              (new Date(entry.completionTime).getTime() - current) / 1000;
+
+            const remainingText = formatUnbondingTime(relativeEndTime, intl);
+
+            if (validatorAddress) {
+              return getSimpleItem(i, {
+                amount: formatCoin(entry.balance, false, 2),
+                time: remainingText,
+              });
+            }
+
+            return getItem(i, {
+              icon: thumbnail,
+              name: validator?.description.moniker ?? "...",
+              amount: formatCoin(entry.balance, false, 2),
+              time: remainingText,
+            });
+          })}
+        </React.Fragment>
+      );
+    });
+  };
+
+  const opacityAnim = useRef(new Animated.Value(0)).current;
+  const onScrollContent = useCallback((e) => {
+    opacityAnim.setValue(e.nativeEvent.contentOffset.y > 0 ? 255 : 0);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  return (
+    <View style={style.flatten(["background-color-background", "flex-grow-1"])}>
+      <AnimatedNavigationBar title={title} animOpacity={opacityAnim} />
+      <ScrollView
+        scrollEventThrottle={16}
+        contentContainerStyle={style.flatten(["flex-grow-1", "padding-x-16"])}
+        onScroll={onScrollContent}
+        stickyHeaderIndices={[2]}
+      >
+        <View style={style.flatten(["padding-16", "items-center"])}>
+          <Text
+            style={style.flatten(["color-label-text-2", "text-small-regular"])}
+          >
+            {title}
+          </Text>
+          <Text
+            style={style.flatten([
+              "color-label-text-1",
+              "text-3x-large-medium",
+            ])}
+          >
+            {formatCoin(balance, false, 2)}
+          </Text>
+        </View>
+        <View style={style.flatten(["background-color-background"])}>
+          <AlertInline
+            type="info"
+            content={intl.formatMessage(
+              { id: "staking.unbonding.noticeWithdrawalPeriod" },
+              { coin: balance.denom, days: unbondingTimeText }
+            )}
+          />
+          <Text
+            style={style.flatten([
+              "margin-y-8",
+              "color-label-text-2",
+              "text-center",
+              "text-small-regular",
+            ])}
+          >
+            {intl.formatMessage(
+              { id: "staking.unbonding.viewHistoryGuide" },
+              { coin: chainStore.current.stakeCurrency.coinDenom }
+            )}
+            <Text
+              style={style.flatten(["text-underline", "color-link-text"])}
+              onPress={() => {
+                smartNavigation.navigateSmart("Wallet.History", {
+                  isNavigated: true,
+                });
+              }}
+            >
+              {intl.formatMessage({ id: "staking.unbonding.history" })}
+            </Text>
+          </Text>
+        </View>
+        <View
+          style={style.flatten([
+            "height-32",
+            "margin-top-16",
+            "padding-y-8",
+            "background-color-background",
+            "border-width-bottom-1",
+            "border-color-card-separator",
+          ])}
+        >
+          <View
+            style={style.flatten(["flex-row", "justify-between", "height-16"])}
+          >
+            <Text
+              style={style.flatten(["color-label-text-2", "text-small-medium"])}
+            >
+              {validatorAddress
+                ? intl.formatMessage({ id: "staking.unbonding.amount" })
+                : intl.formatMessage({ id: "staking.unbonding.nameAndAmount" })}
+            </Text>
+            <Text
+              style={style.flatten(["color-label-text-2", "text-small-medium"])}
+            >
+              {intl.formatMessage({ id: "staking.unbonding.receiveAfter" })}
+            </Text>
+          </View>
+        </View>
+        {getUnbondingItems()}
+      </ScrollView>
+    </View>
   );
 });

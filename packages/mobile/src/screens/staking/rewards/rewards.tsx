@@ -64,7 +64,7 @@ export const RewardDetails: FunctionComponent<{
                 key={index}
                 thumbnail={thumbnail}
                 name={validatorName}
-                value={formatCoin(rewards)}
+                value={formatCoin(rewards, false, 4)}
                 containerStyle={style.flatten([
                   "margin-x-16",
                   "margin-bottom-8",
