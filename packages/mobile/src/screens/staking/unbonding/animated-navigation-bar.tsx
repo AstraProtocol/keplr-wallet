@@ -32,6 +32,8 @@ export const AnimatedNavigationBar: FunctionComponent<{
             "height-44",
             "justify-center",
             "items-center",
+            "border-width-bottom-1",
+            "border-color-card-separator",
           ]),
           marginTop: safeAreaInsets.top,
         }}
@@ -71,12 +73,7 @@ export const AnimatedNavigationBar: FunctionComponent<{
   return (
     <Card
       style={{
-        ...style.flatten([
-          "background-color-transparent",
-          "width-full",
-          "border-width-bottom-1",
-          "border-color-card-separator",
-        ]),
+        ...style.flatten(["background-color-transparent", "width-full"]),
         height: height,
       }}
     >

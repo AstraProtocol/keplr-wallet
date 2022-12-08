@@ -96,12 +96,12 @@ export const ValidatorDetailsScreen: FunctionComponent = observer(() => {
         <CommissionsCard
           showStake={!hasStake}
           containerStyle={style.flatten([
-            // "margin-y-card-gap",
             "background-color-transparent",
             "flex-1",
           ])}
           validatorAddress={validatorAddress}
         />
+        <View style={{ height: safeAreaInsets.bottom }} />
       </ScrollView>
       <ValidatorHeaderCard
         validatorAddress={validatorAddress}

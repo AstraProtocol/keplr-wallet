@@ -5,6 +5,7 @@ import React, { FunctionComponent, useCallback, useRef } from "react";
 import { useIntl } from "react-intl";
 import { Animated, Text, View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { formatCoin, formatUnbondingTime } from "../../../common/utils";
 import { AlertInline } from "../../../components";
 import { CardDivider } from "../../../components/card";
@@ -198,6 +199,8 @@ export const UnbondingScreen: FunctionComponent = observer(() => {
     });
   };
 
+  const safeAreaInsets = useSafeAreaInsets();
+
   const opacityAnim = useRef(new Animated.Value(0)).current;
   const onScrollContent = useCallback((e) => {
     opacityAnim.setValue(e.nativeEvent.contentOffset.y > 0 ? 255 : 0);
@@ -288,6 +291,9 @@ export const UnbondingScreen: FunctionComponent = observer(() => {
           </View>
         </View>
         {getUnbondingItems()}
+        <View
+          style={{ height: safeAreaInsets.top + safeAreaInsets.bottom + 44 }}
+        />
       </ScrollView>
     </View>
   );
