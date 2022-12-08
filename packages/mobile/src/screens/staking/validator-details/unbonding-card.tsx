@@ -100,7 +100,7 @@ export const UnbondingCard: FunctionComponent<{
                 <Text
                   style={style.flatten(["text-base-medium", "color-gray-10"])}
                 >
-                  {formatCoin(entry.balance)}
+                  {formatCoin(entry.balance, false, 2)}
                 </Text>
                 <Text
                   style={style.flatten(["text-base-medium", "color-gray-10"])}

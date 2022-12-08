@@ -49,7 +49,7 @@ export const CommissionsCard: FunctionComponent<{
       chainStore.current.stakeCurrency,
       new Dec(validator.tokens)
     );
-    totalStakingText = formatCoin(total);
+    totalStakingText = formatCoin(total, false, 0);
   }
 
   return (

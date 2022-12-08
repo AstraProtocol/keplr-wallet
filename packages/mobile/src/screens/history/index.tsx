@@ -19,7 +19,7 @@ import { useStyle } from "../../styles";
 import { observer } from "mobx-react-lite";
 
 import { ChainUpdaterService } from "@keplr-wallet/background";
-import { useFocusEffect } from "@react-navigation/native";
+import { RouteProp, useFocusEffect, useRoute } from "@react-navigation/native";
 import { FormattedMessage } from "react-intl";
 import { RectButton } from "react-native-gesture-handler";
 import { usePrevious } from "../../hooks";
@@ -38,6 +38,18 @@ export type PageRequestInfo = {
 };
 
 export const HistoryScreen: FunctionComponent = observer(() => {
+  const route = useRoute<
+    RouteProp<
+      Record<
+        string,
+        {
+          isNavigated?: boolean;
+        }
+      >,
+      string
+    >
+  >();
+
   const [refreshing, setRefreshing] = useState(false);
   const [loading, setLoading] = useState(false);
   const [pageInfo, setPageInfo] = useState({
@@ -242,7 +254,9 @@ export const HistoryScreen: FunctionComponent = observer(() => {
           </RectButton>
         )}
       />
-      <View style={style.flatten(["height-44"])} />
+      {route.params?.isNavigated !== true ? (
+        <View style={style.flatten(["height-44"])} />
+      ) : null}
       <SafeAreaView />
     </View>
   );

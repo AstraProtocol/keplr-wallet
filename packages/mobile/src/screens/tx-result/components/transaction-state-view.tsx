@@ -29,7 +29,7 @@ export const TransactionStateView: FunctionComponent<{
   }, [transactionStore.txState]);
 
   useEffect(() => {
-    setAmountText(formatCoin(transactionStore.txAmount));
+    setAmountText(formatCoin(transactionStore.txAmount, false, 2));
   }, [transactionStore.txAmount]);
 
   const isFailure = txState == "failure";

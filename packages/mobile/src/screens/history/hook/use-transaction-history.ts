@@ -60,14 +60,14 @@ export const useTransactionHistory = () => {
     };
   };
 
-  const formatAmount = (amount: { amount: string; denom: string }) => {
+  const formatAmount = (amount: { amount: string; denom: string }, hideDenom: boolean = false, maximumFractionDigits: number = 2) => {
     let amountText = "";
 
     let currency = chainStore.current.currencies.find(
       (cur) => cur.coinMinimalDenom === amount.denom
     );
     if (currency) {
-      amountText = formatCoin(new CoinPretty(currency, amount.amount));
+      amountText = formatCoin(new CoinPretty(currency, amount.amount), hideDenom, maximumFractionDigits);
     }
 
     return amountText;
@@ -243,7 +243,7 @@ export const useTransactionHistory = () => {
 
     return {
       action,
-      rightText: formatAmount(content.amount[0]),
+      rightText: formatAmount(content.amount[0], false, 4),
     };
   };
 

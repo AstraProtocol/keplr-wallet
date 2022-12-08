@@ -39,28 +39,6 @@ export class UserBalanceStore {
 
   getBalanceString(chainId?: string): string {
     const balance = this.getBalance(chainId);
-    return formatCoin(balance);
-  }
-
-  getRewards(chainId?: string): CoinPretty {
-    const selectedChainId = chainId ?? this.chainStore.current.chainId;
-
-    const account = this.accountStore.getAccount(selectedChainId);
-    const queries = this.queriesStore.get(selectedChainId);
-
-    const queryReward = queries.cosmos.queryRewards.getQueryBech32Address(
-      account.bech32Address
-    );
-
-    return queryReward.stakableReward;
-  }
-
-  getRewardsString(chainId?: string): string {
-    return this.getRewards(chainId)
-      .shrink(true)
-      .maxDecimals(6)
-      .trim(true)
-      .upperCase(true)
-      .toString();
+    return formatCoin(balance, false, 2);
   }
 }

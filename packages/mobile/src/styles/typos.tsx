@@ -111,6 +111,14 @@ const XXLargeTypos = {
   },
 };
 
+const XXXLargeTypos = {
+  "text-3x-large-medium": {
+    fontSize: 28,
+    lineHeight: 40,
+    ...getPlatformFontWeight("500"),
+  },
+};
+
 const XXXXLargeTypos = {
   "text-4x-large-semi-bold": {
     fontSize: 32,
@@ -127,5 +135,6 @@ export const Typos = {
   ...LargeTypos,
   ...XLargeTypos,
   ...XXLargeTypos,
+  ...XXXLargeTypos,
   ...XXXXLargeTypos,
 };

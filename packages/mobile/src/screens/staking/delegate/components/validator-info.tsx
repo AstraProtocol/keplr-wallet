@@ -96,7 +96,7 @@ export const ValidatorInfo: FunctionComponent<
               id: "validator.details.delegated.invested",
             }),
           }),
-          buildRightColumn({ text: formatCoin(staked) }),
+          buildRightColumn({ text: formatCoin(staked, false, 2) }),
         ],
       },
       {
@@ -108,7 +108,7 @@ export const ValidatorInfo: FunctionComponent<
             }),
           }),
           buildRightColumn({
-            text: "+" + formatCoin(rewards),
+            text: "+" + formatCoin(rewards, false, 4),
             textColor: styleBuilder.get("color-rewards-text").color,
           }),
         ],

@@ -15,8 +15,7 @@ import { PropertyView, PropertyViewIconType } from "../component/property";
 export const DelegatedCard: FunctionComponent<{
   containerStyle?: ViewStyle;
   validatorAddress: string;
-  followHandler?: () => void;
-}> = observer(({ containerStyle, validatorAddress, followHandler }) => {
+}> = observer(({ containerStyle, validatorAddress }) => {
   const { chainStore, queriesStore, accountStore } = useStore();
 
   const account = accountStore.getAccount(chainStore.current.chainId);
@@ -176,9 +175,9 @@ export const DelegatedCard: FunctionComponent<{
                   "margin-top-2",
                 ])}
                 onPress={() => {
-                  if (followHandler) {
-                    followHandler();
-                  }
+                  smartNavigation.navigateSmart("Unbonding", {
+                    validatorAddress,
+                  });
                 }}
               >
                 {intl.formatMessage({

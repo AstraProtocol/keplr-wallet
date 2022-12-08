@@ -106,7 +106,7 @@ export const StakingRewardScreen: FunctionComponent = () => {
   );
   sendConfigs.gasConfig.setGas(gasLimit);
   sendConfigs.feeConfig.setFeeType(feeType);
-  const feeText = formatCoin(sendConfigs.feeConfig.fee);
+  const feeText = formatCoin(sendConfigs.feeConfig.fee, false, 4);
 
   const withdrawAllRewards = async () => {
     const params = {
@@ -193,7 +193,7 @@ export const StakingRewardScreen: FunctionComponent = () => {
           "margin-bottom-24",
         ])}
       >
-        {formatCoin(stakingReward)}
+        {formatCoin(stakingReward, false, 4)}
       </Text>
       <View
         style={style.flatten([
