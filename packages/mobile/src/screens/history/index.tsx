@@ -181,15 +181,9 @@ export const HistoryScreen: FunctionComponent = observer(() => {
   };
 
   return (
-    <View
-      style={style.flatten([
-        "padding-x-page",
-        "flex-grow-1",
-        "background-color-background",
-      ])}
-    >
+    <View style={style.flatten(["flex-grow-1", "background-color-background"])}>
       <FlatList
-        style={style.flatten(["flex-1"])}
+        style={style.flatten(["flex-1", "padding-x-page"])}
         data={histories}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={refreshHandler} />
@@ -209,7 +203,10 @@ export const HistoryScreen: FunctionComponent = observer(() => {
         }
         ItemSeparatorComponent={() => (
           <View
-            style={style.flatten(["height-1", "background-color-gray-70"])}
+            style={style.flatten([
+              "height-1",
+              "background-color-card-separator",
+            ])}
           />
         )}
         ListFooterComponent={
