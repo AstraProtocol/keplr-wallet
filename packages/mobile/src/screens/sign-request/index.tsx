@@ -92,34 +92,49 @@ export const TransactionSignRequestView: FunctionComponent<{
             )}
           </View>
         </View>
-        <Text style={style.flatten(["color-gray-10", "text-center", "h5"])}>
+        <Text style={style.flatten(["color-gray-10", "text-center", "h4"])}>
           {intl.formatMessage(
             { id: "walletconnect.text.verify" },
             { name: source }
           )}
         </Text>
-        <Text
+        <View
           style={style.flatten([
-            "color-gray-30",
-            "text-center",
-            "body3",
             "margin-top-8",
-            "margin-right-4",
+            "flex-row",
+            "height-24",
+            "justify-center",
+            "items-center",
           ])}
         >
-          {sourceUrl}
-          <Text
+          <Text style={style.flatten(["color-gray-30", "body3"])}>
+            {sourceUrl}
+          </Text>
+          <View
             style={style.flatten([
-              "color-gray-10",
-              "text-center",
-              "body3",
-              "background-color-blue-60",
+              "height-24",
+              "margin-left-6",
+              "padding-x-6",
               "border-radius-22",
+              "border-width-1",
+              "border-color-blue-60",
+              "background-color-alert-inline-info-background",
+              "items-center",
+              "justify-center",
             ])}
           >
-            {chainStore.current.chainName}
-          </Text>
-        </Text>
+            <Text
+              style={style.flatten([
+                "color-gray-10",
+                "text-center",
+                "text-caption2",
+              ])}
+            >
+              {chainStore.current.chainName}
+            </Text>
+          </View>
+        </View>
+
         <TouchableOpacity
           onPress={() => {
             setIsOpen(!isOpen);
@@ -174,14 +189,7 @@ export const TransactionSignRequestView: FunctionComponent<{
         <CardDivider
           style={style.flatten(["background-color-gray-70", "margin-0"])}
         />
-        <View
-          style={style.flatten([
-            "flex-row",
-            "justify-center",
-            "padding-16",
-            "items-center",
-          ])}
-        >
+        <View style={style.flatten(["flex-row", "padding-16", "items-center"])}>
           <Button
             containerStyle={style.flatten(["margin-right-12", "flex-1"])}
             color="neutral"
