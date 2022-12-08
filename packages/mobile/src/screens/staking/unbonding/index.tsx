@@ -81,27 +81,28 @@ export const UnbondingScreen: FunctionComponent = observer(() => {
         </Text>
       </View>
       <View
-        style={style.flatten(["margin-top-16", "background-color-background"])}
+        style={style.flatten([
+          "height-32",
+          "margin-top-16",
+          "padding-y-8",
+          "border-width-bottom-1",
+          "border-color-card-border",
+        ])}
       >
         <View
-          style={style.flatten([
-            "margin-top-16",
-            "flex-row",
-            "justify-between",
-            "items-center",
-            "margin-bottom-4",
-          ])}
+          style={style.flatten(["flex-row", "justify-between", "height-16"])}
         >
-          <Text style={style.flatten(["color-gray-30", "body3"])}>
+          <Text
+            style={style.flatten(["color-label-text-2", "text-small-medium"])}
+          >
             {intl.formatMessage({ id: "staking.unbonding.nameAndAmount" })}
           </Text>
-          <Text style={style.flatten(["color-gray-30", "body3"])}>
+          <Text
+            style={style.flatten(["color-label-text-2", "text-small-medium"])}
+          >
             {intl.formatMessage({ id: "staking.unbonding.receiveAfter" })}
           </Text>
         </View>
-        <CardDivider
-          style={style.flatten(["background-color-gray-70", "margin-x-0"])}
-        />
       </View>
       {unbondings.map((unbonding, unbondingIndex) => {
         const validator = queryValidators.validators.find(
