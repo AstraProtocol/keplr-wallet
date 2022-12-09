@@ -7,12 +7,21 @@ import { CollapseIcon, ExpandIcon, Button } from "../../components";
 import { CardDivider } from "../../components/card";
 import { useStore } from "../../stores";
 import { useStyle } from "../../styles";
+import { TabView, SceneMap, TabBar } from "react-native-tab-view";
+import { DetailsDataCard, RawDataCard } from "./components";
+import { Msg as AminoMsg } from "@cosmjs/launchpad";
 
 export const TransactionSignRequestView: FunctionComponent<{
   onApprove: (name?: string) => void;
   onReject: (name?: string, isWC?: boolean) => void;
 }> = ({ onApprove, onReject }) => {
-  const { signInteractionStore, signClientStore, chainStore } = useStore();
+  const {
+    signInteractionStore,
+    signClientStore,
+    chainStore,
+    accountStore,
+    queriesStore,
+  } = useStore();
 
   const [isWC, setIsWC] = useState(false);
 
@@ -34,7 +43,6 @@ export const TransactionSignRequestView: FunctionComponent<{
 
   const data = waitingData?.data;
 
-  const [isOpen, setIsOpen] = useState(false);
   const style = useStyle();
 
   const signDocWrapper = signInteractionStore.waitingData?.data.signDocWrapper;
@@ -44,13 +52,54 @@ export const TransactionSignRequestView: FunctionComponent<{
       ? signDocWrapper.aminoSignDoc.msgs
       : signDocWrapper.protoSignDoc.txMsgs
     : [];
-  console.log("__DEBUG__ mode:", mode, " msgs:", msgs);
 
-  const messsages = JSON.stringify(msgs, null, 2);
   const source = isWC ? session?.peer.metadata.name : data?.msgOrigin;
   const sourceUrl = isWC ? session?.peer.metadata.url : data?.msgOrigin;
 
   const intl = useIntl();
+
+  const [index, setIndex] = useState(0);
+  const [routes] = useState([
+    {
+      key: "first",
+      title: "Tóm tắt",
+    },
+    {
+      key: "second",
+      title: "Dữ liệu",
+    },
+  ]);
+
+  const FirstRoute = () => (
+    <DetailsDataCard
+      containerStyle={style.flatten([
+        "margin-y-card-gap",
+        "background-color-transparent",
+        "flex-1",
+      ])}
+      msgs={msgs as AminoMsg[]}
+      accountStore={accountStore}
+      chainStore={chainStore}
+      queriesStore={queriesStore}
+    />
+  );
+
+  const SecondRoute = () => (
+    <RawDataCard
+      containerStyle={style.flatten([
+        "margin-y-card-gap",
+        "background-color-transparent",
+        "flex-1",
+      ])}
+      msgs={msgs as AminoMsg[]}
+    />
+  );
+
+  const renderScene = SceneMap({
+    first: FirstRoute,
+    second: SecondRoute,
+  });
+
   return (
     <React.Fragment>
       <View style={style.flatten(["padding-x-16", "flex", "margin-top-20"])}>
@@ -134,57 +183,41 @@ export const TransactionSignRequestView: FunctionComponent<{
             </Text>
           </View>
         </View>
-
-        <TouchableOpacity
-          onPress={() => {
-            setIsOpen(!isOpen);
-          }}
-          style={style.flatten([
-            "flex-row",
-            "justify-center",
-            "items-center",
-            "margin-16",
-          ])}
-        >
-          <Text style={style.flatten(["color-primary", "text-base-medium"])}>
-            <FormattedMessage
-              id={
-                isOpen
-                  ? "walletconnect.action.hide"
-                  : "walletconnect.action.show"
-              }
-            />
-          </Text>
-          {isOpen ? (
-            <CollapseIcon size={20} color={style.get("color-primary").color} />
-          ) : (
-            <ExpandIcon size={20} color={style.get("color-primary").color} />
-          )}
-        </TouchableOpacity>
       </View>
-      {isOpen ? (
-        <View
-          style={style.flatten([
-            "flex",
-            "border-radius-16",
-            "border-color-card-border",
-            "background-color-card-background",
-            "border-width-1",
-            "margin-x-16",
-            "padding-16",
-            "max-height-276",
-          ])}
-        >
-          <ScrollView style={style.flatten(["flex-0"])}>
-            <Text style={style.flatten(["color-gray-10", "body3", "flex-0"])}>
-              {messsages}
-            </Text>
-          </ScrollView>
-        </View>
-      ) : (
-        <View style={style.flatten(["flex-1"])} />
-      )}
-      <View style={style.flatten(["flex-7"])} />
+      <TabView
+        lazy
+        renderLazyPlaceholder={() => <Text>empyt</Text>}
+        style={style.flatten(["margin-top-16", "height-600"])}
+        navigationState={{ index, routes }}
+        renderScene={renderScene}
+        onIndexChange={setIndex}
+        renderTabBar={(props) => (
+          <TabBar
+            {...props}
+            indicatorStyle={style.get("background-color-tab-icon-active")}
+            //   scrollEnabled={true}
+            style={style.flatten([
+              "background-color-transparent",
+              "border-width-bottom-1",
+              "border-color-border",
+            ])}
+            renderLabel={({ route, focused }) => (
+              <Text
+                style={style.flatten(
+                  ["text-base-regular", "color-tab-icon-inactive"],
+                  [
+                    focused && "text-base-semi-bold",
+                    focused && "color-tab-icon-active",
+                  ]
+                )}
+              >
+                {` ${route.title} ` /* add space to avoid text is truncated */}
+              </Text>
+            )}
+          />
+        )}
+      />
+      {/* <View style={style.flatten(["flex-7"])} /> */}
       <View style={style.flatten(["margin-bottom-0", "margin-x-0", "flex"])}>
         <CardDivider
           style={style.flatten(["background-color-gray-70", "margin-0"])}
