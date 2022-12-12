@@ -1,4 +1,3 @@
-
 import * as SplashScreen from "expo-splash-screen";
 
 let splashScreenHided = false;
@@ -7,7 +6,7 @@ export async function preventAutoHideAsync() {
   return SplashScreen.preventAutoHideAsync()
     .then((result) => {
       splashScreenHided = false;
-      console.log(`SplashScreen.preventAutoHideAsync() succeeded: ${result}`)
+      console.log(`SplashScreen.preventAutoHideAsync() succeeded: ${result}`);
     })
     .catch(console.warn);
 }
