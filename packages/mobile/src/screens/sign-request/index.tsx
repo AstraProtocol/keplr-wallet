@@ -3,13 +3,14 @@ import { View, Image, Text } from "react-native";
 import { ScrollView, TouchableOpacity } from "react-native-gesture-handler";
 import { FormattedMessage, useIntl } from "react-intl";
 import FastImage from "react-native-fast-image";
-import { CollapseIcon, ExpandIcon, Button } from "../../components";
+import { Button } from "../../components";
 import { CardDivider } from "../../components/card";
 import { useStore } from "../../stores";
 import { useStyle } from "../../styles";
 import { TabView, SceneMap, TabBar } from "react-native-tab-view";
 import { DetailsDataCard, RawDataCard } from "./components";
 import { Msg as AminoMsg } from "@cosmjs/launchpad";
+import { GrantMsgsObj } from "./models";
 
 export const TransactionSignRequestView: FunctionComponent<{
   onApprove: (name?: string) => void;

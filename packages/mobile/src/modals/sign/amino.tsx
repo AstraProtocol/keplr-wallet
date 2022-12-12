@@ -45,6 +45,7 @@ export function renderAminoMessage(
   content: React.ReactElement;
   scrollViewHorizontal?: boolean;
 } {
+  console.log("__DEBUG__", msg.type);
   if (msg.type === msgOpts.cosmos.msgOpts.send.native.type) {
     const value = msg.value as MsgSend["value"];
     return renderMsgSend(currencies, value.amount, value.to_address);

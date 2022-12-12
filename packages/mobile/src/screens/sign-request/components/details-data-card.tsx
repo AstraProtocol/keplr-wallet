@@ -10,7 +10,7 @@ import {
   MsgWithdrawDelegatorReward,
 } from "@cosmjs/launchpad";
 import { Card, CardBody } from "../../../components/card";
-import { MsgObj } from "../models";
+import { GrantMsgObj, MsgObj } from "../models";
 import { useStyle } from "../../../styles";
 
 import {
@@ -33,16 +33,20 @@ import { AppCurrency } from "@keplr-wallet/types";
 import { ChainStore } from "../../../stores/chain";
 import {
   MsgTransfer,
-  renderMsgBeginRedelegate,
-  renderMsgDelegate,
   renderMsgExecuteContract,
   renderMsgSend,
   renderMsgTransfer,
-  renderMsgUndelegate,
   renderMsgVote,
   renderMsgWithdrawDelegatorReward,
 } from "../../../modals/sign/messages";
-import { renderDelegateMsg, renderRawDataMessage } from "./messages";
+import {
+  renderBeginRedelegateMsg,
+  renderDelegateMsg,
+  renderGrantMsg,
+  renderRawDataMessage,
+  renderUnDelegateMsg,
+  renderWithdrawDelegatorRewardMsg,
+} from "./messages";
 import { KeplrETCQueries } from "@keplr-wallet/stores-etc";
 
 export const DetailsDataCard: FunctionComponent<{
@@ -58,35 +62,21 @@ export const DetailsDataCard: FunctionComponent<{
   >;
 }> = observer(
   ({ containerStyle, msgs, accountStore, chainStore, queriesStore }) => {
-    const style = useStyle();
     const renderedMsgs = (() => {
-      return (msgs as readonly AminoMsg[]).map((msg, i) => {
+      return msgs.map((msg, i) => {
         const chainId = chainStore.current.chainId;
         const account = accountStore.getAccount(chainId);
         const chainInfo = chainStore.getChain(chainId);
-        
         const { content } = renderMessage(
           account,
           msg,
           chainInfo.currencies,
           queriesStore,
-          chainId
+          chainId,
+          account.bech32Address
         );
 
-        return (
-          <CardBody key={i.toString()}>
-            {content}
-            {msgs.length - 1 !== i ? (
-              <View
-                style={style.flatten([
-                  "height-1",
-                  "background-color-border-white",
-                  "margin-x-16",
-                ])}
-              />
-            ) : null}
-          </CardBody>
-        );
+        return <CardBody key={i.toString()}>{content}</CardBody>;
       });
     })();
 
@@ -106,65 +96,103 @@ export function renderMessage(
       readonly msgOpts: SecretMsgOpts;
     };
   },
-  msg: MsgObj,
+  unknownMsg: any,
   currencies: AppCurrency[],
   queriesStore: QueriesStore<
     [CosmosQueries, CosmwasmQueries, SecretQueries, KeplrETCQueries]
   >,
-  chainId: string
+  chainId: string,
+  bech32Address: string
 ): {
   title: string;
   content: React.ReactElement;
   scrollViewHorizontal?: boolean;
 } {
-  if (msg.type === msgOpts.cosmos.msgOpts.ibcTransfer.type) {
-    const value = msg.value as MsgTransfer["value"];
-    return renderMsgTransfer(
-      currencies,
-      value.token,
-      value.receiver,
-      value.source_channel
-    );
+  if ("type" in unknownMsg) {
+    const msg = unknownMsg as MsgObj;
+    if (msg.type === msgOpts.cosmos.msgOpts.ibcTransfer.type) {
+      const value = msg.value as MsgTransfer["value"];
+      return renderMsgTransfer(
+        currencies,
+        value.token,
+        value.receiver,
+        value.source_channel
+      );
+    }
+
+    if (msg.type === msgOpts.cosmos.msgOpts.redelegate.type) {
+      const value = msg.value as MsgBeginRedelegate["value"];
+      const queries = queriesStore.get(chainId);
+      const queryValidators = queries.cosmos.queryValidators.getQueryStatus(
+        Staking.BondStatus.Unspecified
+      );
+      const srcValidator = queryValidators.getValidator(
+        value.validator_src_address
+      );
+      const dstValidator = queryValidators.getValidator(
+        value.validator_dst_address
+      );
+      return renderBeginRedelegateMsg(
+        currencies,
+        value.amount,
+        srcValidator?.description.moniker ?? value.validator_src_address,
+        dstValidator?.description.moniker ?? value.validator_dst_address
+      );
+    }
+
+    if (msg.type === msgOpts.cosmos.msgOpts.undelegate.type) {
+      const value = msg.value as MsgUndelegate["value"];
+      const queries = queriesStore.get(chainId);
+      const queryValidators = queries.cosmos.queryValidators.getQueryStatus(
+        Staking.BondStatus.Unspecified
+      );
+      const validator = queryValidators.getValidator(value.validator_address);
+      return renderUnDelegateMsg(
+        currencies,
+        value.amount,
+        validator?.description.moniker ?? value.validator_address
+      );
+    }
+
+    if (msg.type === msgOpts.cosmos.msgOpts.delegate.type) {
+      const value = msg.value as MsgDelegate["value"];
+      const queries = queriesStore.get(chainId);
+      const queryValidators = queries.cosmos.queryValidators.getQueryStatus(
+        Staking.BondStatus.Unspecified
+      );
+      const validator = queryValidators.getValidator(value.validator_address);
+
+      return renderDelegateMsg(
+        currencies,
+        value.amount,
+        validator?.description.moniker ?? value.validator_address
+      );
+    }
+
+    if (msg.type === msgOpts.cosmos.msgOpts.withdrawRewards.type) {
+      const value = msg.value as MsgWithdrawDelegatorReward["value"];
+      const queries = queriesStore.get(chainId);
+      const queryValidators = queries.cosmos.queryValidators.getQueryStatus(
+        Staking.BondStatus.Unspecified
+      );
+      const queryReward = queries.cosmos.queryRewards.getQueryBech32Address(
+        bech32Address
+      );
+      const rewards = queryReward.getStakableRewardOf(value.validator_address);
+      const validator = queryValidators.getValidator(value.validator_address);
+
+      return renderWithdrawDelegatorRewardMsg(
+        rewards,
+        validator?.description.moniker ?? value.validator_address
+      );
+    }
+  } else if ("grantee" in unknownMsg) {
+    const grantMsg = unknownMsg as GrantMsgObj;
+    if (grantMsg.grantee) {
+      console.log("__DEBUG__", grantMsg.grantee, grantMsg.msgs);
+      return renderGrantMsg(grantMsg.msgs);
+    }
   }
 
-  if (msg.type === msgOpts.cosmos.msgOpts.redelegate.type) {
-    const value = msg.value as MsgBeginRedelegate["value"];
-    return renderMsgBeginRedelegate(
-      currencies,
-      value.amount,
-      value.validator_src_address,
-      value.validator_dst_address
-    );
-  }
-
-  if (msg.type === msgOpts.cosmos.msgOpts.undelegate.type) {
-    const value = msg.value as MsgUndelegate["value"];
-    return renderMsgUndelegate(
-      currencies,
-      value.amount,
-      value.validator_address
-    );
-  }
-
-  if (msg.type === msgOpts.cosmos.msgOpts.delegate.type) {
-    const value = msg.value as MsgDelegate["value"];
-    const queries = queriesStore.get(chainId);
-    const queryValidators = queries.cosmos.queryValidators.getQueryStatus(
-      Staking.BondStatus.Unspecified
-    );
-    const validator = queryValidators.getValidator(value.validator_address);
-
-    return renderDelegateMsg(
-      currencies,
-      value.amount,
-      validator?.description.moniker ?? value.validator_address
-    );
-  }
-
-  if (msg.type === msgOpts.cosmos.msgOpts.withdrawRewards.type) {
-    const value = msg.value as MsgWithdrawDelegatorReward["value"];
-    return renderMsgWithdrawDelegatorReward(value.validator_address);
-  }
-
-  return renderRawDataMessage(msg);
+  return renderRawDataMessage(unknownMsg);
 }

@@ -14,21 +14,7 @@ export const RawDataCard: FunctionComponent<{
   const renderedMsgs = (() => {
     return (msgs as readonly AminoMsg[]).map((msg, i) => {
       const { content } = renderRawDataMessage(msg);
-
-      return (
-        <CardBody key={i.toString()}>
-          {content}
-          {msgs.length - 1 !== i ? (
-            <View
-              style={style.flatten([
-                "height-1",
-                "background-color-border-white",
-                "margin-x-16",
-              ])}
-            />
-          ) : null}
-        </CardBody>
-      );
+      return <CardBody key={i.toString()}>{content}</CardBody>;
     });
   })();
 
