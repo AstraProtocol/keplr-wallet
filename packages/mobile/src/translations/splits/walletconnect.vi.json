@@ -10,7 +10,7 @@
   "walletconnect.empty.description": "Bạn chưa có ứng dụng liên kết nào",
   "walletconnect.rejected": "Đã từ chối giao dịch từ {name}",
   "walletconnect.text.connect": "Liên kết {name} với Astra Wallet?",
-  "walletconnect.text.verify": "Xác nhận giao dịch từ {name}",
+  "walletconnect.text.verify": "Xác nhận giao dịch {type} từ {name}",
   "walletconnect.verified": "Đã xác nhận giao dịch từ {name}",
   "walletconnect.permission": "{name} sẽ có quyền",
   "walletconnect.permission.showBalance": "Xem số dư và hoạt động trong ví của bạn",

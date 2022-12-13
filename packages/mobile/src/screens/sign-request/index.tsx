@@ -10,7 +10,7 @@ import { useStyle } from "../../styles";
 import { TabView, SceneMap, TabBar } from "react-native-tab-view";
 import { DetailsDataCard, RawDataCard } from "./components";
 import { Msg as AminoMsg } from "@cosmjs/launchpad";
-import { GrantMsgsObj } from "./models";
+import { getType } from "./helper";
 
 export const TransactionSignRequestView: FunctionComponent<{
   onApprove: (name?: string) => void;
@@ -53,7 +53,7 @@ export const TransactionSignRequestView: FunctionComponent<{
       ? signDocWrapper.aminoSignDoc.msgs
       : signDocWrapper.protoSignDoc.txMsgs
     : [];
-
+  const type = getType(msgs as any[]);
   const source = isWC ? session?.peer.metadata.name : data?.msgOrigin;
   const sourceUrl = isWC ? session?.peer.metadata.url : data?.msgOrigin;
 
@@ -145,7 +145,7 @@ export const TransactionSignRequestView: FunctionComponent<{
         <Text style={style.flatten(["color-gray-10", "text-center", "h4"])}>
           {intl.formatMessage(
             { id: "walletconnect.text.verify" },
-            { name: source }
+            { name: source, type: type }
           )}
         </Text>
         <View

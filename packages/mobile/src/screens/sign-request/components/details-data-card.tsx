@@ -110,15 +110,15 @@ export function renderMessage(
 } {
   if ("type" in unknownMsg) {
     const msg = unknownMsg as MsgObj;
-    if (msg.type === msgOpts.cosmos.msgOpts.ibcTransfer.type) {
-      const value = msg.value as MsgTransfer["value"];
-      return renderMsgTransfer(
-        currencies,
-        value.token,
-        value.receiver,
-        value.source_channel
-      );
-    }
+    // if (msg.type === msgOpts.cosmos.msgOpts.ibcTransfer.type) {
+    //   const value = msg.value as MsgTransfer["value"];
+    //   return renderMsgTransfer(
+    //     currencies,
+    //     value.token,
+    //     value.receiver,
+    //     value.source_channel
+    //   );
+    // }
 
     if (msg.type === msgOpts.cosmos.msgOpts.redelegate.type) {
       const value = msg.value as MsgBeginRedelegate["value"];
