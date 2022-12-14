@@ -10,7 +10,7 @@ import { useStyle } from "../../styles";
 import { TabView, SceneMap, TabBar } from "react-native-tab-view";
 import { DetailsDataCard, RawDataCard } from "./components";
 import { Msg as AminoMsg } from "@cosmjs/launchpad";
-import { getType } from "./helper";
+import { getType, SignMsgType } from "./helper";
 
 export const TransactionSignRequestView: FunctionComponent<{
   onApprove: (name?: string) => void;
@@ -185,39 +185,53 @@ export const TransactionSignRequestView: FunctionComponent<{
           </View>
         </View>
       </View>
-      <TabView
-        lazy
-        renderLazyPlaceholder={() => <Text>empyt</Text>}
-        style={style.flatten(["margin-top-16", "height-600"])}
-        navigationState={{ index, routes }}
-        renderScene={renderScene}
-        onIndexChange={setIndex}
-        renderTabBar={(props) => (
-          <TabBar
-            {...props}
-            indicatorStyle={style.get("background-color-tab-icon-active")}
-            //   scrollEnabled={true}
-            style={style.flatten([
-              "background-color-transparent",
-              "border-width-bottom-1",
-              "border-color-border",
-            ])}
-            renderLabel={({ route, focused }) => (
-              <Text
-                style={style.flatten(
-                  ["text-base-regular", "color-tab-icon-inactive"],
-                  [
-                    focused && "text-base-semi-bold",
-                    focused && "color-tab-icon-active",
-                  ]
-                )}
-              >
-                {` ${route.title} ` /* add space to avoid text is truncated */}
-              </Text>
-            )}
-          />
-        )}
-      />
+      {type === SignMsgType.Unknown ? (
+        <RawDataCard
+          containerStyle={style.flatten([
+            "margin-y-card-gap",
+            "background-color-transparent",
+            "flex-1",
+          ])}
+          msgs={msgs as AminoMsg[]}
+        />
+      ) : (
+        <TabView
+          lazy
+          renderLazyPlaceholder={() => <Text>empyt</Text>}
+          style={style.flatten(["margin-top-16", "height-600"])}
+          navigationState={{ index, routes }}
+          renderScene={renderScene}
+          onIndexChange={setIndex}
+          renderTabBar={(props) => (
+            <TabBar
+              {...props}
+              indicatorStyle={style.get("background-color-tab-icon-active")}
+              //   scrollEnabled={true}
+              style={style.flatten([
+                "background-color-transparent",
+                "border-width-bottom-1",
+                "border-color-border",
+              ])}
+              renderLabel={({ route, focused }) => (
+                <Text
+                  style={style.flatten(
+                    ["text-base-regular", "color-tab-icon-inactive"],
+                    [
+                      focused && "text-base-semi-bold",
+                      focused && "color-tab-icon-active",
+                    ]
+                  )}
+                >
+                  {
+                    ` ${route.title} ` /* add space to avoid text is truncated */
+                  }
+                </Text>
+              )}
+            />
+          )}
+        />
+      )}
+
       {/* <View style={style.flatten(["flex-7"])} /> */}
       <View style={style.flatten(["margin-bottom-0", "margin-x-0", "flex"])}>
         <CardDivider

@@ -22,6 +22,7 @@ import {
   TextAlign,
 } from "../../../components";
 import { CardBody, CardDivider } from "../../../components/card";
+import { typeOf } from "../helper";
 
 const h = new Hypher(english);
 
@@ -31,7 +32,9 @@ function hyphen(text: string): string {
 }
 
 export function renderRawDataMessage(
-  msg: MsgObj
+  msg: any,
+  showHeader: boolean,
+  index: number
 ): {
   title: string;
   content: React.ReactElement;
@@ -39,14 +42,20 @@ export function renderRawDataMessage(
 } {
   return {
     title: "Custom",
-    content: <RawMsgView msg={msg} />,
+    content: <RawMsgView msg={msg} showHeader={showHeader} index={index} />,
     scrollViewHorizontal: true,
   };
 }
 
 // eslint-disable-next-line @typescript-eslint/ban-types
-export const RawMsgView: FunctionComponent<{ msg: object }> = ({ msg }) => {
+export const RawMsgView: FunctionComponent<{
+  msg: any;
+  showHeader: boolean;
+  index: number;
+}> = ({ msg, showHeader, index }) => {
   const style = useStyle();
+  const type = typeOf(msg);
+  const [isOpen, setIsOpen] = useState(false);
 
   const prettyMsg = useMemo(() => {
     try {
@@ -56,6 +65,61 @@ export const RawMsgView: FunctionComponent<{ msg: object }> = ({ msg }) => {
       return "Failed to decode the msg";
     }
   }, [msg]);
+
+  if (showHeader) {
+    return (
+      <View
+        style={style.flatten([
+          "padding-16",
+          "background-color-gray-90",
+          "border-radius-12",
+          "margin-bottom-16",
+        ])}
+      >
+        <View style={style.flatten(["flex-row", "justify-around"])}>
+          <Text
+            style={style.flatten([
+              "text-base-medium",
+              "color-gray-10",
+              "margin-right-16",
+              "flex-1",
+            ])}
+          >
+            {type}
+          </Text>
+          <TouchableOpacity
+            style={style.flatten(["width-24", "height-24"])}
+            onPress={() => {
+              setIsOpen(!isOpen);
+            }}
+          >
+            {isOpen ? (
+              <CollapseIcon
+                color={style.get("color-gray-30").color}
+                size={24}
+              />
+            ) : (
+              <ExpandIcon color={style.get("color-gray-30").color} size={24} />
+            )}
+          </TouchableOpacity>
+        </View>
+        {isOpen ? (
+          <React.Fragment>
+            <CardDivider
+              style={style.flatten([
+                "margin-0",
+                "margin-y-12",
+                "background-color-gray-80",
+              ])}
+            />
+            <Text style={style.flatten(["text-base-regular", "color-gray-10"])}>
+              {prettyMsg}
+            </Text>
+          </React.Fragment>
+        ) : null}
+      </View>
+    );
+  }
 
   return (
     <View
@@ -281,13 +345,7 @@ export const RevokeMsgView: FunctionComponent<{
         "margin-bottom-16",
       ])}
     >
-      <View
-        style={style.flatten([
-          "flex-row",
-          "justify-around",
-          "margin-bottom-12",
-        ])}
-      >
+      <View style={style.flatten(["flex-row", "justify-around"])}>
         <Text
           style={style.flatten([
             "text-base-medium",
@@ -314,7 +372,11 @@ export const RevokeMsgView: FunctionComponent<{
       {isOpen ? (
         <React.Fragment>
           <CardDivider
-            style={style.flatten(["margin-0", "background-color-gray-80"])}
+            style={style.flatten([
+              "margin-0",
+              "margin-top-12",
+              "background-color-gray-80",
+            ])}
           />
           <ItemRow
             style={{
@@ -357,13 +419,7 @@ export const GrantMsgView: FunctionComponent<{
         "margin-bottom-16",
       ])}
     >
-      <View
-        style={style.flatten([
-          "flex-row",
-          "justify-around",
-          "margin-bottom-12",
-        ])}
-      >
+      <View style={style.flatten(["flex-row", "justify-around"])}>
         <Text
           style={style.flatten([
             "text-base-medium",
@@ -390,7 +446,11 @@ export const GrantMsgView: FunctionComponent<{
       {isOpen ? (
         <React.Fragment>
           <CardDivider
-            style={style.flatten(["margin-0", "background-color-gray-80"])}
+            style={style.flatten([
+              "margin-0",
+              "margin-top-12",
+              "background-color-gray-80",
+            ])}
           />
           <ItemRow
             style={{
@@ -433,13 +493,7 @@ export const ReDelegateMsgView: FunctionComponent<{
         "border-radius-12",
       ])}
     >
-      <View
-        style={style.flatten([
-          "flex-row",
-          "justify-around",
-          "margin-bottom-12",
-        ])}
-      >
+      <View style={style.flatten(["flex-row", "justify-around"])}>
         <Text
           style={style.flatten([
             "text-base-medium",
@@ -466,7 +520,11 @@ export const ReDelegateMsgView: FunctionComponent<{
       {isOpen ? (
         <React.Fragment>
           <CardDivider
-            style={style.flatten(["margin-0", "background-color-gray-80"])}
+            style={style.flatten([
+              "margin-0",
+              "margin-top-12",
+              "background-color-gray-80",
+            ])}
           />
           <ItemRow
             style={{

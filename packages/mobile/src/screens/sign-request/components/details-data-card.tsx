@@ -1,17 +1,15 @@
 import { observer } from "mobx-react-lite";
 import React, { FunctionComponent } from "react";
-import { ScrollView, View, ViewStyle } from "react-native";
+import { ViewStyle } from "react-native";
 import {
   Msg as AminoMsg,
   MsgBeginRedelegate,
   MsgDelegate,
-  MsgSend,
   MsgUndelegate,
   MsgWithdrawDelegatorReward,
 } from "@cosmjs/launchpad";
 import { Card, CardBody } from "../../../components/card";
 import { GrantMsgObj, MsgObj } from "../models";
-import { useStyle } from "../../../styles";
 
 import {
   AccountSetBaseSuper,
@@ -32,14 +30,6 @@ import { AppCurrency } from "@keplr-wallet/types";
 
 import { ChainStore } from "../../../stores/chain";
 import {
-  MsgTransfer,
-  renderMsgExecuteContract,
-  renderMsgSend,
-  renderMsgTransfer,
-  renderMsgVote,
-  renderMsgWithdrawDelegatorReward,
-} from "../../../modals/sign/messages";
-import {
   renderBeginRedelegateMsg,
   renderDelegateMsg,
   renderGrantMsg,
@@ -48,6 +38,7 @@ import {
   renderWithdrawDelegatorRewardMsg,
 } from "./messages";
 import { KeplrETCQueries } from "@keplr-wallet/stores-etc";
+import { useStyle } from "../../../styles";
 
 export const DetailsDataCard: FunctionComponent<{
   containerStyle?: ViewStyle;
@@ -62,6 +53,7 @@ export const DetailsDataCard: FunctionComponent<{
   >;
 }> = observer(
   ({ containerStyle, msgs, accountStore, chainStore, queriesStore }) => {
+    const style = useStyle();
     const renderedMsgs = (() => {
       return msgs.map((msg, i) => {
         const chainId = chainStore.current.chainId;
@@ -73,10 +65,15 @@ export const DetailsDataCard: FunctionComponent<{
           chainInfo.currencies,
           queriesStore,
           chainId,
-          account.bech32Address
+          account.bech32Address,
+          i
         );
 
-        return <CardBody key={i.toString()}>{content}</CardBody>;
+        return (
+          <CardBody style={style.flatten(["padding-y-8"])} key={i.toString()}>
+            {content}
+          </CardBody>
+        );
       });
     })();
 
@@ -102,7 +99,8 @@ export function renderMessage(
     [CosmosQueries, CosmwasmQueries, SecretQueries, KeplrETCQueries]
   >,
   chainId: string,
-  bech32Address: string
+  bech32Address: string,
+  index: number
 ): {
   title: string;
   content: React.ReactElement;
@@ -110,16 +108,6 @@ export function renderMessage(
 } {
   if ("type" in unknownMsg) {
     const msg = unknownMsg as MsgObj;
-    // if (msg.type === msgOpts.cosmos.msgOpts.ibcTransfer.type) {
-    //   const value = msg.value as MsgTransfer["value"];
-    //   return renderMsgTransfer(
-    //     currencies,
-    //     value.token,
-    //     value.receiver,
-    //     value.source_channel
-    //   );
-    // }
-
     if (msg.type === msgOpts.cosmos.msgOpts.redelegate.type) {
       const value = msg.value as MsgBeginRedelegate["value"];
       const queries = queriesStore.get(chainId);
@@ -194,5 +182,5 @@ export function renderMessage(
     }
   }
 
-  return renderRawDataMessage(unknownMsg);
+  return renderRawDataMessage(unknownMsg, false, index);
 }

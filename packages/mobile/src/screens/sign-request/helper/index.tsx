@@ -1,10 +1,11 @@
+import { type } from "os";
 import { GrantMsgObj, MsgObj } from "../models";
 
 export enum SignMsgType {
   Delegate = "Delegate",
   Redelegate = "Redelegate",
   Undelegate = "Undelegate",
-  WithdrawnReward = "WithdrawnReward",
+  WithdrawReward = "WithdrawReward",
   Grant = "Grant",
   Revoke = "Revoke",
   Unknown = "Unknown",
@@ -21,7 +22,7 @@ export function typeOf(msg: any): SignMsgType {
       case "cosmos-sdk/MsgUndelegate":
         return SignMsgType.Undelegate;
       case "cosmos-sdk/MsgWithdrawDelegationReward":
-        return SignMsgType.WithdrawnReward;
+        return SignMsgType.WithdrawReward;
     }
   } else if ("grantee" in msg) {
     const grantMsgObj = msg as GrantMsgObj;
@@ -48,4 +49,20 @@ export function getType(msgs: any[]): SignMsgType {
     }
   }
   return SignMsgType.Unknown;
+}
+
+export function getTitle(type: SignMsgType): string {
+  switch (type) {
+    case SignMsgType.Unknown:
+      return "";
+  }
+  return type;
+}
+
+export function getHeaderTitle(type: SignMsgType): string {
+  switch (type) {
+    case SignMsgType.Unknown:
+      return "Chi tiết";
+  }
+  return type;
 }
