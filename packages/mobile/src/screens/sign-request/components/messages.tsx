@@ -71,9 +71,10 @@ export const RawMsgView: FunctionComponent<{
       <View
         style={style.flatten([
           "padding-16",
-          "background-color-gray-90",
+          "background-color-gray-80",
           "border-radius-12",
           "margin-bottom-16",
+          "flex-grow-0",
         ])}
       >
         <View style={style.flatten(["flex-row", "justify-around"])}>
@@ -109,7 +110,7 @@ export const RawMsgView: FunctionComponent<{
               style={style.flatten([
                 "margin-0",
                 "margin-y-12",
-                "background-color-gray-80",
+                "background-color-gray-70",
               ])}
             />
             <Text style={style.flatten(["text-base-regular", "color-gray-10"])}>
@@ -125,7 +126,7 @@ export const RawMsgView: FunctionComponent<{
     <View
       style={style.flatten([
         "padding-16",
-        "background-color-gray-90",
+        "background-color-gray-80",
         "border-radius-12",
       ])}
     >
@@ -309,7 +310,7 @@ export const DelegateMsgView: FunctionComponent<{
     <View
       style={style.flatten([
         "padding-16",
-        "background-color-gray-90",
+        "background-color-gray-80",
         "border-radius-12",
         "flex-row",
         "justify-around",
@@ -340,7 +341,7 @@ export const RevokeMsgView: FunctionComponent<{
     <View
       style={style.flatten([
         "padding-16",
-        "background-color-gray-90",
+        "background-color-gray-80",
         "border-radius-12",
         "margin-bottom-16",
       ])}
@@ -375,7 +376,7 @@ export const RevokeMsgView: FunctionComponent<{
             style={style.flatten([
               "margin-0",
               "margin-top-12",
-              "background-color-gray-80",
+              "background-color-gray-70",
             ])}
           />
           <ItemRow
@@ -414,7 +415,7 @@ export const GrantMsgView: FunctionComponent<{
     <View
       style={style.flatten([
         "padding-16",
-        "background-color-gray-90",
+        "background-color-gray-80",
         "border-radius-12",
         "margin-bottom-16",
       ])}
@@ -449,7 +450,7 @@ export const GrantMsgView: FunctionComponent<{
             style={style.flatten([
               "margin-0",
               "margin-top-12",
-              "background-color-gray-80",
+              "background-color-gray-70",
             ])}
           />
           <ItemRow
@@ -462,7 +463,7 @@ export const GrantMsgView: FunctionComponent<{
             }}
             columns={[
               {
-                text: "Địa chỉ của nhà được cấp quyền",
+                text: "Địa chỉ của nhà được cấp quyền",
                 textColor: style.get("color-label-text-2").color,
               },
               {
@@ -489,7 +490,7 @@ export const ReDelegateMsgView: FunctionComponent<{
     <View
       style={style.flatten([
         "padding-16",
-        "background-color-gray-90",
+        "background-color-gray-80",
         "border-radius-12",
       ])}
     >
@@ -523,7 +524,7 @@ export const ReDelegateMsgView: FunctionComponent<{
             style={style.flatten([
               "margin-0",
               "margin-top-12",
-              "background-color-gray-80",
+              "background-color-gray-70",
             ])}
           />
           <ItemRow
@@ -548,7 +549,7 @@ export const ReDelegateMsgView: FunctionComponent<{
             ]}
           />
           <CardDivider
-            style={style.flatten(["margin-0", "background-color-gray-80"])}
+            style={style.flatten(["margin-0", "background-color-gray-70"])}
           />
           <ItemRow
             style={{

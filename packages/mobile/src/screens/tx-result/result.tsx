@@ -19,7 +19,6 @@ import { TendermintTxTracer } from "@keplr-wallet/cosmos";
 import { TransactionStateView } from "./components/transaction-state-view";
 import { TransactionDetailsView } from "./components/transaction-details-view";
 import { TransactionActionView } from "./components/transaction-action-view";
-import { PageWithScrollView } from "../../components";
 import { useSmartNavigation } from "../../navigation-util";
 import { useToastModal } from "../../providers/toast-modal";
 import { useIntl } from "react-intl";
@@ -189,19 +188,10 @@ export const TxResultScreen: FunctionComponent = observer(() => {
 
   function getPendingSigningView(): React.ReactElement {
     return (
-      <PageWithScrollView
-        backgroundColor={style.get("color-background").color}
-        contentContainerStyle={style.flatten([
-          "padding-y-16",
-          "flex-1",
-          "justify-between",
-        ])}
-      >
-        <TransactionSignRequestView
-          onApprove={onConfirmSignRequest}
-          onReject={onRejectSignRequest}
-        />
-      </PageWithScrollView>
+      <TransactionSignRequestView
+        onApprove={onConfirmSignRequest}
+        onReject={onRejectSignRequest}
+      />
     );
   }
 
