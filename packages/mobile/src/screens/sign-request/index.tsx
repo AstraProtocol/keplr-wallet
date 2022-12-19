@@ -1,5 +1,5 @@
-import React, { FunctionComponent, useEffect, useState } from "react";
-import { View, Image, Text } from "react-native";
+(import React, { FunctionComponent, useEffect, useState } from "react";
+import { View, Image, Text, Animated } from "react-native";
 import { ScrollView, TouchableOpacity } from "react-native-gesture-handler";
 import { FormattedMessage, useIntl } from "react-intl";
 import FastImage from "react-native-fast-image";
@@ -11,6 +11,10 @@ import { TabView, SceneMap, TabBar } from "react-native-tab-view";
 import { DetailsDataCard, RawDataCard } from "./components";
 import { Msg as AminoMsg } from "@cosmjs/launchpad";
 import { getType, SignMsgType } from "./helper";
+import {
+  CollapsibleTabView,
+  useCollapsibleScene,
+} from "react-native-collapsible-tab-view";
 
 export const TransactionSignRequestView: FunctionComponent<{
   onApprove: (name?: string) => void;
@@ -60,6 +64,9 @@ export const TransactionSignRequestView: FunctionComponent<{
   const intl = useIntl();
 
   const [index, setIndex] = useState(0);
+  const handleIndexChange = (index: number) => {
+    setIndex(index);
+  };
   const [routes] = useState([
     {
       key: "first",
@@ -71,173 +78,182 @@ export const TransactionSignRequestView: FunctionComponent<{
     },
   ]);
 
-  const FirstRoute = () => (
-    <DetailsDataCard
-      containerStyle={style.flatten([
-        "margin-y-card-gap",
-        "background-color-transparent",
-        "flex-grow-1",
-      ])}
-      msgs={msgs as AminoMsg[]}
-      accountStore={accountStore}
-      chainStore={chainStore}
-      queriesStore={queriesStore}
-    />
-  );
+  const FirstRoute: FunctionComponent = () => {
+    const scrollPropsAndRef = useCollapsibleScene(routes[0].key);
+    return (
+      <Animated.ScrollView
+        style={style.flatten(["background-color-transparent"])}
+        {...scrollPropsAndRef}
+      >
+        <DetailsDataCard
+          containerStyle={style.flatten([
+            "margin-y-card-gap",
+            "background-color-transparent",
+            "flex-1",
+          ])}
+          msgs={msgs as AminoMsg[]}
+          accountStore={accountStore}
+          chainStore={chainStore}
+          queriesStore={queriesStore}
+        />
+      </Animated.ScrollView>
+    );
+  };
 
-  const SecondRoute = () => (
-    <RawDataCard
-      containerStyle={style.flatten([
-        "margin-y-card-gap",
-        "background-color-transparent",
-        "flex-grow-1",
-      ])}
-      msgs={msgs as AminoMsg[]}
-    />
-  );
+  const SecondRoute: FunctionComponent = () => {
+    const scrollPropsAndRef = useCollapsibleScene(routes[1].key);
+    return (
+      <Animated.ScrollView
+        style={style.flatten(["background-color-transparent"])}
+        {...scrollPropsAndRef}
+      >
+        <RawDataCard
+          containerStyle={style.flatten([
+            "margin-y-card-gap",
+            "background-color-transparent",
+            "flex-1",
+          ])}
+          msgs={msgs as AminoMsg[]}
+        />
+      </Animated.ScrollView>
+    );
+  };
 
   const renderScene = SceneMap({
     first: FirstRoute,
     second: SecondRoute,
   });
 
-  return (
-    <React.Fragment>
-      <ScrollView
-        style={style.flatten(["flex-1", "background-color-card-background"])}
-        contentContainerStyle={style.flatten(["flex-grow-1"])}
+  const header = () => {
+    return (
+      <View
+        pointerEvents="none"
+        style={style.flatten([
+          "padding-x-16",
+          "flex",
+          "margin-top-64",
+          "background-color-card-background",
+        ])}
       >
-        <View style={style.flatten(["padding-x-16", "flex", "margin-top-64"])}>
+        <View
+          style={style.flatten([
+            "padding-12",
+            "flex-row",
+            "justify-center",
+            "items-center",
+          ])}
+        >
           <View
             style={style.flatten([
-              "padding-12",
-              "flex-row",
-              "justify-center",
+              "width-80",
+              "height-80",
+              "border-radius-64",
+              "background-color-secondary",
               "items-center",
+              "justify-center",
             ])}
           >
-            <View
-              style={style.flatten([
-                "width-80",
-                "height-80",
-                "border-radius-64",
-                "background-color-secondary",
-                "items-center",
-                "justify-center",
-              ])}
-            >
-              {metadata && metadata.icons.length > 0 ? (
-                <FastImage
-                  style={{
-                    width: 64,
-                    height: 64,
-                  }}
-                  source={{
-                    uri: metadata.icons[0],
-                  }}
-                  resizeMode={FastImage.resizeMode.contain}
-                />
-              ) : (
-                <Image
-                  source={require("../../assets/image/icon_verified.png")}
-                  resizeMode="contain"
-                  style={style.flatten(["width-64", "height-64"])}
-                />
-              )}
-            </View>
-          </View>
-          <Text style={style.flatten(["color-gray-10", "text-center", "h4"])}>
-            {intl.formatMessage(
-              { id: "walletconnect.text.verify" },
-              { name: source, type: type }
+            {metadata && metadata.icons.length > 0 ? (
+              <FastImage
+                style={{
+                  width: 64,
+                  height: 64,
+                }}
+                source={{
+                  uri: metadata.icons[0],
+                }}
+                resizeMode={FastImage.resizeMode.contain}
+              />
+            ) : (
+              <Image
+                source={require("../../assets/image/icon_verified.png")}
+                resizeMode="contain"
+                style={style.flatten(["width-64", "height-64"])}
+              />
             )}
+          </View>
+        </View>
+        <Text style={style.flatten(["color-gray-10", "text-center", "h4"])}>
+          {intl.formatMessage(
+            { id: "walletconnect.text.verify" },
+            { name: source, type: type }
+          )}
+        </Text>
+        <View
+          style={style.flatten([
+            "margin-top-8",
+            "flex-row",
+            "height-24",
+            "justify-center",
+            "items-center",
+          ])}
+        >
+          <Text style={style.flatten(["color-gray-30", "body3"])}>
+            {sourceUrl}
           </Text>
           <View
             style={style.flatten([
-              "margin-top-8",
-              "flex-row",
               "height-24",
-              "justify-center",
+              "margin-left-6",
+              "padding-x-6",
+              "border-radius-22",
+              "border-width-1",
+              "border-color-blue-60",
+              "background-color-alert-inline-info-background",
               "items-center",
+              "justify-center",
             ])}
           >
-            <Text style={style.flatten(["color-gray-30", "body3"])}>
-              {sourceUrl}
-            </Text>
-            <View
+            <Text
               style={style.flatten([
-                "height-24",
-                "margin-left-6",
-                "padding-x-6",
-                "border-radius-22",
-                "border-width-1",
-                "border-color-blue-60",
-                "background-color-alert-inline-info-background",
-                "items-center",
-                "justify-center",
+                "color-gray-10",
+                "text-center",
+                "text-caption2",
               ])}
             >
-              <Text
-                style={style.flatten([
-                  "color-gray-10",
-                  "text-center",
-                  "text-caption2",
-                ])}
-              >
-                {chainStore.current.chainName}
-              </Text>
-            </View>
+              {chainStore.current.chainName}
+            </Text>
           </View>
         </View>
-        {type === SignMsgType.Unknown ? (
-          <RawDataCard
-            containerStyle={style.flatten([
-              "margin-y-card-gap",
-              "background-color-transparent",
-              "flex-1",
+      </View>
+    );
+  };
+
+  return (
+    <React.Fragment>
+      <CollapsibleTabView
+        style={style.flatten(["flex", "background-color-card-background", "margin-top-64"])}
+        navigationState={{ index, routes }}
+        renderScene={renderScene}
+        onIndexChange={handleIndexChange}
+        renderHeader={header}
+        disableSnap={true}
+        renderTabBar={(props) => (
+          <TabBar
+            {...props}
+            indicatorStyle={style.get("background-color-tab-icon-active")}
+            //   scrollEnabled={true}
+            style={style.flatten([
+              "background-color-card-background",
+              "border-width-bottom-1",
+              "border-color-border",
             ])}
-            msgs={msgs as AminoMsg[]}
-          />
-        ) : (
-          <TabView
-            lazy
-            renderLazyPlaceholder={() => <Text />}
-            style={style.flatten(["margin-top-16", "flex-1"])}
-            navigationState={{ index, routes }}
-            renderScene={renderScene}
-            onIndexChange={setIndex}
-            renderTabBar={(props) => (
-              <TabBar
-                {...props}
-                indicatorStyle={style.get("background-color-tab-icon-active")}
-                //   scrollEnabled={true}
-                style={style.flatten([
-                  "background-color-transparent",
-                  "border-width-bottom-1",
-                  "border-color-border",
-                ])}
-                renderLabel={({ route, focused }) => (
-                  <Text
-                    style={style.flatten(
-                      ["text-base-regular", "color-tab-icon-inactive"],
-                      [
-                        focused && "text-base-semi-bold",
-                        focused && "color-tab-icon-active",
-                      ]
-                    )}
-                  >
-                    {
-                      ` ${route.title} ` /* add space to avoid text is truncated */
-                    }
-                  </Text>
+            renderLabel={({ route, focused }) => (
+              <Text
+                style={style.flatten(
+                  ["text-base-regular", "color-tab-icon-inactive"],
+                  [
+                    focused && "text-base-semi-bold",
+                    focused && "color-tab-icon-active",
+                  ]
                 )}
-              />
+              >
+                {` ${route.title} ` /* add space to avoid text is truncated */}
+              </Text>
             )}
           />
         )}
-
-        {/* <View style={style.flatten(["flex-7"])} /> */}
-      </ScrollView>
+      />
       <View
         style={style.flatten([
           "margin-bottom-0",
@@ -276,4 +292,98 @@ export const TransactionSignRequestView: FunctionComponent<{
       </View>
     </React.Fragment>
   );
+
+  // return (
+  //   <React.Fragment>
+  //     <ScrollView
+  //       style={style.flatten(["flex-1", "background-color-card-background"])}
+  //       contentContainerStyle={style.flatten(["flex-grow-1"])}
+  //     >
+  //       {header}
+  //       {type === SignMsgType.Unknown ? (
+  //         <RawDataCard
+  //           containerStyle={style.flatten([
+  //             "margin-y-card-gap",
+  //             "background-color-transparent",
+  //             "flex-1",
+  //           ])}
+  //           msgs={msgs as AminoMsg[]}
+  //         />
+  //       ) : (
+  //         <TabView
+  //           lazy
+  //           renderLazyPlaceholder={() => <Text />}
+  //           style={style.flatten(["margin-top-16", "flex-1"])}
+  //           navigationState={{ index, routes }}
+  //           renderScene={renderScene}
+  //           onIndexChange={setIndex}
+  //           renderTabBar={(props) => (
+  //             <TabBar
+  //               {...props}
+  //               indicatorStyle={style.get("background-color-tab-icon-active")}
+  //               //   scrollEnabled={true}
+  //               style={style.flatten([
+  //                 "background-color-transparent",
+  //                 "border-width-bottom-1",
+  //                 "border-color-border",
+  //               ])}
+  //               renderLabel={({ route, focused }) => (
+  //                 <Text
+  //                   style={style.flatten(
+  //                     ["text-base-regular", "color-tab-icon-inactive"],
+  //                     [
+  //                       focused && "text-base-semi-bold",
+  //                       focused && "color-tab-icon-active",
+  //                     ]
+  //                   )}
+  //                 >
+  //                   {
+  //                     ` ${route.title} ` /* add space to avoid text is truncated */
+  //                   }
+  //                 </Text>
+  //               )}
+  //             />
+  //           )}
+  //         />
+  //       )}
+  //     </ScrollView>
+  //     <View
+  //       style={style.flatten([
+  //         "margin-bottom-0",
+  //         "margin-x-0",
+  //         "flex",
+  //         "background-color-card-background",
+  //       ])}
+  //     >
+  //       <CardDivider
+  //         style={style.flatten(["background-color-gray-70", "margin-0"])}
+  //       />
+  //       <View
+  //         style={style.flatten([
+  //           "flex-row",
+  //           "padding-16",
+  //           "items-center",
+  //           "margin-bottom-16",
+  //         ])}
+  //       >
+  //         <Button
+  //           containerStyle={style.flatten(["margin-right-12", "flex-1"])}
+  //           color="neutral"
+  //           text={intl.formatMessage({ id: "common.text.reject" })}
+  //           onPress={async () => {
+  //             onReject(source, isWC);
+  //           }}
+  //         />
+  //         <Button
+  //           text={intl.formatMessage({ id: "common.text.verify" })}
+  //           onPress={async () => {
+  //             onApprove(source);
+  //           }}
+  //           containerStyle={style.flatten(["flex-1"])}
+  //         />
+  //       </View>
+  //     </View>
+  //   </React.Fragment>
+  // );
 };
+)

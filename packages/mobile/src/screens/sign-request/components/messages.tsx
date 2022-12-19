@@ -73,8 +73,7 @@ export const RawMsgView: FunctionComponent<{
           "padding-16",
           "background-color-gray-80",
           "border-radius-12",
-          "margin-bottom-16",
-          "flex-grow-0",
+          // "margin-bottom-16",
         ])}
       >
         <View style={style.flatten(["flex-row", "justify-around"])}>

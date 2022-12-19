@@ -155,7 +155,9 @@
     "react-native-popable": "^0.4.3",
     "web3-providers-http": "^1.7.5",
     "@react-native-firebase/app": "16.4.4",
-    "@react-native-firebase/messaging": "16.4.4"
+    "@react-native-firebase/messaging": "16.4.4",
+    "react-native-collapsible-tab-view": "2.0.2",
+    "@react-navigation/material-top-tabs": "^5.3.8"
   },
   "devDependencies": {
     "@ethersproject/solidity": "^5.0.2",
