@@ -1,6 +1,4 @@
-import { observer } from "mobx-react-lite";
 import React, { FunctionComponent } from "react";
-import { ViewStyle } from "react-native";
 import {
   Msg as AminoMsg,
   MsgBeginRedelegate,
@@ -8,27 +6,20 @@ import {
   MsgUndelegate,
   MsgWithdrawDelegatorReward,
 } from "@cosmjs/launchpad";
-import { Card, CardBody } from "../../../components/card";
 import { GrantMsgObj, MsgObj } from "../models";
 
 import {
-  AccountSetBaseSuper,
-  AccountStore,
-  CosmosAccount,
   CosmosMsgOpts,
   CosmosQueries,
-  CosmwasmAccount,
   CosmwasmMsgOpts,
   CosmwasmQueries,
   QueriesStore,
-  SecretAccount,
   SecretMsgOpts,
   SecretQueries,
   Staking,
 } from "@keplr-wallet/stores";
 import { AppCurrency } from "@keplr-wallet/types";
 
-import { ChainStore } from "../../../stores/chain";
 import {
   renderBeginRedelegateMsg,
   renderDelegateMsg,
@@ -38,48 +29,6 @@ import {
   renderWithdrawDelegatorRewardMsg,
 } from "./messages";
 import { KeplrETCQueries } from "@keplr-wallet/stores-etc";
-import { useStyle } from "../../../styles";
-
-export const DetailsDataCard: FunctionComponent<{
-  containerStyle?: ViewStyle;
-  msgs: AminoMsg[];
-  accountStore: AccountStore<
-    [CosmosAccount, CosmwasmAccount, SecretAccount],
-    AccountSetBaseSuper & CosmosAccount & CosmwasmAccount & SecretAccount
-  >;
-  chainStore: ChainStore;
-  queriesStore: QueriesStore<
-    [CosmosQueries, CosmwasmQueries, SecretQueries, KeplrETCQueries]
-  >;
-}> = observer(
-  ({ containerStyle, msgs, accountStore, chainStore, queriesStore }) => {
-    const style = useStyle();
-    const renderedMsgs = (() => {
-      return msgs.map((msg, i) => {
-        const chainId = chainStore.current.chainId;
-        const account = accountStore.getAccount(chainId);
-        const chainInfo = chainStore.getChain(chainId);
-        const { content } = renderMessage(
-          account,
-          msg,
-          chainInfo.currencies,
-          queriesStore,
-          chainId,
-          account.bech32Address,
-          i
-        );
-
-        return (
-          <CardBody style={style.flatten(["padding-y-8"])} key={i.toString()}>
-            {content}
-          </CardBody>
-        );
-      });
-    })();
-
-    return <Card style={containerStyle}>{renderedMsgs}</Card>;
-  }
-);
 
 export function renderMessage(
   msgOpts: {

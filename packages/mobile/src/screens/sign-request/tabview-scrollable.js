@@ -20,9 +20,9 @@ const SafeStatusBar = Platform.select({
   android: StatusBar.currentHeight,
 });
 
-const CollapsibleTabView = (prop: {
+const SignRequestTabView = (prop: {
   data: any[],
-  header: JSX.Element,
+  header: () => JSX.Element,
   routes: {
     key: string,
     title: string,
@@ -35,6 +35,7 @@ const CollapsibleTabView = (prop: {
   /**
    * stats
    */
+  const [header] = useState(prop.header);
   const [tabIndex, setIndex] = useState(0);
   const [routes] = useState(prop.routes);
   const [canScroll, setCanScroll] = useState(true);
@@ -212,15 +213,14 @@ const CollapsibleTabView = (prop: {
         {...headerPanResponder.panHandlers}
         style={[styles.header, { transform: [{ translateY: y }] }]}
       >
-        {prop.header}
+        {header}
       </Animated.View>
     );
   };
 
   const renderRawItem = ({ index }) => {
-    const data = prop.data;
-    const msg = data[index];
-    const { content } = renderRawDataMessage(msg, data.length > 1, index);
+    const msg = prop.data[index];
+    const { content } = renderRawDataMessage(msg, prop.data.length > 1, index);
     return content;
   };
 
@@ -240,7 +240,6 @@ const CollapsibleTabView = (prop: {
 
   const renderScene = ({ route }) => {
     const focused = route.key === routes[tabIndex].key;
-    const data = prop.data;
     let renderItem;
     switch (route.key) {
       case "first":
@@ -292,7 +291,7 @@ const CollapsibleTabView = (prop: {
           minHeight: windowHeight - SafeStatusBar + HeaderHeight,
         }}
         showsHorizontalScrollIndicator={false}
-        data={data}
+        data={prop.data}
         renderItem={renderItem}
         showsVerticalScrollIndicator={false}
         keyExtractor={(item, index) => index.toString()}
@@ -383,4 +382,4 @@ const styles = StyleSheet.create({
 });
 
 // eslint-disable-next-line import/no-default-export
-export default CollapsibleTabView;
+export default SignRequestTabView;
