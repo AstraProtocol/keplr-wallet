@@ -326,6 +326,7 @@ export class RootStore {
     );
 
     this.userBalanceStore = new UserBalanceStore(
+      new AsyncKVStore("store_nfts"),
       this.chainStore,
       this.accountStore,
       this.queriesStore

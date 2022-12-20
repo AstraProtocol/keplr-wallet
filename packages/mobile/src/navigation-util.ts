@@ -1,11 +1,14 @@
 import { BIP44HDPath, ExportKeyRingData } from "@keplr-wallet/background";
 import {
-  RegisterConfig,
-  AddressBookData,
-  IRecipientConfig,
-  IMemoConfig,
   AddressBookConfig,
+  AddressBookData,
+  IMemoConfig,
+  IRecipientConfig,
+  RegisterConfig,
 } from "@keplr-wallet/hooks";
+import { NFTData } from "@keplr-wallet/stores/build/query/nft";
+import { AppCurrency } from "@keplr-wallet/types";
+import { CoinPretty } from "@keplr-wallet/unit";
 import { SignClientTypes } from "@walletconnect/types";
 import { createSmartNavigatorProvider, SmartNavigator } from "./hooks";
 import { NewMnemonicConfig } from "./screens/register/mnemonic";
@@ -185,6 +188,21 @@ const {
     SessionProposal: {
       upperScreenName: "Wallet",
     },
+    "NFT.Details": {
+      upperScreenName: "Wallet",
+    },
+    "NFT.QRCode": {
+      upperScreenName: "Wallet",
+    },
+    "NFT.Send": {
+      upperScreenName: "Wallet",
+    },
+    "NFT.SendConfirm": {
+      upperScreenName: "Wallet",
+    },
+    "NFT.Gallery": {
+      upperScreenName: "Wallet",
+    },
   }).withParams<{
     NewHome: {
       isRefresh?: boolean;
@@ -302,6 +320,23 @@ const {
     };
     SessionProosal: {
       proposal: SignClientTypes.EventArguments["session_proposal"];
+    };
+    "NFT.Details": {
+      data: NFTData;
+    };
+    "NFT.QRCode": {
+      data: NFTData;
+    };
+    "NFT.Send": {
+      data: NFTData;
+    };
+    "NFT.SendConfirm": {
+      data: NFTData;
+      receiver: string;
+      fee: CoinPretty;
+    };
+    "NFT.Gallery": {
+      data: NFTData;
     };
   }>()
 );

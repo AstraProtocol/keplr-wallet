@@ -15,6 +15,7 @@
   "common.text.connect": "Connect",
   "common.text.continue": "Next",
   "common.text.currentPassword": "Current password",
+  "common.text.details": "Details",
   "common.text.disconnect": "Disconnect",
   "common.text.done": "Done",
   "common.text.enable": "Enable",
@@ -45,5 +46,15 @@
   "common.text.updateWalletName": "Change wallet name",
   "common.text.verify": "Verify",
   "common.text.view": "View",
-  "common.text.wrongPassword": "Invalid password"
+  "common.text.viewLess": "View less",
+  "common.text.viewMore": "View more",
+  "common.text.wrongPassword": "Invalid password",
+  "nft.collectible.empty": "No NFTs yet",
+  "nft.collectible.send": "Send NFT",
+  "nft.qrcode.checkinStand": "Show at check-in stand",
+  "nft.text.code": "E-Ticket",
+  "nft.text.confirm": "Confirm",
+  "nft.text.confirmSend": "Confirm and send",
+  "nft.text.sell": "Sell",
+  "nft.text.send": "Send"
 }

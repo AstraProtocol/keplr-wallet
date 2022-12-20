@@ -1,6 +1,7 @@
 {
   "validator.details.about": "About",
   "validator.details.amountBeingWithdrawn": "Unstaking {denom}",
+  "validator.details.apr": "{percent}%/year",
   "validator.details.commission": "Commission",
   "validator.details.commission.details": "Rewards details",
   "validator.details.commission.percent": "Commission {percent}%",
@@ -11,6 +12,7 @@
   "validator.details.delegated.unbonding": "Unstaking amount",
   "validator.details.delegated.undelegate": "Unstake",
   "validator.details.emptyWithdrawHistory": "There is no transaction yet",
+  "validator.details.interest": "Interest rate",
   "validator.details.invest": "Stake now",
   "validator.details.maxChangeRate": "Daily rate changes",
   "validator.details.maxRate": "Maximum rate",

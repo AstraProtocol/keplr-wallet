@@ -2,49 +2,69 @@ import React, {
   FunctionComponent,
   useCallback,
   useEffect,
+  useMemo,
   useRef,
+  useState,
 } from "react";
 import {
+  Animated,
   AppState,
   AppStateStatus,
   ImageBackground,
   RefreshControl,
-  ScrollView,
+  SectionList,
   Text,
   View,
 } from "react-native";
-import { PageWithScrollViewInBottomTabView } from "../../components/page";
 import { useStore } from "../../stores";
 import { useStyle } from "../../styles";
 
 import { observer } from "mobx-react-lite";
 
 import { ChainUpdaterService } from "@keplr-wallet/background";
+import { NFTData } from "@keplr-wallet/stores/build/query/nft";
+import { CoinPretty } from "@keplr-wallet/unit";
 import { RouteProp, useFocusEffect, useRoute } from "@react-navigation/native";
 import { useIntl } from "react-intl";
 import { TouchableOpacity } from "react-native-gesture-handler";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { ScanIcon } from "../../components";
 import { usePrevious } from "../../hooks";
 import { useSmartNavigation } from "../../navigation-util";
 import { useToastModal } from "../../providers/toast-modal";
-import { AccountCardNew, ActionsCard, BalanceCard } from "./card";
+import { AccountCardNew, ActionsCard, TokenItemNew } from "./card";
+import { CustomTabBar } from "./components";
+import { useQueryBalances } from "./hook/use-query-balance";
+import { useQueryNfts } from "./hook/use-query-nft";
+import { NFTCell, NFTEmptyCell } from "./screens/nft/components/nft-cell";
 
 export const MainScreen: FunctionComponent = observer(() => {
-  const [refreshing, setRefreshing] = React.useState(false);
+  const {
+    fetchFirstPageNFTs,
+    fetchNextPageNFTs,
+    nfts: observableNFTs,
+  } = useQueryNfts();
+  const { waitBalanceResponses, getBalances } = useQueryBalances();
+
+  const [selectedTabIndex, setSelectedTabIndex] = useState(0);
+  const [nfts, setNFTs] = useState([0] as any[]);
 
   const {
     chainStore,
     accountStore,
     queriesStore,
-    priceStore,
     analyticsStore,
+    remoteConfigStore,
   } = useStore();
+
+  const nftSupportEnabled = remoteConfigStore.getBool(
+    "feature_nft_support_enabled"
+  );
 
   const style = useStyle();
   const intl = useIntl();
   const toastModal = useToastModal();
-
-  const scrollViewRef = useRef<ScrollView | null>(null);
+  const safeAreaInsets = useSafeAreaInsets();
 
   const currentChain = chainStore.current;
   const currentChainId = currentChain.chainId;
@@ -101,29 +121,26 @@ export const MainScreen: FunctionComponent = observer(() => {
   );
 
   useEffect(() => {
-    if (scrollViewRef.current) {
-      scrollViewRef.current.scrollTo({ y: 0 });
-    }
+    onRefresh();
+  }, [accountStore, chainStore, queriesStore]);
+
+  useEffect(() => {
     showAccessTestnetToast();
   }, [chainStore.current.chainId]);
 
-  const onRefresh = React.useCallback(async () => {
+  const onRefresh = useCallback(async () => {
     const account = accountStore.getAccount(chainStore.current.chainId);
     const queries = queriesStore.get(chainStore.current.chainId);
 
     // Because the components share the states related to the queries,
     // fetching new query responses here would make query responses on all other components also refresh.
 
+    if (nftSupportEnabled) {
+      fetchFirstPageNFTs();
+    }
+
     await Promise.all([
-      priceStore.waitFreshResponse(),
-      ...queries.queryBalances
-        .getQueryBech32Address(account.bech32Address)
-        .balances.map((bal) => {
-          return bal.waitFreshResponse();
-        }),
-      queriesStore
-        .get(chainStore.current.chainId)
-        .keplrETC.queryERC20Balance.fetchAll(),
+      waitBalanceResponses(),
       queries.cosmos.queryRewards
         .getQueryBech32Address(account.bech32Address)
         .waitFreshResponse(),
@@ -134,9 +151,17 @@ export const MainScreen: FunctionComponent = observer(() => {
         .getQueryBech32Address(account.bech32Address)
         .waitFreshResponse(),
     ]);
+  }, [accountStore, chainStore, queriesStore]);
 
-    setRefreshing(false);
-  }, [accountStore, chainStore, priceStore, queriesStore]);
+  const onEndReached = async () => {
+    fetchNextPageNFTs();
+  };
+
+  useEffect(() => {
+    if (nftSupportEnabled) {
+      setNFTs(observableNFTs.length !== 0 ? observableNFTs : [0]);
+    }
+  }, [observableNFTs]);
 
   const smartNavigation = useSmartNavigation();
 
@@ -173,6 +198,40 @@ export const MainScreen: FunctionComponent = observer(() => {
       onRefresh().then();
     }
   }, [onRefresh, route.params]);
+
+  const sections = useMemo(() => {
+    return [
+      { index: 0, title: "balance", data: [{}] },
+      { index: 1, title: "action", data: [{}] },
+      {
+        index: 2,
+        title: "item",
+        data: [...(!nftSupportEnabled || selectedTabIndex === 0 ? getBalances() : nfts)],
+      },
+    ];
+  }, [selectedTabIndex, nfts, waitBalanceResponses]);
+
+  const viewDetailsNFTHandler = (data?: NFTData) => {
+    if (data) {
+      smartNavigation.navigateSmart("NFT.Details", {
+        data,
+      });
+    }
+  };
+
+  const opacityAnim = useRef(new Animated.Value(0)).current;
+  const viewAnimOpacity = {
+    opacity: opacityAnim.interpolate({
+      inputRange: [0, 200],
+      outputRange: [0, 1],
+    }),
+  };
+
+  const onScrollContent = useCallback((e) => {
+    opacityAnim.setValue(e.nativeEvent.contentOffset.y >= 200 ? 200 : 0);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return (
     <View style={style.get("background-color-background")}>
       <ImageBackground
@@ -180,21 +239,29 @@ export const MainScreen: FunctionComponent = observer(() => {
         source={require("../../assets/logo/main_background.png")}
         resizeMode="cover"
       >
-        <PageWithScrollViewInBottomTabView
-          style={style.flatten(["margin-top-44"])}
-          backgroundColor={style.get("color-transparent").color}
-          refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-          }
-          ref={scrollViewRef}
+        <View
+          style={{
+            height: safeAreaInsets.top + 44,
+          }}
         >
+          <Animated.View
+            style={[
+              {
+                ...style.flatten([
+                  "absolute",
+                  "width-full",
+                  "height-full",
+                  "background-color-background",
+                ]),
+              },
+              viewAnimOpacity,
+            ]}
+          />
           <View
-            style={style.flatten([
-              "flex-row",
-              "height-44",
-              "justify-center",
-              "items-center",
-            ])}
+            style={{
+              ...style.flatten(["flex-row", "justify-center", "items-center"]),
+              marginTop: safeAreaInsets.top,
+            }}
           >
             <View style={{ width: 44 }} />
             <Text
@@ -213,28 +280,168 @@ export const MainScreen: FunctionComponent = observer(() => {
                 smartNavigation.navigateSmart("Camera", {});
               }}
             >
-              <ScanIcon size={32} color={style.get("color-gray-10").color} />
+              <ScanIcon size={32} color={style.get("color-icon-white").color} />
             </TouchableOpacity>
           </View>
-          <AccountCardNew
-            containerStyle={style.flatten([
-              "background-color-transparent",
-              "margin-top-24",
-            ])}
-          />
-          <ActionsCard
-            containerStyle={style.flatten([
-              "background-color-transparent",
-              "margin-top-24",
-            ])}
-          />
-          <BalanceCard
-            containerStyle={style.flatten([
-              "background-color-transparent",
-              "margin-top-40",
-            ])}
-          />
-        </PageWithScrollViewInBottomTabView>
+        </View>
+
+        <SectionList
+          sections={sections}
+          stickyHeaderIndices={[2]}
+          stickySectionHeadersEnabled={true}
+          onScroll={onScrollContent}
+          renderSectionHeader={({ section }) => {
+            if (section.index !== 2) {
+              return null;
+            }
+
+            return (
+              <View>
+                <Animated.View
+                  style={[
+                    {
+                      ...style.flatten([
+                        "absolute",
+                        "width-full",
+                        "height-44",
+                        "background-color-background",
+                      ]),
+                    },
+                    viewAnimOpacity,
+                  ]}
+                />
+                {nftSupportEnabled ? (
+                  <CustomTabBar
+                    data={[
+                      {
+                        title: intl.formatMessage({
+                          id: "main.balance.asset.title",
+                        }),
+                      },
+                      {
+                        title: intl.formatMessage({
+                          id: "main.balance.collection.title",
+                        }),
+                      },
+                    ]}
+                    onIndexChanged={(index) => {
+                      setSelectedTabIndex(index);
+                    }}
+                  />
+                ) : (
+                  <Text
+                    style={style.flatten([
+                      "color-white",
+                      "text-medium-medium",
+                      "margin-left-16",
+                    ])}
+                  >
+                    {intl.formatMessage({ id: "main.balance.asset.title" })}
+                  </Text>
+                )}
+              </View>
+            );
+          }}
+          renderSectionFooter={({ section }) => {
+            if (section.index !== 2) {
+              return null;
+            }
+            return <View style={style.flatten(["height-16"])} />;
+          }}
+          renderItem={({ index, section }) => {
+            if (section.index === 0) {
+              return (
+                <AccountCardNew
+                  containerStyle={style.flatten([
+                    "background-color-transparent",
+                    "margin-top-24",
+                  ])}
+                />
+              );
+            }
+
+            if (section.index === 1) {
+              return (
+                <ActionsCard
+                  containerStyle={style.flatten([
+                    "background-color-transparent",
+                    "margin-top-24",
+                    "margin-bottom-40",
+                  ])}
+                />
+              );
+            }
+
+            if (nftSupportEnabled && selectedTabIndex === 1) {
+              if (index % 2 !== 0) {
+                return null;
+              }
+
+              const leftData = section.data[index] as NFTData;
+
+              if (typeof section.data[index] === "number") {
+                return (
+                  <NFTEmptyCell index={{ section: section.index, item: 0 }} />
+                );
+              }
+
+              const rightData: NFTData | undefined =
+                index + 1 < section.data.length
+                  ? (section.data[index + 1] as NFTData)
+                  : undefined;
+
+              return (
+                <View
+                  style={style.flatten([
+                    "flex-row",
+                    "padding-x-16",
+                    "padding-top-16",
+                    "background-color-background",
+                  ])}
+                >
+                  <NFTCell
+                    index={{ section: section.index, item: index }}
+                    data={leftData}
+                    onPress={viewDetailsNFTHandler}
+                  />
+                  <View style={{ width: 16 }} />
+                  {rightData !== undefined ? (
+                    <NFTCell
+                      index={{ section: section.index, item: index + 1 }}
+                      data={rightData}
+                      onPress={viewDetailsNFTHandler}
+                    />
+                  ) : (
+                    <View style={style.flatten(["flex-1"])} />
+                  )}
+                </View>
+              );
+            }
+
+            const token = section.data[index] as CoinPretty;
+
+            return (
+              <TokenItemNew
+                containerStyle={style.flatten([
+                  "height-74",
+                  "background-color-card-background",
+                  "border-radius-16",
+                  "margin-x-page",
+                ])}
+                key={token.denom}
+                chainInfo={chainStore.current}
+                balance={token}
+              />
+            );
+          }}
+          refreshControl={
+            <RefreshControl refreshing={false} onRefresh={onRefresh} />
+          }
+          onEndReached={onEndReached}
+          keyExtractor={(_item, index) => `nft_${index}`}
+          style={style.flatten(["margin-bottom-48"])}
+        />
+        <View style={{ height: safeAreaInsets.bottom }} />
       </ImageBackground>
     </View>
   );

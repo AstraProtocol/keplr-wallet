@@ -1,19 +1,19 @@
 import { observer } from "mobx-react-lite";
 import React, { Fragment, FunctionComponent } from "react";
-import { Animated, Text, TouchableOpacity, View } from "react-native";
+import { Animated, ViewStyle } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { LeftArrowIcon } from "../../../components";
 import { Card } from "../../../components/card";
-import { useSmartNavigation } from "../../../navigation-util";
+import { CustomNavigationBar } from "../../../components/navigation-bar/custom-navigation-bar";
 import { useStyle } from "../../../styles";
 
 export const AnimatedNavigationBar: FunctionComponent<{
   title?: string;
   animOpacity: Animated.Value;
-}> = observer(({ title, animOpacity }) => {
+  hideBottomSeparator?: boolean;
+  containerStyle?: ViewStyle;
+}> = observer(({ title, animOpacity, hideBottomSeparator, containerStyle }) => {
   const safeAreaInsets = useSafeAreaInsets();
   const style = useStyle();
-  const smartNavigation = useSmartNavigation();
   const viewAnimOpacity = {
     opacity: animOpacity.interpolate({
       inputRange: [0, 200],
@@ -22,51 +22,18 @@ export const AnimatedNavigationBar: FunctionComponent<{
   };
   const height = 44 + safeAreaInsets.top;
 
-  const getNavigationBar = (title: string) => {
+  const getNavigationBar = (
+    title: string,
+    hideBottomSeparator: boolean = false
+  ) => {
     return (
-      <View
-        style={{
-          ...style.flatten([
-            "flex-row",
-            "padding-x-16",
-            "height-44",
-            "justify-center",
-            "items-center",
-            "border-width-bottom-1",
-            "border-color-card-separator",
-          ]),
+      <CustomNavigationBar
+        hideBottomSeparator={hideBottomSeparator}
+        title={title}
+        containerStyle={{
           marginTop: safeAreaInsets.top,
         }}
-      >
-        <TouchableOpacity
-          onPress={() => {
-            smartNavigation.goBack();
-          }}
-        >
-          <LeftArrowIcon size={24} color={style.get("color-white").color} />
-        </TouchableOpacity>
-        <View
-          style={{
-            ...style.flatten([
-              "flex-1",
-              "flex-row",
-              "items-center",
-              "margin-right-24",
-              "justify-center",
-            ]),
-          }}
-        >
-          <Text
-            style={style.flatten([
-              "text-center",
-              "color-white",
-              "text-large-bold",
-            ])}
-          >
-            {title}
-          </Text>
-        </View>
-      </View>
+      />
     );
   };
 
@@ -75,10 +42,11 @@ export const AnimatedNavigationBar: FunctionComponent<{
       style={{
         ...style.flatten(["background-color-transparent", "width-full"]),
         height: height,
+        ...containerStyle,
       }}
     >
       <Fragment>
-        {getNavigationBar("")}
+        {getNavigationBar("", hideBottomSeparator)}
         <Animated.View
           style={[
             {
@@ -92,7 +60,7 @@ export const AnimatedNavigationBar: FunctionComponent<{
             viewAnimOpacity,
           ]}
         >
-          {getNavigationBar(title || "")}
+          {getNavigationBar(title || "", hideBottomSeparator)}
         </Animated.View>
       </Fragment>
     </Card>

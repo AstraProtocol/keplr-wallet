@@ -11,12 +11,14 @@ import {
   MsgDelegate,
   MsgSend,
   MsgSwap,
+  MsgTransferNFT,
   MsgUndelegate,
   MsgWithdrawDelegatorReward,
   renderMsgBeginRedelegate,
   renderMsgDelegate,
   renderMsgSend,
   renderMsgSwap,
+  renderMsgTransferNFT,
   renderMsgUndelegate,
   renderMsgWithdrawDelegatorReward,
 } from "./messages";
@@ -77,6 +79,11 @@ export const renderAminoMessages = (
         return renderMsgSwap(value);
       }
       return [];
+    }
+
+    if (msg.type === "transfer-nft") {
+      const value = msg.value as MsgTransferNFT["value"];
+      return renderMsgTransferNFT(value);
     }
   } catch (e) {
     console.log(e);

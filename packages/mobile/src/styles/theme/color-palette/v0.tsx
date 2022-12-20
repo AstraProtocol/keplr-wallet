@@ -251,6 +251,7 @@ export const AllColors = {
     "label-text-1": Colors["gray-10"],
     "label-text-2": Colors["gray-30"],
     "icon-default": Colors["gray-30"],
+    "icon-white": Colors["gray-10"],
 
     "card-border": Colors["gray-70"],
     "card-background-header": Colors["gray-80"],

@@ -190,6 +190,7 @@ export const V1AllColors = {
     "label-text-1": V1Colors["gray-10"],
     "label-text-2": V1Colors["gray-30"],
     "icon-default": V1Colors["gray-30"],
+    "icon-white": V1Colors["gray-10"],
 
     "card-border": V1Colors["gray-70"],
     "card-background-header": V1Colors["gray-80"],

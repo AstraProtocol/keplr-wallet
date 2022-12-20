@@ -1,7 +1,8 @@
 {
   "validator.details.about": "Về gói tích lũy",
   "validator.details.amountBeingWithdrawn": "Số {denom} đang rút",
-  "validator.details.commission": "Phí",
+  "validator.details.apr": "{percent}%/năm",
+  "validator.details.commission": "Phí phần thưởng",
   "validator.details.commission.percent": "Phí {percent}%",
   "validator.details.commission.details": "Chi tiết về phí",
   "validator.details.delegated.investMore": "Tích lũy thêm",
@@ -11,6 +12,7 @@
   "validator.details.delegated.unbonding": "Tổng đang rút",
   "validator.details.delegated.undelegate": "Rút",
   "validator.details.emptyWithdrawHistory": "Bạn chưa có giao dịch rút tiền nào",
+  "validator.details.interest": "Lãi suất",
   "validator.details.invest": "Tích lũy ngay",
   "validator.details.maxChangeRate": "Thay đổi tối đa mỗi ngày",
   "validator.details.maxRate": "Tối đa",

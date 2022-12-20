@@ -17,6 +17,7 @@ import { ChainStore } from "../chain";
 import { CoinPretty } from "@keplr-wallet/unit";
 import { action, computed, makeObservable, observable } from "mobx";
 import { KeplrETCQueries } from "@keplr-wallet/stores-etc";
+import { formatCoin } from "../../common/utils";
 
 export type TxState = "pending" | "success" | "failure" | undefined;
 
@@ -41,6 +42,7 @@ export class TransactionStore {
     value: Record<string, any>;
   } = undefined;
   @observable protected _txAmount?: CoinPretty = undefined;
+  @observable protected _txContent?: string = undefined;
 
   @observable protected _signDocHelper?: SignDocHelper = undefined;
 
@@ -91,15 +93,37 @@ export class TransactionStore {
     return this._txAmount;
   }
 
+  @computed
+  get txContent(): string | undefined {
+    return this._txContent;
+  }
+
   @action
-  protected setAmount() {
-    const value = this._rawData?.value;
-    if (value) {
-      if (value["amount"]) {
-        this._txAmount = value["amount"] as CoinPretty;
-      } else if (value["totalRewards"]) {
-        this._txAmount = value["totalRewards"] as CoinPretty;
-      }
+  protected setAmount(value?: Record<string, any>) {
+    if (!value) {
+      return;
+    }
+
+    if (value["amount"]) {
+      this._txAmount = value["amount"] as CoinPretty;
+    } else if (value["totalRewards"]) {
+      this._txAmount = value["totalRewards"] as CoinPretty;
+    }
+  }
+
+  @action
+  protected setContent(value?: Record<string, any>) {
+    if (!value) {
+      return;
+    }
+    
+    if (value["content"] && typeof value["content"] === "string") {
+      this._txContent = value["content"] as string;
+    }
+    else if (value["amount"]) {
+      this._txContent = formatCoin(value["amount"] as CoinPretty, false, 2);
+    } else if (value["totalRewards"]) {
+      this._txContent = formatCoin(value["totalRewards"] as CoinPretty, false, 2);
     }
   }
 
@@ -113,7 +137,8 @@ export class TransactionStore {
   @action
   updateRawData(rawData: { type: string; value: Record<string, any> }) {
     this._rawData = rawData;
-    this.setAmount();
+    this.setAmount(rawData?.value);
+    this.setContent(rawData?.value);
   }
 
   @action

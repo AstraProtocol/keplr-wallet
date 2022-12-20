@@ -14,6 +14,13 @@ import {
 import { ObservableQueryDistributionParams } from "../distribution";
 import { ObservableQueryStakingPool } from "../staking";
 import { ObservableQueryJunoAnnualProvisions } from "./juno/annual-provisions";
+import {
+  InflationParams,
+  InflationPeriod,
+  ObservableQueryInflationInflationPeriod,
+  ObservableQueryInflationInflationRate,
+  ObservableQueryInflationParams,
+} from "./astra";
 
 export class ObservableQueryInflation {
   constructor(
@@ -28,7 +35,10 @@ export class ObservableQueryInflation {
     protected readonly _queryOsmosisEpochProvisions: ObservableQueryOsmosisEpochProvisions,
     protected readonly _queryOsmosisMintParams: ObservableQueryOsmosisMintParmas,
     protected readonly _queryJunoAnnualProvisions: ObservableQueryJunoAnnualProvisions,
-    protected readonly _queryDistributionParams: ObservableQueryDistributionParams
+    protected readonly _queryDistributionParams: ObservableQueryDistributionParams,
+    protected readonly _queryAstraInflationParams: ObservableQueryInflationParams,
+    protected readonly _queryAstraInflationPeriod: ObservableQueryInflationInflationPeriod,
+    protected readonly _queryAstraInflationRate: ObservableQueryInflationInflationRate
   ) {
     makeObservable(this);
   }
@@ -180,5 +190,20 @@ export class ObservableQueryInflation {
 
       return new IntPretty(new Int(0)).ready(false);
     }
+  }
+
+  @computed
+  get inflationParams(): InflationParams | undefined {
+    return this._queryAstraInflationParams.params;
+  }
+
+  @computed
+  get inflationRate(): Dec | undefined {
+    return this._queryAstraInflationRate.rate;
+  }
+
+  @computed
+  get inflationPeriod(): InflationPeriod | undefined {
+    return this._queryAstraInflationPeriod.period;
   }
 }

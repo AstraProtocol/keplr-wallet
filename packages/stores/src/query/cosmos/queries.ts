@@ -1,21 +1,21 @@
-import { QueriesSetBase } from "../queries";
 import { KVStore } from "@keplr-wallet/common";
+import { DeepReadonly } from "utility-types";
 import { ChainGetter } from "../../common";
+import { ObservableQueryTokens } from "../blockscout";
+import { ObservableQueryTxs } from "../chain-indexing/tx";
+import { ObservableQueryNFTs } from "../nft";
+import { QueriesSetBase } from "../queries";
 import { ObservableQueryAccount } from "./account";
+import { ObservableQueryGrants } from "./authz";
 import {
-  ObservableQueryInflation,
-  ObservableQueryMintingInfation,
-  ObservableQuerySupplyTotal,
-} from "./supply";
+  ObservableQueryCosmosBalanceRegistry,
+  ObservableQuerySpendableBalances,
+} from "./balance";
+import { ObservableQueryDistributionParams } from "./distribution";
 import {
-  ObservableQueryDelegations,
-  ObservableQueryRedelegations,
-  ObservableQueryRewards,
-  ObservableQueryStakingParams,
-  ObservableQueryStakingPool,
-  ObservableQueryUnbondingDelegations,
-  ObservableQueryValidators,
-} from "./staking";
+  ObservableQueryAllowance,
+  ObservableQueryAllowances,
+} from "./feegrant";
 import {
   ObservableQueryGovernance,
   ObservableQueryProposalVote,
@@ -25,24 +25,34 @@ import {
   ObservableQueryIBCChannel,
   ObservableQueryIBCClientState,
 } from "./ibc";
-import { ObservableQuerySifchainLiquidityAPY } from "./supply/sifchain";
 import {
-  ObservableQueryCosmosBalanceRegistry,
-  ObservableQuerySpendableBalances,
-} from "./balance";
+  ObservableQueryDelegations,
+  ObservableQueryRedelegations,
+  ObservableQueryRewards,
+  ObservableQueryStakingParams,
+  ObservableQueryStakingPool,
+  ObservableQueryUnbondingDelegations,
+  ObservableQueryValidators,
+} from "./staking";
+import { ObservableQueryRPCStatus } from "./status";
+import {
+  ObservableQueryInflation,
+  ObservableQueryMintingInfation,
+  ObservableQuerySupplyTotal,
+} from "./supply";
+import {
+  ObservableQueryInflationInflationPeriod,
+  ObservableQueryInflationInflationRate,
+  ObservableQueryInflationParams,
+} from "./supply/astra";
 import { ObservableQueryIrisMintingInfation } from "./supply/iris-minting";
-import { DeepReadonly } from "utility-types";
+import { ObservableQueryJunoAnnualProvisions } from "./supply/juno";
 import {
   ObservableQueryOsmosisEpochProvisions,
   ObservableQueryOsmosisEpochs,
   ObservableQueryOsmosisMintParmas,
 } from "./supply/osmosis";
-import { ObservableQueryDistributionParams } from "./distribution";
-import { ObservableQueryRPCStatus } from "./status";
-import { ObservableQueryTxs } from "../chain-indexing/tx";
-import { ObservableQueryJunoAnnualProvisions } from "./supply/juno";
-import { ObservableQueryGrants } from "./authz";
-import { ObservableQueryAllowance, ObservableQueryAllowances } from "./feegrant";
+import { ObservableQuerySifchainLiquidityAPY } from "./supply/sifchain";
 
 export interface CosmosQueries {
   cosmos: CosmosQueriesImpl;
@@ -101,6 +111,9 @@ export class CosmosQueriesImpl {
   public readonly queryIBCDenomTrace: DeepReadonly<ObservableQueryDenomTrace>;
 
   public readonly querySifchainAPY: DeepReadonly<ObservableQuerySifchainLiquidityAPY>;
+
+  public readonly queryTokens: DeepReadonly<ObservableQueryTokens>;
+  public readonly queryNfts: DeepReadonly<ObservableQueryNFTs>;
 
   constructor(
     base: QueriesSetBase,
@@ -183,7 +196,14 @@ export class CosmosQueriesImpl {
       ),
       osmosisMintParams,
       new ObservableQueryJunoAnnualProvisions(kvStore, chainId, chainGetter),
-      this.queryDistributionParams
+      this.queryDistributionParams,
+      new ObservableQueryInflationParams(kvStore, chainId, chainGetter),
+      new ObservableQueryInflationInflationPeriod(
+        kvStore,
+        chainId,
+        chainGetter
+      ),
+      new ObservableQueryInflationInflationRate(kvStore, chainId, chainGetter)
     );
     this.queryRewards = new ObservableQueryRewards(
       kvStore,
@@ -222,17 +242,9 @@ export class CosmosQueriesImpl {
       chainGetter
     );
 
-    this.queryTxs = new ObservableQueryTxs(
-      kvStore,
-      chainId,
-      chainGetter
-    );
+    this.queryTxs = new ObservableQueryTxs(kvStore, chainId, chainGetter);
 
-    this.queryGrants = new ObservableQueryGrants(
-      kvStore,
-      chainId,
-      chainGetter
-    );
+    this.queryGrants = new ObservableQueryGrants(kvStore, chainId, chainGetter);
 
     this.queryAllowance = new ObservableQueryAllowance(
       kvStore,
@@ -261,5 +273,8 @@ export class CosmosQueriesImpl {
       chainId,
       chainGetter
     );
+
+    this.queryTokens = new ObservableQueryTokens(kvStore, chainId, chainGetter);
+    this.queryNfts = new ObservableQueryNFTs(kvStore, chainId, chainGetter);
   }
 }

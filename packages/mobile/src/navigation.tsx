@@ -1,57 +1,53 @@
 /* eslint-disable react/display-name */
-import React, {
-  FunctionComponent,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
-import { Text, View, AppState, AppStateStatus } from "react-native";
 import { KeyRingStatus } from "@keplr-wallet/background";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import {
   NavigationContainer,
   NavigationContainerRef,
   StackActions,
   useNavigation,
 } from "@react-navigation/native";
-import { useStore } from "./stores";
-import { observer } from "mobx-react-lite";
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import {
   createStackNavigator,
   TransitionPresets,
 } from "@react-navigation/stack";
-import { SendScreen } from "./screens/send";
+import { observer } from "mobx-react-lite";
+import React, {
+  FunctionComponent,
+  useCallback,
+  useEffect,
+  useRef,
+} from "react";
+import { AppState, AppStateStatus, Text, View } from "react-native";
+import { BorderlessButton } from "react-native-gesture-handler";
 import {
   GovernanceDetailsScreen,
   GovernanceScreen,
 } from "./screens/governance";
-import { useStyle } from "./styles";
-import { BorderlessButton } from "react-native-gesture-handler";
-import { SettingsScreen } from "./screens/settings";
-import { ViewPrivateDataScreen } from "./screens/settings/screens/view-private-data";
-import { SettingChainListScreen } from "./screens/setting/screens/chain-list";
-import { WebScreen } from "./screens/web";
 import { RegisterIntroScreen } from "./screens/register";
+import { RegisterEndScreen } from "./screens/register/end";
 import {
   NewMnemonicScreen,
   RecoverMnemonicScreen,
   VerifyMnemonicScreen,
 } from "./screens/register/mnemonic";
-import { RegisterEndScreen } from "./screens/register/end";
 import { RegisterNewUserScreen } from "./screens/register/new-user";
 import { RegisterNotNewUserScreen } from "./screens/register/not-new-user";
+import { SendScreen } from "./screens/send";
+import { SettingChainListScreen } from "./screens/setting/screens/chain-list";
+import { SettingsScreen } from "./screens/settings";
+import { ViewPrivateDataScreen } from "./screens/settings/screens/view-private-data";
+import { WebScreen } from "./screens/web";
+import { useStore } from "./stores";
+import { useStyle } from "./styles";
 
+import { BlurredBottomTabBar } from "./components/bottom-tabbar";
 import {
-  DelegateScreen,
-  UndelegateScreen,
-  RedelegateScreen,
-  StakingDashboardScreen,
-  ValidatorDetailsScreen,
-  ValidatorListScreen,
-  StakingRewardScreen,
-  UnbondingScreen,
-} from "./screens/staking";
+  BlurredHeaderScreenOptionsPreset,
+  HeaderRightButton,
+  WalletHeaderScreenOptionsPreset,
+} from "./components/header";
+import { HeaderAddIcon } from "./components/header/icon";
 import {
   ConnectIcon,
   HistoryTabbarIcon,
@@ -59,61 +55,68 @@ import {
   SettingTabbarIcon,
   StakeTabbarIcon,
 } from "./components/icon";
+import { FocusedScreenProvider } from "./providers/focused-screen";
+import { PageScrollPositionProvider } from "./providers/page-scroll-position";
+import { CameraScreen } from "./screens/camera";
+import { TorusSignInScreen } from "./screens/register/torus";
 import {
   AddAddressBookScreen,
   AddressBookScreen,
 } from "./screens/setting/screens/address-book";
-import { PageScrollPositionProvider } from "./providers/page-scroll-position";
 import {
-  BlurredHeaderScreenOptionsPreset,
-  HeaderRightButton,
-  WalletHeaderScreenOptionsPreset,
-} from "./components/header";
+  DelegateScreen,
+  RedelegateScreen,
+  StakingDashboardScreen,
+  StakingRewardScreen,
+  UnbondingScreen,
+  UndelegateScreen,
+  ValidatorDetailsScreen,
+  ValidatorListScreen,
+} from "./screens/staking";
 import { TokensScreen } from "./screens/tokens";
-import { CameraScreen } from "./screens/camera";
-import { FocusedScreenProvider } from "./providers/focused-screen";
 import { TxEvmResultScreen, TxResultScreen } from "./screens/tx-result";
-import { TorusSignInScreen } from "./screens/register/torus";
-import { HeaderAddIcon } from "./components/header/icon";
-import { BlurredBottomTabBar } from "./components/bottom-tabbar";
 import { UnlockScreen } from "./screens/unlock";
 
+import { MainScreen } from "./screens/main";
 import {
-  SettingAddTokenScreen,
-  SettingManageTokensScreen,
-} from "./screens/setting/screens/token";
+  NFTDetailsScreen,
+  NFTQRCodeScreen,
+  NFTSendScreen,
+  ReceiveScreen,
+  SendConfirmScreen,
+  SendTokenScreen,
+  SwapScreen,
+} from "./screens/main/screens";
 import { ManageWalletConnectScreen } from "./screens/manage-wallet-connect";
 import {
   ImportFromExtensionIntroScreen,
   ImportFromExtensionScreen,
   ImportFromExtensionSetPasswordScreen,
 } from "./screens/register/import-from-extension";
-import { DappsWebpageScreen } from "./screens/web/webpages";
-import { WebpageScreenScreenOptionsPreset } from "./screens/web/components/webpage-screen";
-import { MainScreen } from "./screens/main";
-import {
-  ReceiveScreen,
-  SendConfirmScreen,
-  SendTokenScreen,
-  SwapScreen,
-} from "./screens/main/screens";
-import { RegisterTutorialcreen } from "./screens/register/tutorial";
 import { NewPincodeScreen } from "./screens/register/pincode";
+import { RegisterTutorialcreen } from "./screens/register/tutorial";
 import {
-  PasswordInputScreen,
+  SettingAddTokenScreen,
+  SettingManageTokensScreen,
+} from "./screens/setting/screens/token";
+import {
   NewPasswordInputScreen,
+  PasswordInputScreen,
 } from "./screens/settings/screens";
+import { WebpageScreenScreenOptionsPreset } from "./screens/web/components/webpage-screen";
+import { DappsWebpageScreen } from "./screens/web/webpages";
 
-import { HistoryScreen } from "./screens/history";
-import { WebViewScreen } from "./screens/web/default";
-import { SessionProposalScreen } from "./screens/wallet-connect";
 import { useIntl } from "react-intl";
-import { SmartNavigatorProvider, useSmartNavigation } from "./navigation-util";
-import { RegisterCreateEntryScreen } from "./screens/register/create-entry";
-import { SwapConfirmScreen } from "./screens/main/screens/swap-confirm";
+import { SmartNavigatorProvider } from "./navigation-util";
 import { SwapProvider } from "./providers/swap/provider";
+import { HistoryScreen } from "./screens/history";
+import { SwapConfirmScreen } from "./screens/main/screens/swap-confirm";
 import { SetupBiometricsScreen } from "./screens/register/biometrics";
-import { link } from "fs";
+import { RegisterCreateEntryScreen } from "./screens/register/create-entry";
+import { SessionProposalScreen } from "./screens/wallet-connect";
+import { WebViewScreen } from "./screens/web/default";
+import { NFTGalleryScreen } from "./screens/main/screens/nft/nft-gallery";
+import { NFTSendConfirmScreen } from "./screens/main/screens/nft/nft-send-confirm";
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -533,6 +536,46 @@ export const WalletNavigation: FunctionComponent = () => {
         name="Setting.ManageTokens"
         component={SettingManageTokensScreen}
       />
+      <Stack.Screen
+        options={{
+          title: "",
+          headerShown: false,
+        }}
+        name="NFT.Details"
+        component={NFTDetailsScreen}
+      />
+      <Stack.Screen
+        options={{
+          title: "",
+          headerShown: false,
+        }}
+        name="NFT.Send"
+        component={NFTSendScreen}
+      />
+      <Stack.Screen
+        options={{
+          title: "",
+          headerShown: false,
+        }}
+        name="NFT.SendConfirm"
+        component={NFTSendConfirmScreen}
+      />
+      <Stack.Screen
+        options={{
+          title: "",
+          headerShown: false,
+        }}
+        name="NFT.QRCode"
+        component={NFTQRCodeScreen}
+      />
+      <Stack.Screen
+        options={{
+          title: "",
+          headerShown: false,
+        }}
+        name="NFT.Gallery"
+        component={NFTGalleryScreen}
+      />
     </Stack.Navigator>
   );
 };
@@ -797,9 +840,9 @@ export const MainTabNavigation: FunctionComponent = () => {
       <Tab.Screen
         name="NewMain"
         component={NewMainNavigation}
-        options={{
-          unmountOnBlur: true,
-        }}
+        // options={{
+        //   unmountOnBlur: true,
+        // }}
       />
       <Tab.Screen name="Stake" component={StakingNavigation} />
       {dappsEnabled && <Tab.Screen name="D-apps" component={WebNavigation} />}

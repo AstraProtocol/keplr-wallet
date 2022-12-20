@@ -27,6 +27,8 @@ export interface AppChainInfo extends ChainInfo {
   readonly chainIdNumber?: ChainId;
   readonly documentsUrl?: string;
   readonly chainIndexingUrl: string;
+  readonly ticketHubUrl: string;
+  readonly blockscoutUrl: string;
 }
 
 export const EmbedChainInfos: AppChainInfo[] = [
@@ -105,5 +107,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
     },
     documentsUrl: "https://wallet.astranaut.dev",
     chainIndexingUrl: "https://chainindexing.astranaut.dev",
+    ticketHubUrl: "https://api.tala.xyz/tickethub",
+    blockscoutUrl: "https://blockscout.astranaut.dev",
   },
 ];

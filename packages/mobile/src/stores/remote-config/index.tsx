@@ -9,11 +9,12 @@ export class RemoteConfigStore {
       .setDefaults({
         feature_stackity_env: "uat",
         feature_dapps_enabled: false,
-        feature_swap_enabled: false,
+        feature_swap_enabled: true,
         feature_socialLogin_enabled: true,
         feature_debug_enabled: false,
         feature_wallet_connect: true,
         feature_remote_notification: true,
+        feature_nft_support_enabled: true,
       })
       .then(() => {
         remoteConfig()

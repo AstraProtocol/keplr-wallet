@@ -42,6 +42,11 @@ const BaseTypos = {
     lineHeight: 20,
     ...getPlatformFontWeight("600"),
   },
+  "text-base-bold": {
+    fontSize: 14,
+    lineHeight: 20,
+    ...getPlatformFontWeight("700"),
+  },
 };
 
 const MediumTypos = {
@@ -68,6 +73,11 @@ const MediumTypos = {
 };
 
 const LargeTypos = {
+  "text-large-medium": {
+    fontSize: 18,
+    lineHeight: 24,
+    ...getPlatformFontWeight("500"),
+  },
   "text-large-semi-bold": {
     fontSize: 18,
     lineHeight: 24,

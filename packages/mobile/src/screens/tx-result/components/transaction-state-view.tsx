@@ -1,3 +1,4 @@
+import { Msg as AminoMsg } from "@cosmjs/launchpad";
 import LottieView from "lottie-react-native";
 import { observer } from "mobx-react-lite";
 import React, { FunctionComponent, useEffect, useState } from "react";
@@ -12,8 +13,6 @@ import {
 import { useStore } from "../../../stores";
 import { TxState } from "../../../stores/transaction";
 import { useStyle } from "../../../styles";
-import { Msg as AminoMsg } from "@cosmjs/launchpad";
-import { formatCoin } from "../../../common/utils";
 
 export const TransactionStateView: FunctionComponent<{
   style?: ViewStyle;
@@ -21,7 +20,7 @@ export const TransactionStateView: FunctionComponent<{
   const { transactionStore, accountStore, chainStore } = useStore();
 
   const [txState, setTxState] = useState(transactionStore.txState);
-  const [amountText, setAmountText] = useState("");
+  const [txContent, setTxContent] = useState("");
   const msgs = transactionStore.txMsgs as readonly AminoMsg[];
 
   useEffect(() => {
@@ -29,8 +28,8 @@ export const TransactionStateView: FunctionComponent<{
   }, [transactionStore.txState]);
 
   useEffect(() => {
-    setAmountText(formatCoin(transactionStore.txAmount, false, 2));
-  }, [transactionStore.txAmount]);
+    setTxContent(transactionStore.txContent || "");
+  }, [transactionStore.txContent]);
 
   const isFailure = txState == "failure";
 
@@ -93,6 +92,17 @@ export const TransactionStateView: FunctionComponent<{
         success: intl.formatMessage({ id: "tx.result.state.swap.success" }),
         failure: intl.formatMessage({ id: "tx.result.state.swap.failure" }),
       },
+      ["transfer-nft"]: {
+        pending: intl.formatMessage({
+          id: "tx.result.state.transferNFT.pending",
+        }),
+        success: intl.formatMessage({
+          id: "tx.result.state.transferNFT.success",
+        }),
+        failure: intl.formatMessage({
+          id: "tx.result.state.transferNFT.failure",
+        }),
+      },
     };
 
     const mainText = allMainText[type];
@@ -113,7 +123,7 @@ export const TransactionStateView: FunctionComponent<{
   const isShowStep = typeMsg !== "wallet-swap";
   const mainText = getMainText(typeMsg, txState);
   const errorText = intl.formatMessage({ id: "tx.result.state.error" });
-  const subText = isFailure ? errorText : amountText;
+  const subText = isFailure ? errorText : txContent;
 
   const mainTextStyle = {
     ...(isFailure

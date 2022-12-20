@@ -1,12 +1,18 @@
-import React, { FunctionComponent } from "react";
-import { ViewStyle, StyleSheet, Text, View } from "react-native";
-import { Colors, useStyle } from "../../../styles";
 import Clipboard from "expo-clipboard";
-import { Button } from "../../../components/button";
-import QRCode from "react-native-qrcode-svg";
+import React, { FunctionComponent } from "react";
 import { useIntl } from "react-intl";
+import {
+  StyleSheet,
+  Text,
+  useWindowDimensions,
+  View,
+  ViewStyle,
+} from "react-native";
+import QRCode from "react-native-qrcode-svg";
+import { Button } from "../../../components/button";
 import { useToastModal } from "../../../providers/toast-modal";
 import { useStore } from "../../../stores";
+import { useStyle } from "../../../styles";
 export const AddressQRCodeItem: FunctionComponent<{
   style?: ViewStyle;
   bech32Address: string;
@@ -16,6 +22,7 @@ export const AddressQRCodeItem: FunctionComponent<{
   const intl = useIntl();
   const toast = useToastModal();
   const { analyticsStore } = useStore();
+  const windowDimensions = useWindowDimensions();
 
   return (
     <View
@@ -33,13 +40,15 @@ export const AddressQRCodeItem: FunctionComponent<{
         propStyle,
       ])}
     >
-      <View style={style.flatten([
-        "padding-16",
-        "border-radius-16",
-        "background-color-white",
-      ])}>
+      <View
+        style={style.flatten([
+          "padding-16",
+          "border-radius-16",
+          "background-color-white",
+        ])}
+      >
         <QRCode
-          size={200}
+          size={windowDimensions.width - 2 * (16 + 32 + 16)}
           color={"black"}
           backgroundColor={"white"}
           value={hexAddress}
@@ -65,7 +74,7 @@ export const AddressQRCodeItem: FunctionComponent<{
         })}
         onPress={() => {
           analyticsStore.logEvent("astra_hub_select_copy_address", {
-            copy_address: hexAddress
+            copy_address: hexAddress,
           });
           console.log("__DEBUG__ hexAddress: ", hexAddress);
           console.log("__DEBUG__ bech32Address: ", bech32Address);

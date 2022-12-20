@@ -2,19 +2,15 @@
 
 import { Bech32Address } from "@keplr-wallet/cosmos";
 import { CoinPrimitive } from "@keplr-wallet/stores";
-import { AppCurrency, Currency } from "@keplr-wallet/types";
+import { Currency } from "@keplr-wallet/types";
 import { Coin, CoinPretty, CoinUtils, IntPretty } from "@keplr-wallet/unit";
 import yaml from "js-yaml";
 import React, { FunctionComponent, useEffect, useMemo, useState } from "react";
 import { Text } from "react-native";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-import Hypher from "hypher";
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
 import converter from "bech32-converting";
 import { Buffer } from "buffer/";
-import english from "hyphenation.en-us";
 import { observer } from "mobx-react-lite";
 import { useIntl } from "react-intl";
 import { formatCoin, formatDate } from "../../../common/utils";
@@ -27,13 +23,6 @@ import {
 } from "../../../components";
 import { useStore } from "../../../stores";
 import { useStyle } from "../../../styles";
-
-const h = new Hypher(english);
-
-// https://zpl.fi/hyphenation-in-react-native/
-function hyphen(text: string): string {
-  return h.hyphenateText(text);
-}
 
 export interface MessageObj {
   readonly type: string;
@@ -187,6 +176,13 @@ export interface MsgSwap {
   transactionHash?: string;
   txFee?: string;
   gasUsed?: string;
+}
+
+export interface MsgTransferNFT {
+  value: {
+    fee: CoinPretty;
+    recipient: string;
+  };
 }
 
 // eslint-disable-next-line @typescript-eslint/ban-types
@@ -350,86 +346,6 @@ export function renderMsgSwap(data: MsgSwap): IRow[] {
           buildRightColumn({
             text: formatDate(new Date()),
           }),
-        ],
-      },
-    ],
-    separatorRow
-  );
-
-  return rows;
-}
-
-export function renderMsgTransfer(
-  currencies: AppCurrency[],
-  amount: CoinPrimitive,
-  receiver: string,
-  channelId: string
-) {
-  const intl = useIntl();
-  const coin = new Coin(amount.denom, amount.amount);
-  const parsed = CoinUtils.parseDecAndDenomFromCoin(currencies, coin);
-
-  amount = {
-    amount: clearDecimals(parsed.amount),
-    denom: parsed.denom,
-  };
-
-  const separatorRow: IRow = { type: "separator" };
-  const rows: IRow[] = join(
-    [
-      {
-        ...common,
-        alignItems: AlignItems.top,
-        cols: [
-          buildLeftColumn({
-            text: intl.formatMessage({
-              id: "tx.result.models.msgTransfer.type",
-            }),
-            flex: 3,
-          }),
-          buildRightColumn({ text: "", flex: 7 }),
-        ],
-      },
-      {
-        ...common,
-        alignItems: AlignItems.top,
-        cols: [
-          buildLeftColumn({
-            text: intl.formatMessage({
-              id: "tx.result.models.msgTransfer.from",
-            }),
-            flex: 3,
-          }),
-          buildRightColumn({
-            text: hyphen(`${amount.amount} ${amount.denom}`),
-            flex: 7,
-          }),
-        ],
-      },
-      {
-        ...common,
-        alignItems: AlignItems.top,
-        cols: [
-          buildLeftColumn({
-            text: intl.formatMessage({ id: "tx.result.models.msgTransfer.to" }),
-            flex: 3,
-          }),
-          buildRightColumn({
-            text: hyphen(Bech32Address.shortenAddress(receiver, 20)),
-            flex: 7,
-          }),
-        ],
-      },
-      {
-        ...common,
-        cols: [
-          buildLeftColumn({
-            text: intl.formatMessage({
-              id: "tx.result.models.msgTransfer.channelLabel",
-            }),
-            flex: 3,
-          }),
-          buildRightColumn({ text: channelId, flex: 7 }),
         ],
       },
     ],
@@ -812,6 +728,62 @@ export function renderMsgExecuteContract(
       </Text>
     ),
   };
+}
+
+export function renderMsgTransferNFT(value: MsgTransferNFT["value"]): IRow[] {
+  const intl = useIntl();
+
+  let _toAddress = value.recipient;
+  if (_toAddress.startsWith("astra")) {
+    try {
+      _toAddress = converter("astra").toHex(value.recipient);
+      console.log("toAddress: ", _toAddress);
+    } catch {}
+  }
+
+  const separatorRow: IRow = { type: "separator" };
+  const rows: IRow[] = join(
+    [
+      {
+        ...common,
+        alignItems: AlignItems.top,
+        cols: [
+          buildLeftColumn({
+            text: intl.formatMessage({
+              id: "tx.result.models.msgSend.reveiver",
+            }),
+            flex: 4,
+          }),
+          buildRightColumn({ text: _toAddress, flex: 6 }),
+        ],
+      },
+      {
+        ...common,
+        cols: [
+          buildLeftColumn({
+            text: intl.formatMessage({
+              id: "tx.result.models.msgSend.time",
+            }),
+            flex: 4,
+          }),
+          buildRightColumn({ text: formatDate(new Date()), flex: 6 }),
+        ],
+      },
+      {
+        ...common,
+        cols: [
+          buildLeftColumn({
+            text: intl.formatMessage({ id: "tx.result.models.msgSend.fee" }),
+            flex: 3,
+          }),
+          buildRightColumn({ text: formatCoin(value.fee, false, 6), flex: 7 }),
+        ],
+      },
+    ],
+    separatorRow
+  );
+
+  return rows;
 }
 
 export const WasmExecutionMsgView: FunctionComponent<{
