@@ -110,7 +110,6 @@
     "react-native-device-info": "^8.3.1",
     "react-native-fast-image": "^8.3.7",
     "react-native-fs": "^2.18.0",
-    "react-native-gesture-handler": "^1.10.3",
     "react-native-keyboard-aware-scroll-view": "^0.9.5",
     "react-native-keychain": "^7.0.0",
     "react-native-localize": "^2.1.1",
@@ -156,8 +155,7 @@
     "web3-providers-http": "^1.7.5",
     "@react-native-firebase/app": "16.4.4",
     "@react-native-firebase/messaging": "16.4.4",
-    "react-native-collapsible-tab-view": "2.0.2",
-    "@react-navigation/material-top-tabs": "^5.3.8"
+    "react-native-gesture-handler": "^1.10.3"
   },
   "devDependencies": {
     "@ethersproject/solidity": "^5.0.2",

@@ -44,7 +44,7 @@ export const ManageWalletConnectScreen: FunctionComponent = observer(() => {
 
   return (
     <PageWithScrollView backgroundColor={style.get("color-background").color}>
-      <View style={style.flatten(["flex-1", "padding-x-0", "padding-y-8"])}>
+      <View style={style.flatten(["flex", "padding-x-0", "padding-y-0"])}>
         <CardDivider
           style={style.flatten(["margin-0", "background-color-gray-70"])}
         />

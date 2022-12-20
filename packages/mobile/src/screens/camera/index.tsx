@@ -38,7 +38,6 @@ export const CameraScreen: FunctionComponent = observer(() => {
   // Expectedly, screen should be moved to other after processing the result.
   const [isCompleted, setIsCompleted] = useState(true);
   const qrCode = useRef("");
-
   useFocusEffect(
     useCallback(() => {
       // If the other screen is pushed according to the qr code data,
