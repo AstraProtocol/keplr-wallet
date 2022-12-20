@@ -1,20 +1,12 @@
 import React, { FunctionComponent, useEffect, useState } from "react";
-import {
-  View,
-  Image,
-  Text,
-  Animated,
-  Dimensions,
-  ScrollView,
-} from "react-native";
+import { View, Image, Text, Animated } from "react-native";
 // import { ScrollView, TouchableOpacity } from "react-native-gesture-handler";
 import { useIntl } from "react-intl";
-import FastImage from "react-native-fast-image";
 import { Button } from "../../components";
 import { CardDivider } from "../../components/card";
 import { useStore } from "../../stores";
 import { useStyle } from "../../styles";
-import { RawDataCard, renderMessage } from "./components";
+import { RawDataCard, renderMessage, RequestHeaderView } from "./components";
 import { Msg as AminoMsg } from "@cosmjs/launchpad";
 import { getType, SignMsgType } from "./helper";
 import SignRequestTabView from "./tabview-scrollable";
@@ -38,6 +30,7 @@ export const TransactionSignRequestView: FunctionComponent<{
     const requestSession = signClientStore.requestSession(
       pendingRequest?.topic
     );
+    console.log("__DEBUG__: ", requestSession);
     if (pendingRequest && requestSession) {
       setIsWC(true);
     }
@@ -63,7 +56,7 @@ export const TransactionSignRequestView: FunctionComponent<{
   const type = getType(msgs as any[]);
   const source = isWC ? session?.peer.metadata.name : data?.msgOrigin;
   const sourceUrl = isWC ? session?.peer.metadata.url : data?.msgOrigin;
-
+  console.log(source, sourceUrl);
   const intl = useIntl();
 
   const renderDetail = ({ index }: { index: number }) => {
@@ -95,100 +88,6 @@ export const TransactionSignRequestView: FunctionComponent<{
     },
   ];
 
-  const header = () => {
-    return (
-      <View
-        style={style.flatten([
-          // "padding-x-16",
-          "flex-1",
-          "margin-top-64",
-          "background-color-card-background",
-        ])}
-      >
-        <View
-          style={style.flatten([
-            "padding-12",
-            "flex-row",
-            "justify-center",
-            "items-center",
-          ])}
-        >
-          <View
-            style={style.flatten([
-              "width-80",
-              "height-80",
-              "border-radius-64",
-              "background-color-secondary",
-              "items-center",
-              "justify-center",
-            ])}
-          >
-            {metadata && metadata.icons.length > 0 ? (
-              <FastImage
-                style={{
-                  width: 64,
-                  height: 64,
-                }}
-                source={{
-                  uri: metadata.icons[0],
-                }}
-                resizeMode={FastImage.resizeMode.contain}
-              />
-            ) : (
-              <Image
-                source={require("../../assets/image/icon_verified.png")}
-                resizeMode="contain"
-                style={style.flatten(["width-64", "height-64"])}
-              />
-            )}
-          </View>
-        </View>
-        <Text style={style.flatten(["color-gray-10", "text-center", "h4"])}>
-          {intl.formatMessage(
-            { id: "walletconnect.text.verify" },
-            { name: source, type: type }
-          )}
-        </Text>
-        <View
-          style={style.flatten([
-            "margin-top-8",
-            "flex-row",
-            "height-24",
-            "justify-center",
-            "items-center",
-          ])}
-        >
-          <Text style={style.flatten(["color-gray-30", "body3"])}>
-            {sourceUrl}
-          </Text>
-          <View
-            style={style.flatten([
-              "height-24",
-              "margin-left-6",
-              "padding-x-6",
-              "border-radius-22",
-              "border-width-1",
-              "border-color-blue-60",
-              "background-color-alert-inline-info-background",
-              "items-center",
-              "justify-center",
-            ])}
-          >
-            <Text
-              style={style.flatten([
-                "color-gray-10",
-                "text-center",
-                "text-caption2",
-              ])}
-            >
-              {chainStore.current.chainName}
-            </Text>
-          </View>
-        </View>
-      </View>
-    );
-  };
-
   return (
     <React.Fragment>
       {type === SignMsgType.Unknown ? (
@@ -196,95 +95,18 @@ export const TransactionSignRequestView: FunctionComponent<{
           style={style.flatten(["flex-1", "background-color-card-background"])}
           contentContainerStyle={style.flatten(["flex-grow-1"])}
         >
-          <View
-            style={style.flatten([
-              // "padding-x-16",
+          <RequestHeaderView
+            containerStyle={style.flatten([
+              "padding-x-16",
               "flex-1",
               "margin-top-64",
               "background-color-card-background",
             ])}
-          >
-            <View
-              style={style.flatten([
-                "padding-12",
-                "flex-row",
-                "justify-center",
-                "items-center",
-              ])}
-            >
-              <View
-                style={style.flatten([
-                  "width-80",
-                  "height-80",
-                  "border-radius-64",
-                  "background-color-secondary",
-                  "items-center",
-                  "justify-center",
-                ])}
-              >
-                {metadata && metadata.icons.length > 0 ? (
-                  <FastImage
-                    style={{
-                      width: 64,
-                      height: 64,
-                    }}
-                    source={{
-                      uri: metadata.icons[0],
-                    }}
-                    resizeMode={FastImage.resizeMode.contain}
-                  />
-                ) : (
-                  <Image
-                    source={require("../../assets/image/icon_verified.png")}
-                    resizeMode="contain"
-                    style={style.flatten(["width-64", "height-64"])}
-                  />
-                )}
-              </View>
-            </View>
-            <Text style={style.flatten(["color-gray-10", "text-center", "h4"])}>
-              {intl.formatMessage(
-                { id: "walletconnect.text.verify" },
-                { name: source, type: type }
-              )}
-            </Text>
-            <View
-              style={style.flatten([
-                "margin-top-8",
-                "flex-row",
-                "height-24",
-                "justify-center",
-                "items-center",
-              ])}
-            >
-              <Text style={style.flatten(["color-gray-30", "body3"])}>
-                {sourceUrl}
-              </Text>
-              <View
-                style={style.flatten([
-                  "height-24",
-                  "margin-left-6",
-                  "padding-x-6",
-                  "border-radius-22",
-                  "border-width-1",
-                  "border-color-blue-60",
-                  "background-color-alert-inline-info-background",
-                  "items-center",
-                  "justify-center",
-                ])}
-              >
-                <Text
-                  style={style.flatten([
-                    "color-gray-10",
-                    "text-center",
-                    "text-caption2",
-                  ])}
-                >
-                  {chainStore.current.chainName}
-                </Text>
-              </View>
-            </View>
-          </View>
+            metadata={metadata}
+            source={source}
+            sourceUrl={sourceUrl}
+            chain={chainStore.current.chainName}
+          />
           <RawDataCard
             containerStyle={style.flatten([
               "margin-y-card-gap",
@@ -299,7 +121,19 @@ export const TransactionSignRequestView: FunctionComponent<{
           data={msgs as any[]}
           routes={routes}
           renderDetails={renderDetail}
-          header={header}
+          header={
+            <RequestHeaderView
+              containerStyle={style.flatten([
+                "flex-1",
+                "margin-top-64",
+                "background-color-card-background",
+              ])}
+              metadata={metadata}
+              source={source}
+              sourceUrl={sourceUrl}
+              chain={chainStore.current.chainName}
+            />
+          }
         />
       )}
       <View

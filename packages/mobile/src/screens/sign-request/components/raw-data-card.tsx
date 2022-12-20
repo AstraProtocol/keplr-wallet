@@ -16,7 +16,10 @@ export const RawDataCard: FunctionComponent<{
     return (msgs as readonly AminoMsg[]).map((msg, i) => {
       const { content } = renderRawDataMessage(msg, showHeader, i);
       return (
-        <CardBody style={style.flatten(["padding-y-0"])} key={i.toString()}>
+        <CardBody
+          style={style.flatten(["padding-y-0", "margin-bottom-16"])}
+          key={i.toString()}
+        >
           {content}
         </CardBody>
       );

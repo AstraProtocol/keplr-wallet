@@ -9,12 +9,15 @@ import {
   Platform,
   StatusBar,
 } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { TabView, TabBar } from "react-native-tab-view";
 import { renderRawDataMessage } from "./components/messages";
+
 const windowHeight = Dimensions.get("window").height;
 const windowWidth = Dimensions.get("window").width;
-const TabBarHeight = 48;
-const HeaderHeight = 300;
+const TabBarHeight = 64;
+const HeaderHeight = 260;
+
 const SafeStatusBar = Platform.select({
   ios: 44,
   android: StatusBar.currentHeight,
@@ -22,7 +25,7 @@ const SafeStatusBar = Platform.select({
 
 const SignRequestTabView = (prop: {
   data: any[],
-  header: () => JSX.Element,
+  header: JSX.Element,
   routes: {
     key: string,
     title: string,
@@ -35,7 +38,7 @@ const SignRequestTabView = (prop: {
   /**
    * stats
    */
-  const [header] = useState(prop.header);
+  // const [header] = useState(prop.header);
   const [tabIndex, setIndex] = useState(0);
   const [routes] = useState(prop.routes);
   const [canScroll, setCanScroll] = useState(true);
@@ -213,7 +216,7 @@ const SignRequestTabView = (prop: {
         {...headerPanResponder.panHandlers}
         style={[styles.header, { transform: [{ translateY: y }] }]}
       >
-        {header}
+        {prop.header}
       </Animated.View>
     );
   };
@@ -283,11 +286,11 @@ const SignRequestTabView = (prop: {
         onMomentumScrollBegin={onMomentumScrollBegin}
         onScrollEndDrag={onScrollEndDrag}
         onMomentumScrollEnd={onMomentumScrollEnd}
-        ItemSeparatorComponent={() => <View style={{ height: 10 }} />}
-        ListHeaderComponent={() => <View style={{ height: 10 }} />}
+        ItemSeparatorComponent={() => <View style={{ height: 16 }} />}
+        ListHeaderComponent={() => <View style={{ height: 16 }} />}
         contentContainerStyle={{
           paddingTop: HeaderHeight + TabBarHeight,
-          paddingHorizontal: 10,
+          paddingHorizontal: 16,
           minHeight: windowHeight - SafeStatusBar + HeaderHeight,
         }}
         showsHorizontalScrollIndicator={false}
