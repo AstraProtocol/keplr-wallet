@@ -1,26 +1,28 @@
-import { computed, makeObservable } from "mobx";
 import { Dec, DecUtils, Int, IntPretty } from "@keplr-wallet/unit";
-import { ObservableQuerySupplyTotal } from "./supply";
-import { MintingInflation } from "./types";
-import { ObservableChainQuery } from "../../chain-query";
+import { computed, makeObservable } from "mobx";
 import { ChainGetter } from "../../../common";
+import { ObservableChainQuery } from "../../chain-query";
+import { ObservableQueryDistributionParams } from "../distribution";
+import { ObservableQueryStakingPool } from "../staking";
+import {
+  Coin,
+  InflationParams,
+  InflationPeriod,
+  ObservableQueryInflationEpochMintProvision,
+  ObservableQueryInflationInflationPeriod,
+  ObservableQueryInflationInflationRate,
+  ObservableQueryInflationParams,
+} from "./astra";
 import { ObservableQueryIrisMintingInfation } from "./iris-minting";
-import { ObservableQuerySifchainLiquidityAPY } from "./sifchain";
+import { ObservableQueryJunoAnnualProvisions } from "./juno/annual-provisions";
 import {
   ObservableQueryOsmosisEpochProvisions,
   ObservableQueryOsmosisEpochs,
   ObservableQueryOsmosisMintParmas,
 } from "./osmosis";
-import { ObservableQueryDistributionParams } from "../distribution";
-import { ObservableQueryStakingPool } from "../staking";
-import { ObservableQueryJunoAnnualProvisions } from "./juno/annual-provisions";
-import {
-  InflationParams,
-  InflationPeriod,
-  ObservableQueryInflationInflationPeriod,
-  ObservableQueryInflationInflationRate,
-  ObservableQueryInflationParams,
-} from "./astra";
+import { ObservableQuerySifchainLiquidityAPY } from "./sifchain";
+import { ObservableQuerySupplyTotal } from "./supply";
+import { MintingInflation } from "./types";
 
 export class ObservableQueryInflation {
   constructor(
@@ -37,6 +39,7 @@ export class ObservableQueryInflation {
     protected readonly _queryJunoAnnualProvisions: ObservableQueryJunoAnnualProvisions,
     protected readonly _queryDistributionParams: ObservableQueryDistributionParams,
     protected readonly _queryAstraInflationParams: ObservableQueryInflationParams,
+    protected readonly _queryAstraInflationEpochMintProvision: ObservableQueryInflationEpochMintProvision,
     protected readonly _queryAstraInflationPeriod: ObservableQueryInflationInflationPeriod,
     protected readonly _queryAstraInflationRate: ObservableQueryInflationInflationRate
   ) {
@@ -193,17 +196,22 @@ export class ObservableQueryInflation {
   }
 
   @computed
-  get inflationParams(): InflationParams | undefined {
+  get params(): InflationParams | undefined {
     return this._queryAstraInflationParams.params;
   }
 
   @computed
-  get inflationRate(): Dec | undefined {
+  get epochMintProvision(): Coin | undefined {
+    return this._queryAstraInflationEpochMintProvision.epochMintProvision;
+  }
+
+  @computed
+  get rate(): Dec | undefined {
     return this._queryAstraInflationRate.rate;
   }
 
   @computed
-  get inflationPeriod(): InflationPeriod | undefined {
+  get period(): InflationPeriod | undefined {
     return this._queryAstraInflationPeriod.period;
   }
 }

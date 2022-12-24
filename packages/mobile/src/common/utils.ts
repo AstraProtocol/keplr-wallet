@@ -19,7 +19,11 @@ export const TX_GAS_DEFAULT = {
   withdraw: 250000,
 };
 
-export const formatCoin = (coin?: CoinPretty, hideDenom: boolean = false, maximumFractionDigits: number | undefined = undefined) => {
+export const formatCoin = (
+  coin?: CoinPretty,
+  hideDenom: boolean = false,
+  maximumFractionDigits: number | undefined = undefined
+) => {
   if (!coin) {
     return "";
   }
@@ -30,7 +34,8 @@ export const formatCoin = (coin?: CoinPretty, hideDenom: boolean = false, maximu
   });
 
   // Prevent rounded value
-  const fractionDigits = maximumFractionDigits ?? LOCALE_FORMAT.maximumFractionDigits(value);
+  const fractionDigits =
+    maximumFractionDigits ?? LOCALE_FORMAT.maximumFractionDigits(value);
   const parts = formattedText.split(LOCALE_FORMAT.fractionDelimitter);
 
   if (fractionDigits != 0) {
@@ -77,11 +82,15 @@ export const formatTextNumber = (value: string) => {
   return replacedValue;
 };
 
-export const formatPercent = (value: any, hideSymbol: boolean = false) => {
+export const formatPercent = (
+  value: any,
+  hideSymbol: boolean = false,
+  maxDecimals: number = 0
+) => {
   return (
     new IntPretty(new Dec(value ?? 0))
       .moveDecimalPointRight(2)
-      .maxDecimals(2)
+      .maxDecimals(maxDecimals)
       .trim(true)
       .toString() + (hideSymbol ? "" : "%")
   );

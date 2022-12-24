@@ -1,12 +1,23 @@
 export type InflationParams = {
-  params: {
-    mint_denom: string;
-    inflation_parameters: {
-      max_staking_rewards: string;
-      r: string;
-    };
-    enable_inflation: boolean;
+  mint_denom: string;
+  inflation_parameters: {
+    max_staking_rewards: string;
+    r: string;
   };
+  enable_inflation: boolean;
+};
+
+export type InflationParamsResponse = {
+  params: InflationParams;
+};
+
+export type Coin = {
+  denom: string;
+  amount: string;
+};
+
+export type InflationEpochMintProvision = {
+  epoch_mint_provision: Coin;
 };
 
 export type InflationPeriod = {

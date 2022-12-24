@@ -3,9 +3,16 @@ import { Dec } from "@keplr-wallet/unit";
 import { computed, makeObservable } from "mobx";
 import { ChainGetter } from "../../../../common";
 import { ObservableChainQuery } from "../../../chain-query";
-import { InflationParams, InflationPeriod, InflationRate } from "./types";
+import {
+  Coin,
+  InflationEpochMintProvision,
+  InflationParams,
+  InflationParamsResponse,
+  InflationPeriod,
+  InflationRate,
+} from "./types";
 
-export class ObservableQueryInflationParams extends ObservableChainQuery<InflationParams> {
+export class ObservableQueryInflationParams extends ObservableChainQuery<InflationParamsResponse> {
   constructor(kvStore: KVStore, chainId: string, chainGetter: ChainGetter) {
     super(kvStore, chainId, chainGetter, "/astra/inflation/v1/params");
 
@@ -22,7 +29,33 @@ export class ObservableQueryInflationParams extends ObservableChainQuery<Inflati
       throw Error(this.error.message);
     }
 
-    return this.response.data;
+    return this.response.data.params;
+  }
+}
+
+export class ObservableQueryInflationEpochMintProvision extends ObservableChainQuery<InflationEpochMintProvision> {
+  constructor(kvStore: KVStore, chainId: string, chainGetter: ChainGetter) {
+    super(
+      kvStore,
+      chainId,
+      chainGetter,
+      "/astra/inflation/v1/epoch_mint_provision"
+    );
+
+    makeObservable(this);
+  }
+
+  @computed
+  get epochMintProvision(): Coin | undefined {
+    if (!this.response) {
+      return;
+    }
+
+    if (this.error) {
+      throw Error(this.error.message);
+    }
+
+    return this.response.data.epoch_mint_provision;
   }
 }
 

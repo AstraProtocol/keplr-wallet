@@ -19,7 +19,6 @@ import { Keyboard, Text, View } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import {
   FEE_RESERVATION,
-  formatCoin,
   formatPercent,
   formatUnbondingTime,
   MIN_AMOUNT,
@@ -41,8 +40,8 @@ import { useSmartNavigation } from "../../../navigation-util";
 import { ChainStore, useStore } from "../../../stores";
 import { useStyle } from "../../../styles";
 import { AmountInput } from "../../main/components";
-import { useStaking } from "../hook/use-staking";
 import { EstimateRewardsView, StakingValidatorItem } from "../component";
+import { useStaking } from "../hook/use-staking";
 
 export const DelegateScreen: FunctionComponent = observer(() => {
   const route = useRoute<

@@ -41,6 +41,7 @@ import {
   ObservableQuerySupplyTotal,
 } from "./supply";
 import {
+  ObservableQueryInflationEpochMintProvision,
   ObservableQueryInflationInflationPeriod,
   ObservableQueryInflationInflationRate,
   ObservableQueryInflationParams,
@@ -198,6 +199,11 @@ export class CosmosQueriesImpl {
       new ObservableQueryJunoAnnualProvisions(kvStore, chainId, chainGetter),
       this.queryDistributionParams,
       new ObservableQueryInflationParams(kvStore, chainId, chainGetter),
+      new ObservableQueryInflationEpochMintProvision(
+        kvStore,
+        chainId,
+        chainGetter
+      ),
       new ObservableQueryInflationInflationPeriod(
         kvStore,
         chainId,

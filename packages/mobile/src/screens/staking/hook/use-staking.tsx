@@ -25,6 +25,22 @@ export const useStaking = () => {
   const queryRedelegations = queries.cosmos.queryRedelegations.getQueryBech32Address(
     account.bech32Address
   );
+  const queryPool = queries.cosmos.queryPool;
+  const queryInflation = queries.cosmos.queryInflation;
+
+  const getChainAPR = () => {
+    const dailyRewards = Number(
+      queryInflation.epochMintProvision?.amount || "0"
+    );
+
+    if (queryPool.bondedTokens.toDec().isZero() || dailyRewards === 0) {
+      return 0;
+    }
+
+    const bonded = Number(queryPool.bondedTokens.toCoin().amount);
+
+    return (dailyRewards * 365.25) / bonded;
+  };
 
   const getValidators = (
     status:
@@ -49,8 +65,12 @@ export const useStaking = () => {
   };
 
   const getValidatorAPR = (validatorAddress: string) => {
-    return 0.25;
-    // return getValidator(validatorAddress);
+    const validator = getValidator(validatorAddress);
+    const chainAPR = getChainAPR();
+    const commissionRate = Number(
+      validator?.commission.commission_rates.rate || "0"
+    );
+    return chainAPR * (1 - commissionRate);
   };
 
   const getTotalSharesAmountOf = (validatorAddress: string) => {
