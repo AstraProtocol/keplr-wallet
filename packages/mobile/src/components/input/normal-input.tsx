@@ -39,6 +39,7 @@ interface NormalInputProps {
   ) => void;
   returnKeyType?: ReturnKeyTypeOptions;
   editable?: boolean;
+  rightLabelView?: React.ReactNode;
 }
 
 export const NormalInput: FunctionComponent<NormalInputProps> = observer(
@@ -65,6 +66,7 @@ export const NormalInput: FunctionComponent<NormalInputProps> = observer(
     onSubmitEditting,
     returnKeyType = "done",
     editable = true,
+    rightLabelView,
   }) => {
     const styleBuilder = useStyle();
 
@@ -73,7 +75,7 @@ export const NormalInput: FunctionComponent<NormalInputProps> = observer(
 
     const labelStyle = {
       ...styleBuilder.flatten([
-        "text-base-semi-bold",
+        "text-base-bold",
         "color-input-label",
         "margin-bottom-4",
       ]),
@@ -84,7 +86,7 @@ export const NormalInput: FunctionComponent<NormalInputProps> = observer(
         "text-small-regular",
         errorText && errorText.length != 0
           ? "color-input-error"
-          : "color-input-label",
+          : "color-input-info",
       ]),
     };
 
@@ -182,10 +184,11 @@ export const NormalInput: FunctionComponent<NormalInputProps> = observer(
           value={value}
           placeholder={placeholder}
           label={label}
+          rightLabelView={rightLabelView}
           labelStyle={labelStyle}
           error={errorText || info}
           errorLabelStyle={errorLabelStyle}
-          placeholderTextColor={styleBuilder.get("color-input-label").color}
+          placeholderTextColor={styleBuilder.get("color-input-placeholder").color}
           inputContainerStyle={inputContainerStyle}
           containerStyle={containerStyle}
           style={textInputStyle}

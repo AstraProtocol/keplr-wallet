@@ -110,13 +110,13 @@ import { useIntl } from "react-intl";
 import { SmartNavigatorProvider } from "./navigation-util";
 import { SwapProvider } from "./providers/swap/provider";
 import { HistoryScreen } from "./screens/history";
+import { NFTGalleryScreen } from "./screens/main/screens/nft/nft-gallery";
+import { NFTSendConfirmScreen } from "./screens/main/screens/nft/nft-send-confirm";
 import { SwapConfirmScreen } from "./screens/main/screens/swap-confirm";
 import { SetupBiometricsScreen } from "./screens/register/biometrics";
 import { RegisterCreateEntryScreen } from "./screens/register/create-entry";
 import { SessionProposalScreen } from "./screens/wallet-connect";
 import { WebViewScreen } from "./screens/web/default";
-import { NFTGalleryScreen } from "./screens/main/screens/nft/nft-gallery";
-import { NFTSendConfirmScreen } from "./screens/main/screens/nft/nft-send-confirm";
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -311,7 +311,6 @@ export const TransactionNavigation: FunctionComponent = () => {
 };
 
 export const StakingNavigation: FunctionComponent = () => {
-  const intl = useIntl();
   const style = useStyle();
   const screenOptions = {
     ...WalletHeaderScreenOptionsPreset,
@@ -327,7 +326,7 @@ export const StakingNavigation: FunctionComponent = () => {
     >
       <Stack.Screen
         options={{
-          title: intl.formatMessage({ id: "staking.headerTitle" }),
+          headerShown: false,
         }}
         name="Staking.Dashboard"
         component={StakingDashboardScreen}
@@ -457,7 +456,8 @@ export const WalletNavigation: FunctionComponent = () => {
       />
       <Stack.Screen
         options={{
-          title: intl.formatMessage({ id: "validator.list.new.title" }),
+          // title: intl.formatMessage({ id: "validator.list.new.title" }),
+          headerShown: false
         }}
         name="Validator.List"
         component={ValidatorListScreen}

@@ -142,7 +142,9 @@ export const InputColors = {
   "input-error": Colors["red-50"],
   "input-success": Colors["green-50"],
   "input-value": Colors["gray-10"],
-  "input-label": Colors["gray-30"],
+  "input-label": Colors["gray-10"],
+  "input-info": Colors["gray-30"],
+  "input-placeholder": Colors["gray-30"],
   "input-background": Colors["gray-90"],
 };
 

@@ -13,7 +13,7 @@ import converter from "bech32-converting";
 import { Buffer } from "buffer/";
 import { observer } from "mobx-react-lite";
 import { useIntl } from "react-intl";
-import { formatCoin, formatDate } from "../../../common/utils";
+import { formatCoin, formatDate, formatPercent } from "../../../common/utils";
 import {
   AlignItems,
   buildLeftColumn,
@@ -23,6 +23,7 @@ import {
 } from "../../../components";
 import { useStore } from "../../../stores";
 import { useStyle } from "../../../styles";
+import { useStaking } from "../../staking/hook/use-staking";
 
 export interface MessageObj {
   readonly type: string;
@@ -248,7 +249,7 @@ export function renderMsgSend(value: MsgSend["value"]): IRow[] {
         ...common,
         cols: [
           buildLeftColumn({
-            text: intl.formatMessage({ id: "tx.result.models.msgSend.fee" }),
+            text: intl.formatMessage({ id: "common.text.transactionFee" }),
             flex: 3,
           }),
           buildRightColumn({ text: formatCoin(value.fee, false, 6), flex: 7 }),
@@ -398,7 +399,7 @@ export function renderMsgBeginRedelegate(value: MsgBeginRedelegate["value"]) {
         cols: [
           buildLeftColumn({
             text: intl.formatMessage({
-              id: "tx.result.models.msgBeginRedelegate.fee",
+              id: "common.text.transactionFee",
             }),
           }),
           buildRightColumn({ text: formatCoin(value.fee, false, 4) }),
@@ -443,7 +444,7 @@ export function renderMsgUndelegate(value: MsgUndelegate["value"]): IRow[] {
         cols: [
           buildLeftColumn({
             text: intl.formatMessage({
-              id: "tx.result.models.msgUndelegate.fee",
+              id: "common.text.transactionFee",
             }),
           }),
           buildRightColumn({ text: formatCoin(value.fee, false, 4) }),
@@ -457,14 +458,11 @@ export function renderMsgUndelegate(value: MsgUndelegate["value"]): IRow[] {
 }
 
 export function renderMsgDelegate(value: MsgDelegate["value"]) {
+  const { getValidatorAPR } = useStaking();
   const intl = useIntl();
 
-  const commissionText =
-    value.commission
-      .moveDecimalPointRight(2)
-      .maxDecimals(2)
-      .trim(true)
-      .toString() + "%";
+  const commissionText = formatPercent(value.commission);
+  const apr = getValidatorAPR(value.validatorAddress);
 
   const rows: IRow[] = join(
     [
@@ -473,7 +471,7 @@ export function renderMsgDelegate(value: MsgDelegate["value"]) {
         cols: [
           buildLeftColumn({
             text: intl.formatMessage({
-              id: "tx.result.models.msgDelegate.validator",
+              id: "common.text.validators",
             }),
           }),
           buildRightColumn({ text: value.validatorName }),
@@ -484,7 +482,20 @@ export function renderMsgDelegate(value: MsgDelegate["value"]) {
         cols: [
           buildLeftColumn({
             text: intl.formatMessage({
-              id: "tx.result.models.msgDelegate.commission",
+              id: "common.text.interest",
+            }),
+          }),
+          buildRightColumn({
+            text: formatPercent(apr),
+          }),
+        ],
+      },
+      {
+        ...common,
+        cols: [
+          buildLeftColumn({
+            text: intl.formatMessage({
+              id: "common.text.commission",
             }),
           }),
           buildRightColumn({
@@ -497,7 +508,7 @@ export function renderMsgDelegate(value: MsgDelegate["value"]) {
         cols: [
           buildLeftColumn({
             text: intl.formatMessage({
-              id: "tx.result.models.msgDelegate.time",
+              id: "common.text.transactionTime",
             }),
           }),
           buildRightColumn({ text: formatDate(new Date()) }),
@@ -508,7 +519,7 @@ export function renderMsgDelegate(value: MsgDelegate["value"]) {
         cols: [
           buildLeftColumn({
             text: intl.formatMessage({
-              id: "tx.result.models.msgDelegate.fee",
+              id: "common.text.transactionFee",
             }),
           }),
           buildRightColumn({ text: formatCoin(value.fee, false, 4) }),
@@ -577,7 +588,7 @@ export function renderMsgWithdrawDelegatorReward(
       cols: [
         buildLeftColumn({
           text: intl.formatMessage({
-            id: "tx.result.models.msgWithdrawDelegatorReward.fee",
+            id: "common.text.transactionFee",
           }),
         }),
         buildRightColumn({ text: formatCoin(value.fee, false, 4) }),
@@ -773,7 +784,7 @@ export function renderMsgTransferNFT(value: MsgTransferNFT["value"]): IRow[] {
         ...common,
         cols: [
           buildLeftColumn({
-            text: intl.formatMessage({ id: "tx.result.models.msgSend.fee" }),
+            text: intl.formatMessage({ id: "common.text.transactionFee" }),
             flex: 3,
           }),
           buildRightColumn({ text: formatCoin(value.fee, false, 6), flex: 7 }),

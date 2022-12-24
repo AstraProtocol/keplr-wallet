@@ -1,4 +1,3 @@
-import { Staking } from "@keplr-wallet/stores";
 import { RouteProp, useRoute } from "@react-navigation/native";
 import { observer } from "mobx-react-lite";
 import React, { FunctionComponent, useCallback, useRef } from "react";
@@ -13,6 +12,7 @@ import { ValidatorThumbnail } from "../../../components/thumbnail";
 import { useSmartNavigation } from "../../../navigation-util";
 import { useStore } from "../../../stores";
 import { useStyle } from "../../../styles";
+import { useStaking } from "../hook/use-staking";
 import { AnimatedNavigationBar } from "./animated-navigation-bar";
 import { useQueryUnbonding } from "./hook/use-query-unbonding";
 
@@ -30,18 +30,18 @@ export const UnbondingScreen: FunctionComponent = observer(() => {
   >();
   const validatorAddress = route.params.validatorAddress;
 
+  const style = useStyle();
   const intl = useIntl();
   const smartNavigation = useSmartNavigation();
 
-  const { chainStore, queriesStore } = useStore();
+  const { chainStore } = useStore();
   const {
     getUnbondingTime,
     getUnbondings,
     getUnbondingOf,
     getUnbondingsTotal,
   } = useQueryUnbonding();
-
-  const queries = queriesStore.get(chainStore.current.chainId);
+  const { getValidator, getValidatorThumbnail } = useStaking();
 
   const unbondingTimeText = formatUnbondingTime(getUnbondingTime(), intl);
 
@@ -54,14 +54,9 @@ export const UnbondingScreen: FunctionComponent = observer(() => {
   }
 
   const balance = getUnbondingsTotal(unbondings);
-  const queryValidators = queries.cosmos.queryValidators.getQueryStatus(
-    Staking.BondStatus.Unspecified
-  );
 
   const validator = validatorAddress
-    ? queryValidators.validators.find(
-        (val) => val.operator_address === validatorAddress
-      )
+    ? getValidator(validatorAddress)
     : undefined;
 
   const title = validator
@@ -70,8 +65,6 @@ export const UnbondingScreen: FunctionComponent = observer(() => {
         { name: validator.description.moniker }
       )
     : intl.formatMessage({ id: "staking.unbonding.totalAmount" });
-
-  const style = useStyle();
 
   const getSimpleItem = (
     key: React.Key | null | undefined,
@@ -124,7 +117,7 @@ export const UnbondingScreen: FunctionComponent = observer(() => {
         >
           <View style={style.flatten(["flex-row", "justify-start"])}>
             <ValidatorThumbnail size={24} url={icon} />
-            <View style={style.flatten(["padding-x-16", "flex"])}>
+            <View style={style.flatten(["padding-x-4"])}>
               <Text
                 style={style.flatten([
                   "text-base-regular",
@@ -162,12 +155,8 @@ export const UnbondingScreen: FunctionComponent = observer(() => {
 
   const getUnbondingItems = () => {
     return unbondings.map((unbonding, unbondingIndex) => {
-      const validator = queryValidators.validators.find(
-        (val) => val.operator_address === unbonding.validatorAddress
-      );
-      const thumbnail = queryValidators.getValidatorThumbnail(
-        unbonding.validatorAddress
-      );
+      const validator = getValidator(unbonding.validatorAddress);
+      const thumbnail = getValidatorThumbnail(unbonding.validatorAddress);
       const entries = unbonding.entries;
 
       return (

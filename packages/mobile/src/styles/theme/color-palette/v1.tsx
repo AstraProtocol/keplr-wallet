@@ -72,7 +72,8 @@ const GreenColors = {
   "green-80": "#008A70",
   "green-90": "#00614E",
   "green-100": "#003B2D",
-  "green-overlay": "#30CFB426",
+
+  "green-50-15": "#30CFB426",
 };
 
 const BlueColors = {
@@ -116,7 +117,7 @@ export const V1AlertInlineColors = {
   "alert-inline-warning-border": V1Colors["yellow-60"],
   "alert-inline-success-main": V1Colors["green-50"],
   "alert-inline-success-content": V1Colors["gray-10"],
-  "alert-inline-success-background": V1Colors["green-overlay"],
+  "alert-inline-success-background": V1Colors["green-50-15"],
   "alert-inline-success-border": V1Colors["green-50"],
   "alert-inline-error-main": V1Colors["red-50"],
   "alert-inline-error-content": V1Colors["gray-10"],
@@ -130,7 +131,9 @@ export const V1InputColors = {
   "input-error": V1Colors["red-50"],
   "input-success": V1Colors["green-50"],
   "input-value": V1Colors["gray-10"],
-  "input-label": V1Colors["gray-30"],
+  "input-label": V1Colors["gray-10"],
+  "input-info": V1Colors["gray-30"],
+  "input-placeholder": V1Colors["gray-30"],
   "input-background": V1Colors["gray-90"],
 };
 
@@ -158,12 +161,12 @@ export const V1StepViewColors = {
   "step-text-success-inactive": V1Colors["gray-50"],
 
   "step-dot-success-active": V1Colors["green-50"],
-  "step-dot-success-inactive": V1Colors["green-overlay"],
+  "step-dot-success-inactive": V1Colors["green-50-15"],
 
   "step-tick-success-active": V1Colors["green-50"],
-  "step-tick-success-inactive": V1Colors["green-overlay"],
+  "step-tick-success-inactive": V1Colors["green-50-15"],
 
-  "step-line-success-active": V1Colors["green-overlay"],
+  "step-line-success-active": V1Colors["green-50-15"],
   "step-line-success-inactive": V1Colors["gray-90"],
 };
 

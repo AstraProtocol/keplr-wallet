@@ -26,46 +26,41 @@ export const ValidatorItem: FunctionComponent<{
             "background-color-card-background",
             "flex-row",
             "items-center",
-            "justify-between",
           ]),
           containerStyle,
         ])}
       >
-        <View
-          style={style.flatten(["flex-row", "justify-start", "items-center"])}
-        >
-          <ValidatorThumbnail
-            style={style.flatten(["margin-right-8"])}
-            size={24}
-            url={thumbnail}
-          />
-          <View>
-            {name ? (
-              <Text
-                style={style.flatten([
-                  "text-base-medium",
-                  "color-label-text-1",
-                  "max-width-160",
-                ])}
-                numberOfLines={1}
-                ellipsizeMode="tail"
-              >
-                {name}
-              </Text>
-            ) : null}
-            {value ? (
-              <Text
-                style={StyleSheet.flatten([
-                  style.flatten(["text-small-regular", "color-label-text-2"]),
-                  valueStyle,
-                ])}
-                numberOfLines={1}
-                ellipsizeMode="tail"
-              >
-                {value}
-              </Text>
-            ) : null}
-          </View>
+        <ValidatorThumbnail
+          style={style.flatten(["margin-right-8"])}
+          size={40}
+          url={thumbnail}
+        />
+        <View style={style.flatten(["flex-1"])}>
+          {name ? (
+            <Text
+              style={style.flatten(["text-base-medium", "color-label-text-1"])}
+              numberOfLines={1}
+              ellipsizeMode="tail"
+            >
+              {name}
+            </Text>
+          ) : null}
+          {value ? (
+            <Text
+              style={StyleSheet.flatten([
+                style.flatten([
+                  "text-small-regular",
+                  "color-label-text-2",
+                  "margin-top-4",
+                ]),
+                valueStyle,
+              ])}
+              numberOfLines={1}
+              ellipsizeMode="tail"
+            >
+              {value}
+            </Text>
+          ) : null}
         </View>
         {right ? right : null}
       </View>

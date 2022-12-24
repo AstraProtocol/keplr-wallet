@@ -1,6 +1,6 @@
 import { observer } from "mobx-react-lite";
 import React, { FunctionComponent } from "react";
-import { StyleSheet, Text, TextStyle, View, ViewStyle } from "react-native";
+import { Text, TextStyle, View, ViewStyle } from "react-native";
 import { LOCALE_FORMAT } from "../../../common/utils";
 import {
   StakingRewardsIcon,
@@ -56,60 +56,57 @@ export const PropertyView: FunctionComponent<{
 
     return (
       <View
-        style={StyleSheet.flatten([
-          style.flatten([
-            "flex-1",
-            "margin-left-0",
-            "justify-center",
-          ]),
-          containerStyle,
-        ])}
+        style={{
+          ...style.flatten(["flex-1", "margin-left-0", "justify-center"]),
+          ...containerStyle,
+        }}
       >
         <View style={style.flatten(["flex-row", "items-center"])}>
           {iconType != undefined ? (
             <View style={style.flatten(["margin-right-4"])}>{getIcon()}</View>
           ) : null}
           <Text
-            style={StyleSheet.flatten([
-              style.flatten([
-                "color-gray-30",
+            style={{
+              ...style.flatten([
+                "color-label-text-2",
                 "text-small-medium",
                 "margin-top-0",
               ]),
-              labelStyle,
-            ])}
+              ...labelStyle,
+            }}
           >
             {label}
           </Text>
         </View>
         <View style={style.flatten(["flex-row", "margin-top-2", "items-end"])}>
           <Text
-            style={StyleSheet.flatten([
-              style.flatten(["color-gray-10", "text-x-large-medium"]),
-              valueStyle,
-            ])}
+            style={{
+              ...style.flatten(["color-label-text-1", "text-x-large-medium"]),
+              ...valueStyle,
+            }}
           >
             {parts[0]}
           </Text>
           <Text
-            style={StyleSheet.flatten([
-              style.flatten([
-                "color-gray-30",
-                "text-small-medium",
-                "margin-bottom-4",
-              ]),
-              valueStyle,
-            ])}
+            style={{
+              ...style.flatten(["color-label-text-2", "text-small-medium"]),
+              ...{ marginBottom: 5 },
+              ...valueStyle,
+            }}
           >
             {parts.length > 1 ? delimitter + parts[1] : ""}
           </Text>
         </View>
         {subValue && (
           <Text
-            style={StyleSheet.flatten([
-              style.flatten(["color-gray-30", "subtitle4", "margin-bottom-0"]),
-              subValueStyle,
-            ])}
+            style={{
+              ...style.flatten([
+                "color-label-text-2",
+                "subtitle4",
+                "margin-bottom-0",
+              ]),
+              ...subValueStyle,
+            }}
           >
             {subValue}
           </Text>

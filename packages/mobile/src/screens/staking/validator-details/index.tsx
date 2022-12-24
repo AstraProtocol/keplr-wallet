@@ -1,13 +1,12 @@
-import { Dec } from "@keplr-wallet/unit";
 import { RouteProp, useRoute } from "@react-navigation/native";
 import { observer } from "mobx-react-lite";
 import React, { FunctionComponent, useCallback, useRef } from "react";
-import { useStore } from "../../../stores";
 import { useStyle } from "../../../styles";
 
 import { Animated, Image, View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useStaking } from "../hook/use-staking";
 import { CommissionsCard } from "./commission-card";
 import { DelegatedCard } from "./delegated-card";
 import { ValidatorHeaderCard } from "./header-card";
@@ -26,23 +25,16 @@ export const ValidatorDetailsScreen: FunctionComponent = observer(() => {
     >
   >();
 
+  const { isStakingTo } = useStaking();
+
   const opacityAnim = useRef(new Animated.Value(0)).current;
   const safeAreaInsets = useSafeAreaInsets();
   const height = 44 + safeAreaInsets.top;
   const validatorAddress = route.params.validatorAddress;
 
-  const { chainStore, queriesStore, accountStore } = useStore();
-
-  const account = accountStore.getAccount(chainStore.current.chainId);
-  const queries = queriesStore.get(chainStore.current.chainId);
-
-  const staked = queries.cosmos.queryDelegations
-    .getQueryBech32Address(account.bech32Address)
-    .getDelegationTo(validatorAddress);
-
   const style = useStyle();
 
-  const hasStake = staked.toDec().gt(new Dec(0));
+  const hasStake = isStakingTo(validatorAddress);
 
   const onScrollContent = useCallback((e) => {
     opacityAnim.setValue(e.nativeEvent.contentOffset.y > 0 ? 255 : 0);
@@ -98,6 +90,7 @@ export const ValidatorDetailsScreen: FunctionComponent = observer(() => {
           containerStyle={style.flatten([
             "background-color-transparent",
             "flex-1",
+            "margin-bottom-16",
           ])}
           validatorAddress={validatorAddress}
         />

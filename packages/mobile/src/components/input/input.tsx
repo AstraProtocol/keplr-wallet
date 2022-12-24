@@ -29,6 +29,8 @@ export const TextInput = React.forwardRef<
 
     inputLeft?: React.ReactNode;
     inputRight?: React.ReactNode;
+
+    rightLabelView?: React.ReactNode;
   }
 >((props, ref) => {
   const { style: propsStyle, ...restProps } = props;
@@ -42,20 +44,31 @@ export const TextInput = React.forwardRef<
         props.containerStyle,
       ])}
     >
-      {props.label ? (
-        <Text
-          style={StyleSheet.flatten([
-            style.flatten([
-              "subtitle3",
-              "color-text-black-medium",
-              "margin-bottom-3",
-            ]),
-            props.labelStyle,
-          ])}
-        >
-          {props.label}
-        </Text>
-      ) : null}
+      <View
+        style={style.flatten([
+          "flex-row",
+          "items-center",
+          "justify-end",
+          "margin-bottom-3",
+        ])}
+      >
+        {props.label ? (
+          <Text
+            style={StyleSheet.flatten([
+              style.flatten([
+                "flex-1",
+                "subtitle3",
+                "color-text-black-medium",
+                // "margin-bottom-3",
+              ]),
+              props.labelStyle,
+            ])}
+          >
+            {props.label}
+          </Text>
+        ) : null}
+        {props.rightLabelView}
+      </View>
       <View
         style={StyleSheet.flatten([
           style.flatten(

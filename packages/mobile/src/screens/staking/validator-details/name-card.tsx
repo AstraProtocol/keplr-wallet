@@ -1,17 +1,15 @@
-import React, { FunctionComponent, useMemo } from "react";
 import { observer } from "mobx-react-lite";
+import React, { FunctionComponent, useMemo } from "react";
 
 import { Staking } from "@keplr-wallet/stores";
 import { StyleSheet, Text, View, ViewStyle } from "react-native";
 
 import { Card, CardBody } from "../../../components/card";
 
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { ValidatorThumbnail } from "../../../components/thumbnail";
 import { useStore } from "../../../stores";
 import { useStyle } from "../../../styles";
-import { TooltipLabel } from "../component";
-import { ValidatorThumbnail } from "../../../components/thumbnail";
-import { useIntl } from "react-intl";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export const ValidatorNameCard: FunctionComponent<{
   containerStyle?: ViewStyle;
@@ -34,7 +32,6 @@ export const ValidatorNameCard: FunctionComponent<{
   const thumbnail = queryValidators.getValidatorThumbnail(validatorAddress);
 
   const style = useStyle();
-  const intl = useIntl();
   const safeAreaInsets = useSafeAreaInsets();
 
   return (
@@ -63,14 +60,6 @@ export const ValidatorNameCard: FunctionComponent<{
           >
             {validator.description.moniker}
           </Text>
-          <TooltipLabel
-            textStyle={style.flatten(["color-white"])}
-            containerStyle={style.flatten(["margin-top-4"])}
-            text={intl.formatMessage(
-              { id: "validator.details.uptime" },
-              { percent: "100%" }
-            )}
-          />
         </CardBody>
       ) : null}
     </Card>

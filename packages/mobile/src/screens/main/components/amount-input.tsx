@@ -41,6 +41,7 @@ export const AmountInput: FunctionComponent<{
     e: NativeSyntheticEvent<TextInputSubmitEditingEventData>
   ) => void;
   returnKeyType?: ReturnKeyTypeOptions;
+  rightLabelView?: React.ReactNode;
 }> = observer(
   ({
     labelText,
@@ -59,6 +60,7 @@ export const AmountInput: FunctionComponent<{
     inputRef,
     onSubmitEditting,
     returnKeyType,
+    rightLabelView,
   }) => {
     const style = useStyle();
     const intl = useIntl();
@@ -204,6 +206,7 @@ export const AmountInput: FunctionComponent<{
           inputRef={inputRef}
           onSubmitEditting={onSubmitEditting}
           returnKeyType={returnKeyType}
+          rightLabelView={rightLabelView}
         />
       </View>
     );

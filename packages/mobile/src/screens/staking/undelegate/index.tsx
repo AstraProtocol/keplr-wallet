@@ -1,42 +1,42 @@
-import React, { FunctionComponent, useEffect, useState } from "react";
-import { observer } from "mobx-react-lite";
-import { RouteProp, useRoute } from "@react-navigation/native";
-import { ChainStore, useStore } from "../../../stores";
-import { useStyle } from "../../../styles";
 import {
   FeeType,
   IAmountConfig,
   useUndelegateTxConfig,
 } from "@keplr-wallet/hooks";
-import { AmountInput } from "../../main/components";
-import { Keyboard, Text, View } from "react-native";
-import { Button } from "../../../components/button";
+import { MsgUndelegate } from "@keplr-wallet/proto-types/cosmos/staking/v1beta1/tx";
 import {
   AccountStore,
   CosmosAccount,
   CosmwasmAccount,
   SecretAccount,
-  Staking,
 } from "@keplr-wallet/stores";
-import { AlertInline } from "../../../components/alert-inline";
-import {
-  buildLeftColumn,
-  buildRightColumn,
-} from "../../../components/foundation-view/item-row";
+import { CoinPretty, Dec, DecUtils, IntPretty } from "@keplr-wallet/unit";
+import { RouteProp, useRoute } from "@react-navigation/native";
+import { observer } from "mobx-react-lite";
+import React, { FunctionComponent, useEffect, useState } from "react";
 import { useIntl } from "react-intl";
+import { Keyboard, Text, View } from "react-native";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import {
   formatCoin,
   formatPercent,
   formatUnbondingTime,
   TX_GAS_DEFAULT,
 } from "../../../common/utils";
-import { MsgUndelegate } from "@keplr-wallet/proto-types/cosmos/staking/v1beta1/tx";
-import { CoinPretty, Dec, DecUtils, IntPretty } from "@keplr-wallet/unit";
 import { IRow, ListRowView } from "../../../components";
-import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import { AlertInline } from "../../../components/alert-inline";
 import { AvoidingKeyboardBottomView } from "../../../components/avoiding-keyboard/avoiding-keyboard-bottom";
+import { Button } from "../../../components/button";
+import {
+  buildLeftColumn,
+  buildRightColumn,
+} from "../../../components/foundation-view/item-row";
 import { useSmartNavigation } from "../../../navigation-util";
-import { ValidatorInfo } from "../delegate/components/validator-info";
+import { ChainStore, useStore } from "../../../stores";
+import { useStyle } from "../../../styles";
+import { AmountInput } from "../../main/components";
+import { StakingValidatorItem } from "../component";
+import { useStaking } from "../hook/use-staking";
 
 export const UndelegateScreen: FunctionComponent = observer(() => {
   const route = useRoute<
@@ -50,6 +50,8 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
       string
     >
   >();
+
+  const { getValidator } = useStaking();
 
   const validatorAddress = route.params.validatorAddress;
 
@@ -68,9 +70,7 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
   const account = accountStore.getAccount(chainStore.current.chainId);
   const queries = queriesStore.get(chainStore.current.chainId);
 
-  const validator = queries.cosmos.queryValidators
-    .getQueryStatus(Staking.BondStatus.Unspecified)
-    .getValidator(validatorAddress);
+  const validator = getValidator(validatorAddress)!;
 
   const staked = queries.cosmos.queryDelegations
     .getQueryBech32Address(account.bech32Address)
@@ -115,7 +115,7 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
       type: "items",
       cols: [
         buildLeftColumn({
-          text: intl.formatMessage({ id: "stake.undelegate.fee" }),
+          text: intl.formatMessage({ id: "common.text.transactionFee" }),
         }),
         buildRightColumn({ text: feeText }),
       ],
@@ -217,24 +217,24 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
       >
         <View style={style.flatten(["height-page-pad"])} />
         <AlertInline
-          type="info"
+          type="warning"
           content={intl.formatMessage(
-            { id: "stake.undelegate.noticeWithdrawalPeriod" },
-            { coin: staked.denom, days: unbondingTimeText }
+            { id: "common.inline.staking.noticeWithdrawalPeriod" },
+            { denom: staked.denom, days: unbondingTimeText }
           )}
         />
         <Text
           style={style.flatten([
-            "color-gray-30",
+            "color-label-text-1",
             "text-base-semi-bold",
             "margin-top-24",
           ])}
         >
           {intl.formatMessage({ id: "stake.undelegate.validatorLabel" })}
         </Text>
-        <ValidatorInfo
-          style={style.flatten(["margin-top-4"])}
-          validatorAddress={validatorAddress}
+        <StakingValidatorItem
+          containerStyle={style.flatten(["margin-top-4", "margin-x-0"])}
+          validator={validator}
         />
         <AmountInput
           labelText={intl.formatMessage({ id: "stake.undelegate.amountLabel" })}

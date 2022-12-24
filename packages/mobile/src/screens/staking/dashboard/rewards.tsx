@@ -1,83 +1,48 @@
-import {
-  AccountStore,
-  CosmosAccount,
-  CosmosQueries,
-  CosmwasmAccount,
-  CosmwasmQueries,
-  QueriesStore,
-  SecretAccount,
-  SecretQueries,
-} from "@keplr-wallet/stores";
-import { KeplrETCQueries } from "@keplr-wallet/stores-etc";
-import { Dec } from "@keplr-wallet/unit";
 import { observer } from "mobx-react-lite";
 import React, { FunctionComponent } from "react";
 import { useIntl } from "react-intl";
-import { StyleSheet, View, ViewStyle } from "react-native";
-import { formatCoin, MIN_REWARDS_AMOUNT } from "../../../common/utils";
+import { View, ViewStyle } from "react-native";
+import { formatCoin } from "../../../common/utils";
 import { Button } from "../../../components/button";
 import { CardDivider } from "../../../components/card";
 import { useSmartNavigation } from "../../../navigation-util";
-import { ChainStore } from "../../../stores/chain";
 
 import { useStyle } from "../../../styles";
 import { PropertyView, PropertyViewIconType } from "../component/property";
+import { useStaking } from "../hook/use-staking";
 
 export const RewardsItem: FunctionComponent<{
-  chainStore: ChainStore;
-  accountStore: AccountStore<[CosmosAccount, CosmwasmAccount, SecretAccount]>;
-  queriesStore: QueriesStore<
-    [CosmosQueries, CosmwasmQueries, SecretQueries, KeplrETCQueries]
-  >;
   containerStyle?: ViewStyle;
-}> = observer(({ chainStore, accountStore, queriesStore, containerStyle }) => {
+}> = observer(({ containerStyle }) => {
+  const {
+    getTotalStakingAmount,
+    getTotalRewardsAmount,
+    getTotalUnbondingAmount,
+    hasRewards,
+    hasUnbonding,
+  } = useStaking();
+
   const smartNavigation = useSmartNavigation();
   const style = useStyle();
   const intl = useIntl();
 
-  const account = accountStore.getAccount(chainStore.current.chainId);
-  const queries = queriesStore.get(chainStore.current.chainId);
+  const totalStakingAmount = getTotalStakingAmount();
+  const totalRewardsAmount = getTotalRewardsAmount();
+  const totalUnbondingAmount = getTotalUnbondingAmount();
 
-  const rewardsQueries = queries.cosmos.queryRewards.getQueryBech32Address(
-    account.bech32Address
-  );
-  const pendingStakableReward = rewardsQueries.stakableReward;
-
-  const queryDelegated = queries.cosmos.queryDelegations.getQueryBech32Address(
-    account.bech32Address
-  );
-
-  const unbondingsQueries = queries.cosmos.queryUnbondingDelegations.getQueryBech32Address(
-    account.bech32Address
-  );
-
-  const unbondingBalances = unbondingsQueries.unbondingBalances;
-
-  const delegated = queryDelegated.total;
-  const isRewardExist =
-    queryDelegated.delegations.filter((delegation) => {
-      const stakableRewards = rewardsQueries.getStakableRewardOf(
-        delegation.delegation.validator_address
-      );
-      return stakableRewards.toDec().gte(new Dec(MIN_REWARDS_AMOUNT));
-    })?.length !== 0;
-
-  const isPending = unbondingBalances.length > 0;
-
-  const unboding = unbondingsQueries.total;
+  const isPending = hasUnbonding();
+  const isRewardExist = hasRewards();
 
   return (
     <View
-      style={StyleSheet.flatten([
-        style.flatten([
-          // "padding-0",
+      style={{
+        ...style.flatten([
           "margin-x-16",
-          // "justify-between",
           "background-color-card-background",
           "border-radius-16",
         ]),
-        containerStyle,
-      ])}
+        ...containerStyle,
+      }}
     >
       <View
         style={style.flatten([
@@ -90,17 +55,20 @@ export const RewardsItem: FunctionComponent<{
         <PropertyView
           iconType={PropertyViewIconType.staked}
           label={intl.formatMessage({
-            id: "staking.dashboard.rewards.totalInvestment",
+            id: "TotalStakingAmount",
           })}
-          value={formatCoin(delegated, false, 2)}
+          value={formatCoin(totalStakingAmount, false, 2)}
           labelStyle={style.flatten(["color-staking-staked-text"])}
+          containerStyle={style.flatten(["flex-6"])}
         />
         <Button
-          containerStyle={style.flatten(["width-132"])}
+          containerStyle={style.flatten(["flex-4"])}
           onPress={() => {
             smartNavigation.navigateSmart("Validator.List", {});
           }}
-          text={intl.formatMessage({ id: "staking.dashboard.rewards.invest" })}
+          text={intl.formatMessage({
+            id: "Stake",
+          })}
           size="medium"
         />
       </View>
@@ -116,16 +84,17 @@ export const RewardsItem: FunctionComponent<{
         <PropertyView
           iconType={PropertyViewIconType.rewards}
           label={intl.formatMessage({
-            id: "staking.dashboard.rewards.totalProfit",
+            id: "TotalRewardsAmount",
           })}
-          value={"+" + formatCoin(pendingStakableReward, false, 4)}
+          value={"+" + formatCoin(totalRewardsAmount, false, 4)}
           labelStyle={style.flatten(["color-staking-rewards-text"])}
+          containerStyle={style.flatten(["flex-6"])}
         />
 
         <Button
-          containerStyle={style.flatten(["width-132"])}
+          containerStyle={style.flatten(["flex-4"])}
           text={intl.formatMessage({
-            id: "staking.dashboard.rewards.withdrawProfit",
+            id: "ClaimRewards",
           })}
           color="primary"
           mode="outline"
@@ -147,18 +116,18 @@ export const RewardsItem: FunctionComponent<{
       >
         <PropertyView
           iconType={PropertyViewIconType.unbonding}
-          label={intl.formatMessage(
-            { id: "staking.dashboard.rewards.totalWithdrawals" },
-            { denom: unboding.denom }
-          )}
-          value={formatCoin(unboding, false, 2)}
+          label={intl.formatMessage({
+            id: "TotalUnstakingAmount",
+          })}
+          value={formatCoin(totalUnbondingAmount, false, 2)}
           labelStyle={style.flatten(["color-staking-unbonding-text"])}
+          containerStyle={style.flatten(["flex-6"])}
         />
 
         <Button
-          containerStyle={style.flatten(["width-132"])}
+          containerStyle={style.flatten(["flex-4"])}
           text={intl.formatMessage({
-            id: "staking.dashboard.rewards.follow",
+            id: "Follow",
           })}
           color="primary"
           mode="outline"

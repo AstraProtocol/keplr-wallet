@@ -264,7 +264,7 @@ export const SelectorButtonWithoutModal: FunctionComponent<{
         style={StyleSheet.flatten([
           style.flatten([
             "text-base-semi-bold",
-            "color-gray-30",
+            "color-label-text-1",
             "margin-bottom-6",
           ]),
           labelStyle,
@@ -304,7 +304,11 @@ export const SelectorButtonWithoutModal: FunctionComponent<{
         )}
         <Text
           style={StyleSheet.flatten([
-            style.flatten(["text-base-regular", "color-gray-10", "flex-1"]),
+            style.flatten([
+              "flex-1",
+              "text-base-regular",
+              "color-label-text-1",
+            ]),
             textStyle,
           ])}
         >

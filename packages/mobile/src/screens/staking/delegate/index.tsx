@@ -1,47 +1,48 @@
-import React, { FunctionComponent, useEffect, useState } from "react";
-import { observer } from "mobx-react-lite";
-import { useStyle } from "../../../styles";
-import { RouteProp, useRoute } from "@react-navigation/native";
-import { Keyboard, View } from "react-native";
-import { ChainStore, useStore } from "../../../stores";
 import {
   FeeType,
   IAmountConfig,
   useDelegateTxConfig,
 } from "@keplr-wallet/hooks";
-import { EthereumEndpoint } from "../../../config";
-import { AmountInput } from "../../main/components";
-import { Button } from "../../../components/button";
-import { useSmartNavigation } from "../../../navigation-util";
+import { MsgDelegate } from "@keplr-wallet/proto-types/cosmos/staking/v1beta1/tx";
 import {
   AccountStore,
   CosmosAccount,
   CosmwasmAccount,
   SecretAccount,
-  Staking,
 } from "@keplr-wallet/stores";
-import { ValidatorInfo } from "./components/validator-info";
-import {
-  buildLeftColumn,
-  buildRightColumn,
-} from "../../../components/foundation-view/item-row";
 import { CoinPretty, Dec, DecUtils, IntPretty } from "@keplr-wallet/unit";
-import {
-  IRow,
-  ListRowView,
-} from "../../../components/foundation-view/list-row-view";
-import { AlertInline } from "../../../components";
+import { RouteProp, useRoute } from "@react-navigation/native";
+import { observer } from "mobx-react-lite";
+import React, { FunctionComponent, useEffect, useState } from "react";
 import { useIntl } from "react-intl";
+import { Keyboard, Text, View } from "react-native";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import {
   FEE_RESERVATION,
+  formatCoin,
   formatPercent,
   formatUnbondingTime,
   MIN_AMOUNT,
   TX_GAS_DEFAULT,
 } from "../../../common/utils";
-import { MsgDelegate } from "@keplr-wallet/proto-types/cosmos/staking/v1beta1/tx";
+import { AlertInline } from "../../../components";
 import { AvoidingKeyboardBottomView } from "../../../components/avoiding-keyboard/avoiding-keyboard-bottom";
-import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import { Button } from "../../../components/button";
+import {
+  buildLeftColumn,
+  buildRightColumn,
+} from "../../../components/foundation-view/item-row";
+import {
+  IRow,
+  ListRowView,
+} from "../../../components/foundation-view/list-row-view";
+import { EthereumEndpoint } from "../../../config";
+import { useSmartNavigation } from "../../../navigation-util";
+import { ChainStore, useStore } from "../../../stores";
+import { useStyle } from "../../../styles";
+import { AmountInput } from "../../main/components";
+import { useStaking } from "../hook/use-staking";
+import { EstimateRewardsView, StakingValidatorItem } from "../component";
 
 export const DelegateScreen: FunctionComponent = observer(() => {
   const route = useRoute<
@@ -70,6 +71,7 @@ export const DelegateScreen: FunctionComponent = observer(() => {
   const style = useStyle();
   const intl = useIntl();
   const smartNavigation = useSmartNavigation();
+  const { getValidator, isStakingTo } = useStaking();
 
   const account = accountStore.getAccount(chainStore.current.chainId);
   const queries = queriesStore.get(chainStore.current.chainId);
@@ -91,11 +93,9 @@ export const DelegateScreen: FunctionComponent = observer(() => {
     sendConfigs.recipientConfig.setRawRecipient(validatorAddress);
   }, [sendConfigs.recipientConfig, validatorAddress]);
 
-  const queryValidators = queries.cosmos.queryValidators.getQueryStatus(
-    Staking.BondStatus.Unspecified
-  );
+  const validator = getValidator(validatorAddress)!;
 
-  const validator = queryValidators.getValidator(validatorAddress);
+  const hasStake = isStakingTo(validatorAddress);
 
   const balanceText = userBalanceStore.getBalanceString();
 
@@ -115,17 +115,11 @@ export const DelegateScreen: FunctionComponent = observer(() => {
 
   const [amountIsValid, setAmountIsValid] = useState(false);
   const [amountErrorText, setAmountErrorText] = useState("");
+  const [stakingAmount, setStakingAmount] = useState(
+    new CoinPretty(chainStore.current.stakeCurrency, 0)
+  );
 
   const rows: IRow[] = [
-    {
-      type: "items",
-      cols: [
-        buildLeftColumn({
-          text: intl.formatMessage({ id: "stake.delegate.available" }),
-        }),
-        buildRightColumn({ text: balanceText }),
-      ],
-    },
     {
       type: "items",
       cols: [
@@ -139,6 +133,21 @@ export const DelegateScreen: FunctionComponent = observer(() => {
       ],
     },
   ];
+
+  const getRightLabelView = () => {
+    return (
+      <View>
+        <Text
+          style={style.flatten(["text-small-regular", "color-label-text-2"])}
+        >
+          {intl.formatMessage({ id: "Available" }) + " "}
+          <Text style={style.flatten(["color-label-text-1"])}>
+            {balanceText}
+          </Text>
+        </Text>
+      </View>
+    );
+  };
 
   const onContinueHandler = async () => {
     Keyboard.dismiss();
@@ -220,10 +229,7 @@ export const DelegateScreen: FunctionComponent = observer(() => {
 
   const updateNavigationTitle = () => {
     smartNavigation.setOptions({
-      title: intl.formatMessage(
-        { id: "delegate.title" },
-        { coin: chainStore.current.stakeCurrency.coinDenom }
-      ),
+      title: intl.formatMessage({ id: "Stake" }),
     });
   };
 
@@ -244,21 +250,43 @@ export const DelegateScreen: FunctionComponent = observer(() => {
             }
           )}
         />
-        <ValidatorInfo
-          style={{ marginTop: 24 }}
-          validatorAddress={validatorAddress}
+        <StakingValidatorItem
+          containerStyle={style.flatten(["margin-top-20", "margin-x-0"])}
+          validator={validator}
         />
+        {hasStake && (
+          <AlertInline
+            type="warning"
+            hideIcon
+            hideBorder
+            content={intl.formatMessage({
+              id: "common.inline.staking.unstakingInfo",
+            })}
+            style={style.flatten(["margin-top-4"])}
+          />
+        )}
         <AmountInput
-          labelText={intl.formatMessage({ id: "stake.delegate.amount" })}
+          labelText={intl.formatMessage({ id: "Amount" })}
+          rightLabelView={getRightLabelView()}
           amountConfig={sendConfigs.amountConfig}
           availableAmount={userBalanceStore.getBalance()}
           feeConfig={sendConfigs.feeConfig}
           onAmountChanged={(amount, errorText, isFocus) => {
+            setStakingAmount(
+              new CoinPretty(
+                chainStore.current.stakeCurrency,
+                new Dec(amount || "0").mul(
+                  DecUtils.getTenExponentN(
+                    chainStore.current.stakeCurrency.coinDecimals
+                  )
+                )
+              )
+            );
             setAmountIsValid(Number(amount) > 0 && errorText.length === 0);
             setAmountErrorText(isFocus ? "" : errorText);
           }}
           config={{ minAmount: MIN_AMOUNT, feeReservation: FEE_RESERVATION }}
-          containerStyle={style.flatten(["margin-top-24"])}
+          containerStyle={style.flatten(["margin-top-20"])}
         />
         <ListRowView
           rows={rows}
@@ -268,20 +296,22 @@ export const DelegateScreen: FunctionComponent = observer(() => {
         />
       </KeyboardAwareScrollView>
       <View style={style.flatten(["flex-1", "justify-end"])}>
-        <View style={style.flatten(["height-1", "background-color-gray-70"])} />
         <View
-          style={style.flatten([
-            "background-color-background",
-            "height-68",
-            "justify-center",
-            "padding-x-page",
-          ])}
+          style={{
+            ...style.flatten(["background-color-background", "justify-center"]),
+            height: 48 + 44 + 2 * 12,
+          }}
         >
+          <EstimateRewardsView
+            validatorAddress={validatorAddress}
+            stakingAmount={stakingAmount}
+          />
           <Button
-            text={intl.formatMessage({ id: "stake.delegate.invest" })}
+            text={intl.formatMessage({ id: "Continue" })}
             disabled={amountErrorText.length !== 0}
             loading={account.txTypeInProgress === "delegate"}
             onPress={onContinueHandler}
+            containerStyle={style.flatten(["margin-x-page", "margin-y-12"])}
           />
         </View>
         <AvoidingKeyboardBottomView />

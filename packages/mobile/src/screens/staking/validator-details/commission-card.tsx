@@ -1,33 +1,31 @@
-import React, { FunctionComponent, useMemo } from "react";
 import { observer } from "mobx-react-lite";
+import React, { FunctionComponent, useMemo } from "react";
 
-import { Staking } from "@keplr-wallet/stores";
 import { Text, View, ViewStyle } from "react-native";
 import { Button } from "../../../components/button";
-import { CoinPretty, Dec } from "@keplr-wallet/unit";
-import { Card, CardBody, CardDivider } from "../../../components/card";
+import { Card, CardBody } from "../../../components/card";
 
-import { useStore } from "../../../stores";
-import { useStyle } from "../../../styles";
-import { TooltipLabel } from "../component";
-import { useSmartNavigation } from "../../../navigation-util";
 import { FormattedMessage, useIntl } from "react-intl";
 import { formatCoin, formatDate, formatPercent } from "../../../common/utils";
+import { useSmartNavigation } from "../../../navigation-util";
+import { useStyle } from "../../../styles";
+import { TooltipLabel } from "../component";
+import { useStaking } from "../hook/use-staking";
 
 export const CommissionsCard: FunctionComponent<{
   containerStyle?: ViewStyle;
   validatorAddress: string;
   showStake: boolean;
 }> = observer(({ containerStyle, validatorAddress, showStake }) => {
-  const { chainStore, queriesStore } = useStore();
+  const {
+    getTotalSharesAmountOf,
+    getValidatorAPR,
+    queryValidators,
+  } = useStaking();
+
+  const style = useStyle();
   const intl = useIntl();
   const smartNavigation = useSmartNavigation();
-
-  const queries = queriesStore.get(chainStore.current.chainId);
-
-  const queryValidators = queries.cosmos.queryValidators.getQueryStatus(
-    Staking.BondStatus.Unspecified
-  );
 
   const validator = useMemo(() => {
     return queryValidators.validators.find(
@@ -40,17 +38,10 @@ export const CommissionsCard: FunctionComponent<{
     const date = new Date(validator.commission.update_time);
     dateText = formatDate(date);
   }
+  const uptimeText = "100%";
 
-  const style = useStyle();
-
-  let totalStakingText = "";
-  if (validator) {
-    const total = new CoinPretty(
-      chainStore.current.stakeCurrency,
-      new Dec(validator.tokens)
-    );
-    totalStakingText = formatCoin(total, false, 0);
-  }
+  const totalStakesAmount = getTotalSharesAmountOf(validatorAddress);
+  const apr = getValidatorAPR(validatorAddress);
 
   return (
     <Card style={containerStyle}>
@@ -76,10 +67,10 @@ export const CommissionsCard: FunctionComponent<{
             </Text>
           ) : null}
           <View style={style.flatten(["flex-row", "margin-top-24"])}>
-            <View style={style.flatten(["items-center", "flex-1"])}>
+            <View style={style.flatten(["flex-1"])}>
               <TooltipLabel
                 text={intl.formatMessage({
-                  id: "validator.details.totalShares",
+                  id: "InterestRate",
                 })}
                 textStyle={style.flatten(["text-small-regular"])}
               />
@@ -90,7 +81,14 @@ export const CommissionsCard: FunctionComponent<{
                   "margin-top-2",
                 ])}
               >
-                {totalStakingText}
+                {intl.formatMessage(
+                  {
+                    id: "common.text.apr",
+                  },
+                  {
+                    percent: formatPercent(apr, true),
+                  }
+                )}
               </Text>
               {/* <TooltipLabel
                 text={intl.formatMessage(
@@ -99,10 +97,10 @@ export const CommissionsCard: FunctionComponent<{
                 )}
               /> */}
             </View>
-            <View style={style.flatten(["items-center", "flex-1"])}>
+            <View style={style.flatten(["flex-1"])}>
               <TooltipLabel
                 text={intl.formatMessage({
-                  id: "validator.details.commission",
+                  id: "OperatingFee",
                 })}
                 textStyle={style.flatten(["text-small-regular"])}
               />
@@ -117,10 +115,46 @@ export const CommissionsCard: FunctionComponent<{
               </Text>
             </View>
           </View>
+          <View style={style.flatten(["flex-row", "margin-top-24"])}>
+            <View style={style.flatten(["flex-1"])}>
+              <TooltipLabel
+                text={intl.formatMessage({
+                  id: "TotalShares",
+                })}
+                textStyle={style.flatten(["text-small-regular"])}
+              />
+              <Text
+                style={style.flatten([
+                  "color-gray-10",
+                  "text-x-large-medium",
+                  "margin-top-2",
+                ])}
+              >
+                {formatCoin(totalStakesAmount, false, 0)}
+              </Text>
+            </View>
+            <View style={style.flatten(["flex-1"])}>
+              <TooltipLabel
+                text={intl.formatMessage({
+                  id: "Uptime",
+                })}
+                textStyle={style.flatten(["text-small-regular"])}
+              />
+              <Text
+                style={style.flatten([
+                  "color-gray-10",
+                  "text-x-large-medium",
+                  "margin-top-2",
+                ])}
+              >
+                {uptimeText}
+              </Text>
+            </View>
+          </View>
           {showStake ? (
             <Button
               containerStyle={style.flatten(["margin-top-24"])}
-              text={intl.formatMessage({ id: "validator.details.invest" })}
+              text={intl.formatMessage({ id: "Stake" })}
               onPress={() => {
                 smartNavigation.navigateSmart("Delegate", {
                   validatorAddress,

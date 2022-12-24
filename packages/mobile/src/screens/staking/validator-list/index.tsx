@@ -1,262 +1,47 @@
-import React, { FunctionComponent, useMemo, useState } from "react";
-import { observer } from "mobx-react-lite";
-
-import { Text, View } from "react-native";
 import { Staking } from "@keplr-wallet/stores";
-import { CoinPretty, Dec } from "@keplr-wallet/unit";
-import { RouteProp, useRoute } from "@react-navigation/native";
-import { RectButton } from "react-native-gesture-handler";
-import { CardDivider } from "../../../components/card";
-import { AllIcon } from "../../../components/icon";
-import { PageWithSectionList } from "../../../components/page";
-import { ValidatorThumbnail } from "../../../components/thumbnail";
-import { useSmartNavigation } from "../../../navigation-util";
-import { useStore } from "../../../stores";
+import { observer } from "mobx-react-lite";
+import React, { FunctionComponent } from "react";
+import { useIntl } from "react-intl";
+import { FlatList, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { CustomNavigationBar } from "../../../components/navigation-bar/custom-navigation-bar";
 import { useStyle } from "../../../styles";
-import { TooltipLabel } from "../component";
-import { FormattedMessage, useIntl } from "react-intl";
-import { formatCoin, formatPercent } from "../../../common/utils";
-
-type Sort = "APY" | "Voting Power" | "Name";
+import { DashboardValidatorItem } from "../component";
+import { useStaking } from "../hook/use-staking";
 
 export const ValidatorListScreen: FunctionComponent = observer(() => {
-  const route = useRoute<
-    RouteProp<
-      Record<
-        string,
-        {
-          validatorSelector?: (validatorAddress: string) => void;
-        }
-      >,
-      string
-    >
-  >();
-
-  const { chainStore, queriesStore } = useStore();
-
-  const queries = queriesStore.get(chainStore.current.chainId);
-
-  const [sort, setSort] = useState<Sort>("Voting Power");
-  const bondedValidators = queries.cosmos.queryValidators.getQueryStatus(
-    Staking.BondStatus.Unspecified
-  );
+  const { getValidators } = useStaking();
 
   const style = useStyle();
   const intl = useIntl();
+  const safeAreaInsets = useSafeAreaInsets();
 
-  const data = useMemo(() => {
-    const data = bondedValidators.validators.filter(
-      (validator) => validator.status === "BOND_STATUS_BONDED"
-    );
-
-    switch (sort) {
-      case "APY":
-        data.sort((val1, val2) => {
-          return new Dec(val1.commission.commission_rates.rate).gt(
-            new Dec(val2.commission.commission_rates.rate)
-          )
-            ? 1
-            : -1;
-        });
-        break;
-      case "Name":
-        data.sort((val1, val2) => {
-          if (!val1.description.moniker) {
-            return 1;
-          }
-          if (!val2.description.moniker) {
-            return -1;
-          }
-          return val1.description.moniker > val2.description.moniker ? -1 : 1;
-        });
-        break;
-      case "Voting Power":
-        data.sort((val1, val2) => {
-          return new Dec(val1.tokens).gt(new Dec(val2.tokens)) ? -1 : 1;
-        });
-        break;
-    }
-
-    return data;
-  }, [bondedValidators.validators, sort]);
+  const data = getValidators("BOND_STATUS_BONDED");
 
   return (
-    <React.Fragment>
-      <PageWithSectionList
-        style={style.get("background-color-background")}
-        sections={[
-          {
-            data,
-          },
-        ]}
-        stickySectionHeadersEnabled={true}
+    <View style={style.flatten(["flex-1", "background-color-background"])}>
+      <CustomNavigationBar
+        hideBottomSeparator
+        title={intl.formatMessage({ id: "validator.list.new.title" })}
+        containerStyle={{
+          ...style.flatten(["background-color-background"]),
+          marginTop: safeAreaInsets.top,
+        }}
+      />
+      <FlatList
+        data={data}
         keyExtractor={(item: Staking.Validator) => item.operator_address}
-        renderItem={({
-          item,
-          index,
-        }: {
-          item: Staking.Validator;
-          index: number;
-        }) => {
-          return (
-            <ValidatorItem
-              validatorAddress={item.operator_address}
-              index={index}
-              sort={sort}
-              onSelectValidator={route.params.validatorSelector}
-            />
-          );
+        renderItem={({ item }: { item: Staking.Validator; index: number }) => {
+          return <DashboardValidatorItem validator={item} />;
         }}
-        ItemSeparatorComponent={() => (
-          <CardDivider style={style.flatten(["background-color-gray-70"])} />
-        )}
-        renderSectionHeader={() => {
-          return (
-            <View
-              style={style.flatten([
-                "flex",
-                "height-40",
-                "padding-top-12",
-                "background-color-background",
-              ])}
-            >
-              <View
-                style={style.flatten([
-                  "flex-row",
-                  "justify-between",
-                  "padding-x-16",
-                  "margin-bottom-8",
-                ])}
-              >
-                <Text style={style.flatten(["color-gray-30", "text-caption2"])}>
-                  <FormattedMessage id="validator.list.name" />
-                </Text>
-                <TooltipLabel
-                  text={intl.formatMessage({
-                    id: "validator.list.totalShares",
-                  })}
-                />
-              </View>
-              <CardDivider
-                style={style.flatten([
-                  "background-color-gray-70",
-                  "margin-bottom-0",
-                ])}
-              />
-            </View>
-          );
+        contentContainerStyle={style.flatten(["padding-bottom-16"])}
+      />
+      <View
+        style={{
+          ...style.flatten(["background-color-background"]),
+          height: safeAreaInsets.bottom,
         }}
       />
-    </React.Fragment>
+    </View>
   );
-});
-
-const ValidatorItem: FunctionComponent<{
-  validatorAddress: string;
-  index: number;
-  sort: Sort;
-
-  onSelectValidator?: (validatorAddress: string) => void;
-}> = observer(({ validatorAddress, index, sort, onSelectValidator }) => {
-  const { chainStore, queriesStore } = useStore();
-
-  const queries = queriesStore.get(chainStore.current.chainId);
-
-  const bondedValidators = queries.cosmos.queryValidators.getQueryStatus(
-    Staking.BondStatus.Unspecified
-  );
-
-  const style = useStyle();
-
-  const validator = bondedValidators.getValidator(validatorAddress);
-
-  const smartNavigation = useSmartNavigation();
-  const intl = useIntl();
-
-  var totalStakingText = "";
-  if (validator) {
-    const totalStaking = new CoinPretty(
-      chainStore.current.stakeCurrency,
-      new Dec(validator.tokens)
-    );
-    totalStakingText = formatCoin(totalStaking, false, 0);
-  }
-  return validator ? (
-    <RectButton
-      style={style.flatten([
-        "flex-row",
-        "background-color-background",
-        "height-72",
-        "items-center",
-        "padding-x-16",
-      ])}
-      onPress={() => {
-        if (onSelectValidator) {
-          onSelectValidator(validatorAddress);
-          smartNavigation.goBack();
-        } else {
-          smartNavigation.navigateSmart("Validator.Details", {
-            validatorAddress,
-          });
-        }
-      }}
-    >
-      <ValidatorThumbnail
-        style={style.flatten(["margin-right-8"])}
-        size={40}
-        url={bondedValidators.getValidatorThumbnail(validator.operator_address)}
-      />
-      <View style={style.flatten(["flex-1"])}>
-        <View
-          style={style.flatten([
-            "flex-row",
-            "justify-between",
-            "items-center",
-            "margin-bottom-4",
-          ])}
-        >
-          <Text
-            style={style.flatten([
-              "subtitle3",
-              "color-gray-10",
-              "max-width-160",
-            ])}
-            numberOfLines={1}
-            ellipsizeMode="tail"
-          >
-            {validator.description.moniker}
-          </Text>
-          <View
-            style={style.flatten(["flex-row", "justify-end", "items-center"])}
-          >
-            <Text style={style.flatten(["subtitle3", "color-gray-10"])}>
-              {totalStakingText}
-            </Text>
-            <View
-              style={style.flatten([
-                "width-20",
-                "height-20",
-                "items-center",
-                "justify-center",
-                "margin-right-12",
-              ])}
-            >
-              <AllIcon color={style.get("color-gray-10").color} />
-            </View>
-          </View>
-        </View>
-        <Text style={style.flatten(["text-caption2", "color-gray-30"])}>
-          {intl.formatMessage(
-            { id: "validator.details.commission.percent" },
-            {
-              percent: formatPercent(
-                validator.commission.commission_rates.rate,
-                true
-              ),
-            }
-          )}
-        </Text>
-      </View>
-    </RectButton>
-  ) : null;
 });

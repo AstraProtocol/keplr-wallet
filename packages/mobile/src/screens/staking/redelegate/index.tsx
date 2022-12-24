@@ -1,8 +1,9 @@
-import React, { FunctionComponent, useEffect, useState } from "react";
-import { observer } from "mobx-react-lite";
-import { RouteProp, useRoute } from "@react-navigation/native";
-import { ChainStore, useStore } from "../../../stores";
-import { useStyle } from "../../../styles";
+import {
+  FeeType,
+  IAmountConfig,
+  useRedelegateTxConfig,
+} from "@keplr-wallet/hooks";
+import { MsgBeginRedelegate } from "@keplr-wallet/proto-types/cosmos/staking/v1beta1/tx";
 import {
   AccountStore,
   CosmosAccount,
@@ -10,31 +11,31 @@ import {
   SecretAccount,
   Staking,
 } from "@keplr-wallet/stores";
-import {
-  FeeType,
-  IAmountConfig,
-  useRedelegateTxConfig,
-} from "@keplr-wallet/hooks";
-import { Keyboard, Text, View } from "react-native";
-import { AmountInput } from "../../main/components";
-import { Button } from "../../../components/button";
-import {
-  buildLeftColumn,
-  buildRightColumn,
-} from "../../../components/foundation-view/item-row";
+import { CoinPretty, Dec, DecUtils } from "@keplr-wallet/unit";
+import { RouteProp, useRoute } from "@react-navigation/native";
+import { observer } from "mobx-react-lite";
+import React, { FunctionComponent, useEffect, useState } from "react";
 import { useIntl } from "react-intl";
-import { SelectValidatorItem } from "./select-validator";
+import { Keyboard, Text, View } from "react-native";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import {
   formatCoin,
   formatPercent,
   TX_GAS_DEFAULT,
 } from "../../../common/utils";
-import { MsgBeginRedelegate } from "@keplr-wallet/proto-types/cosmos/staking/v1beta1/tx";
-import { CoinPretty, Dec, DecUtils } from "@keplr-wallet/unit";
-import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import { AlertInline, IRow, ListRowView } from "../../../components";
 import { AvoidingKeyboardBottomView } from "../../../components/avoiding-keyboard/avoiding-keyboard-bottom";
-import { IRow, ListRowView } from "../../../components";
-import { ValidatorInfo } from "../delegate/components/validator-info";
+import { Button } from "../../../components/button";
+import {
+  buildLeftColumn,
+  buildRightColumn,
+} from "../../../components/foundation-view/item-row";
+import { ChainStore, useStore } from "../../../stores";
+import { useStyle } from "../../../styles";
+import { AmountInput } from "../../main/components";
+import { StakingValidatorItem } from "../component";
+import { useStaking } from "../hook/use-staking";
+import { SelectValidatorItem } from "./select-validator";
 
 export const RedelegateScreen: FunctionComponent = observer(() => {
   const route = useRoute<
@@ -48,6 +49,8 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
       string
     >
   >();
+
+  const { getValidator, getRewardsAmountOf } = useStaking();
 
   const validatorAddress = route.params.validatorAddress;
 
@@ -65,9 +68,8 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
   const account = accountStore.getAccount(chainStore.current.chainId);
   const queries = queriesStore.get(chainStore.current.chainId);
 
-  const srcValidator = queries.cosmos.queryValidators
-    .getQueryStatus(Staking.BondStatus.Unspecified)
-    .getValidator(validatorAddress);
+  const srcValidator = getValidator(validatorAddress)!;
+  const rewardsAmount = getRewardsAmountOf(validatorAddress);
 
   const staked = queries.cosmos.queryDelegations
     .getQueryBech32Address(account.bech32Address)
@@ -111,7 +113,7 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
       type: "items",
       cols: [
         buildLeftColumn({
-          text: intl.formatMessage({ id: "stake.redelegate.fee" }),
+          text: intl.formatMessage({ id: "common.text.transactionFee" }),
         }),
         buildRightColumn({ text: feeText }),
       ],
@@ -208,12 +210,24 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
         enableOnAndroid
       >
         <View style={style.flatten(["height-24"])} />
-        <Text style={style.flatten(["color-gray-30", "text-base-semi-bold"])}>
+        <Text style={style.flatten(["color-label-text-1", "text-base-bold"])}>
           {intl.formatMessage({ id: "stake.redelegate.from" })}
         </Text>
-        <ValidatorInfo
-          style={style.flatten(["margin-top-4", "margin-bottom-24"])}
-          validatorAddress={sendConfigs.srcValidatorAddress}
+        <StakingValidatorItem
+          containerStyle={style.flatten(["margin-top-4", "margin-x-0"])}
+          validator={srcValidator}
+        />
+        <AlertInline
+          type="warning"
+          hideIcon
+          hideBorder
+          content={intl.formatMessage(
+            {
+              id: "common.inline.staking.redelegatingInfo",
+            },
+            { rewards: formatCoin(rewardsAmount, false, 4) }
+          )}
+          style={style.flatten(["margin-top-4", "margin-bottom-20"])}
         />
         <SelectValidatorItem
           currentValidator={validatorAddress}
@@ -242,18 +256,17 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
       <View style={style.flatten(["flex-1", "justify-end"])}>
         <View style={style.flatten(["height-1", "background-color-gray-70"])} />
         <View
-          style={style.flatten([
-            "background-color-background",
-            "height-68",
-            "justify-center",
-            "padding-x-page",
-          ])}
+          style={{
+            ...style.flatten(["background-color-background", "justify-center"]),
+            height: 44 + 2 * 12,
+          }}
         >
           <Button
-            text={intl.formatMessage({ id: "stake.redelegate.redelagate" })}
+            text={intl.formatMessage({ id: "Continue" })}
             disabled={amountErrorText.length !== 0}
             loading={account.txTypeInProgress === "redelegate"}
             onPress={onContinueHandler}
+            containerStyle={style.flatten(["margin-x-page", "margin-y-12"])}
           />
         </View>
         <AvoidingKeyboardBottomView />

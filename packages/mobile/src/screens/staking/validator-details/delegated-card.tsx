@@ -1,48 +1,41 @@
-import { CoinPretty, Dec } from "@keplr-wallet/unit";
 import { observer } from "mobx-react-lite";
 import React, { FunctionComponent, useMemo, useState } from "react";
 import { useIntl } from "react-intl";
 import { Text, View, ViewStyle } from "react-native";
 import { formatCoin } from "../../../common/utils";
-import { Button, CannotRedelegateIcon } from "../../../components";
+import { Button } from "../../../components";
 import { Card } from "../../../components/card";
 import { registerModal } from "../../../modals/base";
 import { useSmartNavigation } from "../../../navigation-util";
-import { useStore } from "../../../stores";
 import { useStyle } from "../../../styles";
 import { PropertyView, PropertyViewIconType } from "../component/property";
+import { useStaking } from "../hook/use-staking";
 
 export const DelegatedCard: FunctionComponent<{
   containerStyle?: ViewStyle;
   validatorAddress: string;
 }> = observer(({ containerStyle, validatorAddress }) => {
-  const { chainStore, queriesStore, accountStore } = useStore();
-
-  const account = accountStore.getAccount(chainStore.current.chainId);
-  const queries = queriesStore.get(chainStore.current.chainId);
-
-  const smartNavigation = useSmartNavigation();
+  const {
+    getUnbondingAmountOf,
+    getStakingAmountOf,
+    getRewardsAmountOf,
+    getRedelegationsTo,
+  } = useStaking();
 
   const style = useStyle();
   const intl = useIntl();
+  const smartNavigation = useSmartNavigation();
 
   const [
     displayCannotRedelegateModal,
     setDisplayCannotRedelegateModal,
   ] = useState(false);
 
-  const staked = queries.cosmos.queryDelegations
-    .getQueryBech32Address(account.bech32Address)
-    .getDelegationTo(validatorAddress);
+  const stakingAmount = getStakingAmountOf(validatorAddress);
+  const rewardsAmount = getRewardsAmountOf(validatorAddress);
+  const unbondingAmount = getUnbondingAmountOf(validatorAddress);
 
-  const rewards = queries.cosmos.queryRewards
-    .getQueryBech32Address(account.bech32Address)
-    .getStakableRewardOf(validatorAddress);
-
-  const redelegation = queries.cosmos.queryRedelegations
-    .getQueryBech32Address(account.bech32Address)
-    .getRedelegations({ dstValidatorAddress: validatorAddress })
-    .shift();
+  const redelegation = getRedelegationsTo(validatorAddress).shift();
 
   const redelegationCompletionTime = useMemo(() => {
     const completionTime = redelegation?.entries.shift()?.redelegation_entry
@@ -59,21 +52,6 @@ export const DelegatedCard: FunctionComponent<{
     });
   }, [redelegation]);
 
-  const unbondingsQuery = queries.cosmos.queryUnbondingDelegations.getQueryBech32Address(
-    account.bech32Address
-  );
-
-  const unbondings = unbondingsQuery.unbondingBalances;
-
-  const zeroAmount = new CoinPretty(staked.currency, new Dec(0));
-  const unbonding = unbondings.find(
-    (unbonding) => validatorAddress === unbonding.validatorAddress
-  );
-  const unbondingAmount =
-    unbonding?.entries.reduce((coin, entry) => {
-      return coin.add(entry.balance);
-    }, zeroAmount) || zeroAmount;
-
   return (
     <Card style={containerStyle}>
       <View
@@ -82,20 +60,22 @@ export const DelegatedCard: FunctionComponent<{
           "padding-y-16",
           "background-color-card-background",
           "border-radius-16",
+          "border-width-1",
+          "border-color-card-border",
         ])}
       >
         <PropertyView
           iconType={PropertyViewIconType.staked}
           label={intl.formatMessage({
-            id: "validator.details.delegated.invested",
+            id: "StakingAmount",
           })}
-          value={formatCoin(staked, false, 2)}
+          value={formatCoin(stakingAmount, false, 2)}
           labelStyle={style.flatten(["color-staking-staked-text"])}
         />
         <Button
           size="medium"
           text={intl.formatMessage({
-            id: "validator.details.delegated.investMore",
+            id: "Stake",
           })}
           containerStyle={style.flatten(["margin-y-8"])}
           onPress={() => {
@@ -111,7 +91,7 @@ export const DelegatedCard: FunctionComponent<{
             size="medium"
             mode="outline"
             text={intl.formatMessage({
-              id: "validator.details.delegated.regelegate",
+              id: "Redelegate",
             })}
             containerStyle={style.flatten(["flex-1"])}
             onPress={() => {
@@ -130,7 +110,7 @@ export const DelegatedCard: FunctionComponent<{
             size="medium"
             mode="outline"
             text={intl.formatMessage({
-              id: "validator.details.delegated.undelegate",
+              id: "Unstake",
             })}
             containerStyle={style.flatten(["flex-1"])}
             onPress={() => {
@@ -151,9 +131,9 @@ export const DelegatedCard: FunctionComponent<{
           <PropertyView
             iconType={PropertyViewIconType.rewards}
             label={intl.formatMessage({
-              id: "validator.details.delegated.profit",
+              id: "RewardsAmount",
             })}
-            value={"+" + formatCoin(rewards, false, 4)}
+            value={"+" + formatCoin(rewardsAmount, false, 4)}
             labelStyle={style.flatten(["color-staking-rewards-text"])}
           />
           <View style={style.flatten(["width-8"])} />
@@ -161,7 +141,7 @@ export const DelegatedCard: FunctionComponent<{
             <PropertyView
               iconType={PropertyViewIconType.unbonding}
               label={intl.formatMessage(
-                { id: "validator.details.delegated.unbonding" },
+                { id: "UnstakingAmount" },
                 { denom: unbondingAmount.denom }
               )}
               value={formatCoin(unbondingAmount, false, 2)}
@@ -181,7 +161,7 @@ export const DelegatedCard: FunctionComponent<{
                 }}
               >
                 {intl.formatMessage({
-                  id: "common.text.follow",
+                  id: "Follow",
                 })}
               </Text>
             )}
@@ -200,7 +180,7 @@ export const DelegatedCard: FunctionComponent<{
             { date: redelegationCompletionTime }
           )}
           buttonText={intl.formatMessage({
-            id: "common.text.understand",
+            id: "Understand",
           })}
         />
       </View>
@@ -223,20 +203,16 @@ const CannotRedelegateModal: FunctionComponent<{
         style={style.flatten([
           "items-center",
           "content-stretch",
-          "margin-x-40",
+          "margin-x-16",
           "padding-16",
-          "border-radius-8",
-          "border-width-1",
-          "border-color-gray-60",
-          "background-color-gray-90",
+          "border-radius-12",
+          "background-color-card-background",
         ])}
       >
-        <CannotRedelegateIcon />
         <Text
           style={style.flatten([
-            "text-medium-semi-bold",
-            "color-gray-10",
-            "margin-top-16",
+            "text-large-bold",
+            "color-label-text-1",
             "text-center",
           ])}
         >
@@ -245,7 +221,7 @@ const CannotRedelegateModal: FunctionComponent<{
         <Text
           style={style.flatten([
             "text-base-regular",
-            "color-gray-30",
+            "color-label-text-1",
             "margin-top-8",
             "text-center",
           ])}

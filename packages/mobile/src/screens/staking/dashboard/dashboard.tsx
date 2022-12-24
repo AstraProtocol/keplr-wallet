@@ -1,18 +1,17 @@
-import React, { FunctionComponent, useRef } from "react";
-import { PageWithScrollView } from "../../../components/page";
+import React, { FunctionComponent } from "react";
+import { RefreshControl, ScrollView, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useStore } from "../../../stores";
 import { useStyle } from "../../../styles";
+import { DelegationsItem } from "./delegate";
 import { DashboardHeader } from "./header";
 import { RewardsItem } from "./rewards";
-import { DelegationsItem } from "./delegate";
-import { RefreshControl, ScrollView, View } from "react-native";
-import { useStore } from "../../../stores";
 
 export const StakingDashboardScreen: FunctionComponent = () => {
   const style = useStyle();
-  const scrollViewRef = useRef<ScrollView | null>(null);
-  const [refreshing, setRefreshing] = React.useState(false);
+  const safeAreaInsets = useSafeAreaInsets();
 
-  const { chainStore, accountStore, queriesStore/*, priceStore*/ } = useStore();
+  const { chainStore, accountStore, queriesStore } = useStore();
   const onRefresh = React.useCallback(async () => {
     const account = accountStore.getAccount(chainStore.current.chainId);
     const queries = queriesStore.get(chainStore.current.chainId);
@@ -36,37 +35,30 @@ export const StakingDashboardScreen: FunctionComponent = () => {
         .getQueryBech32Address(account.bech32Address)
         .waitFreshResponse(),
     ]);
-
-    setRefreshing(false);
   }, [accountStore, chainStore, queriesStore]);
 
   return (
-    <PageWithScrollView
-      backgroundColor={style.get("color-background").color}
-      refreshControl={
-        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-      }
-      ref={scrollViewRef}
-    >
-      <DashboardHeader
-        containerStyle={style.flatten(["margin-top-24"])}
-      />
-      <RewardsItem
-        chainStore={chainStore}
-        accountStore={accountStore}
-        queriesStore={queriesStore}
-        containerStyle={style.flatten(["margin-top-24"])}
-      />
-      <DelegationsItem
-        containerStyle={style.flatten([
-          "background-color-background",
-          "margin-top-24",
-        ])}
-        chainStore={chainStore}
-        accountStore={accountStore}
-        queriesStore={queriesStore}
-      />
+    <View style={style.get("background-color-background")}>
+      <ScrollView
+        style={{
+          ...style.flatten(["margin-bottom-48"]),
+          marginTop: safeAreaInsets.top,
+        }}
+        refreshControl={
+          <RefreshControl refreshing={false} onRefresh={onRefresh} />
+        }
+      >
+        <DashboardHeader containerStyle={style.flatten(["margin-top-24"])} />
+        <RewardsItem containerStyle={style.flatten(["margin-top-24"])} />
+        <DelegationsItem
+          containerStyle={style.flatten([
+            "background-color-background",
+            "margin-top-24",
+            "margin-bottom-16",
+          ])}
+        />
+      </ScrollView>
       <View style={style.flatten(["height-48"])} />
-    </PageWithScrollView>
+    </View>
   );
 };

@@ -1,7 +1,6 @@
 {
   "validator.details.about": "About",
   "validator.details.amountBeingWithdrawn": "Unstaking {denom}",
-  "validator.details.apr": "{percent}%/year",
   "validator.details.commission": "Commission",
   "validator.details.commission.details": "Rewards details",
   "validator.details.commission.percent": "Commission {percent}%",

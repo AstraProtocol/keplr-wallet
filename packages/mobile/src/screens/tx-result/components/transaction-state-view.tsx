@@ -51,10 +51,7 @@ export const TransactionStateView: FunctionComponent<{
         ),
       },
       [account.cosmos.msgOpts.delegate.type]: {
-        pending: intl.formatMessage(
-          { id: "tx.result.state.delegate.pending" },
-          { denom: transactionStore.txAmount?.denom }
-        ),
+        pending: intl.formatMessage({ id: "tx.result.state.delegate.pending" }),
         success: intl.formatMessage({ id: "tx.result.state.delegate.success" }),
         failure: intl.formatMessage({ id: "tx.result.state.delegate.failure" }),
       },
@@ -62,14 +59,12 @@ export const TransactionStateView: FunctionComponent<{
         pending: intl.formatMessage({
           id: "tx.result.state.undelegate.pending",
         }),
-        success: intl.formatMessage(
-          { id: "tx.result.state.undelegate.success" },
-          { denom: transactionStore.txAmount?.denom }
-        ),
-        failure: intl.formatMessage(
-          { id: "tx.result.state.undelegate.failure" },
-          { denom: transactionStore.txAmount?.denom }
-        ),
+        success: intl.formatMessage({
+          id: "tx.result.state.undelegate.success",
+        }),
+        failure: intl.formatMessage({
+          id: "tx.result.state.undelegate.failure",
+        }),
       },
       [account.cosmos.msgOpts.redelegate.type]: {
         pending: intl.formatMessage({

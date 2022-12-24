@@ -1,19 +1,22 @@
 import { Staking } from "@keplr-wallet/stores";
-import { CoinPretty, Dec } from "@keplr-wallet/unit";
 import React, { FunctionComponent, useMemo, useRef, useState } from "react";
-import { FormattedMessage, useIntl } from "react-intl";
-import { ScrollView, Text, TouchableOpacity, View } from "react-native";
+import { useIntl } from "react-intl";
+import {
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
+  ViewStyle,
+} from "react-native";
 import { RectButton } from "react-native-gesture-handler";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { formatCoin, formatPercent } from "../../../common/utils";
 import { Button } from "../../../components";
 import { CardDivider } from "../../../components/card";
 import { CloseLargeIcon } from "../../../components/icon/outlined";
-import { ValidatorThumbnail } from "../../../components/thumbnail";
 import { registerModal } from "../../../modals/base";
-import { useStore } from "../../../stores";
 import { useStyle } from "../../../styles";
-import { TooltipLabel } from "../component";
+import { StakingValidatorItem } from "../component";
+import { useStaking } from "../hook/use-staking";
 
 export const ValidatorsBottomSheet: FunctionComponent<{
   label: string;
@@ -34,71 +37,21 @@ export const ValidatorsBottomSheet: FunctionComponent<{
     modalPersistent,
     currentValidator: currentValidatorAddress,
   }) => {
+    const { getValidators } = useStaking();
+
     const style = useStyle();
-    const { chainStore, queriesStore } = useStore();
     const intl = useIntl();
-    const queries = queriesStore.get(chainStore.current.chainId);
-    const bondedValidators = queries.cosmos.queryValidators.getQueryStatus(
-      Staking.BondStatus.Unspecified
-    );
-
-    console.log("__bondedValidators__", bondedValidators.validators);
-
-    const [toValidator, setToValidator] = useState(selectedValidator);
     const safeAreaInsets = useSafeAreaInsets();
 
-    const data = useMemo(() => {
-      const data = bondedValidators.validators;
-      return data.filter((validator) => {
-        return (
-          validator.operator_address !== currentValidatorAddress &&
-          validator.status === "BOND_STATUS_BONDED"
-        );
-      });
-    }, [bondedValidators.validators, currentValidatorAddress]);
+    const validators = getValidators("BOND_STATUS_BONDED");
 
-    const renderBall = (selected: boolean) => {
-      if (selected) {
-        return (
-          <View
-            style={style.flatten([
-              "margin-left-8",
-              "width-18",
-              "height-18",
-              "border-radius-32",
-              "background-color-transparent",
-              "items-center",
-              "justify-center",
-              "border-width-1",
-              "border-color-primary",
-            ])}
-          >
-            <View
-              style={style.flatten([
-                "width-8",
-                "height-8",
-                "border-radius-32",
-                "background-color-primary",
-              ])}
-            />
-          </View>
-        );
-      } else {
-        return (
-          <View
-            style={style.flatten([
-              "margin-left-8",
-              "width-18",
-              "height-18",
-              "border-radius-32",
-              "background-color-transparent",
-              "border-width-1",
-              "border-color-gray-10",
-            ])}
-          />
-        );
-      }
-    };
+    const [toValidator, setToValidator] = useState(selectedValidator);
+
+    const data = useMemo(() => {
+      return validators.filter((validator) => {
+        return validator.operator_address !== currentValidatorAddress;
+      });
+    }, [validators, currentValidatorAddress]);
 
     const scrollViewRef = useRef<ScrollView | null>(null);
     const initOnce = useRef<boolean>(false);
@@ -149,64 +102,38 @@ export const ValidatorsBottomSheet: FunctionComponent<{
         />
         <View
           style={style.flatten([
-            "border-radius-8",
+            "border-radius-16",
             "overflow-hidden",
             "background-color-gray-90",
           ])}
         >
-          <View style={style.flatten(["flex-row", "items-center"])}>
-            <TouchableOpacity
-              onPress={close}
-              style={style.flatten(["margin-16"])}
-            >
-              <CloseLargeIcon />
-            </TouchableOpacity>
+          <View
+            style={style.flatten([
+              "flex-row",
+              "items-center",
+              "height-40",
+              "margin-top-8",
+            ])}
+          >
+            <View
+              style={style.flatten(["margin-x-16", "height-24", "width-24"])}
+            />
             <Text
               style={style.flatten([
                 "flex-1",
-                "text-medium-medium",
+                "text-medium-bold",
                 "color-label-text-1",
                 "text-center",
               ])}
             >
               {label}
             </Text>
-            <View
-              style={style.flatten(["margin-16", "height-24", "width-24"])}
-            />
-          </View>
-          <CardDivider
-            style={style.flatten([
-              "background-color-card-separator",
-              "margin-x-0",
-            ])}
-          />
-          <View style={style.flatten(["flex", "height-40", "padding-top-12"])}>
-            <View
-              style={style.flatten([
-                "flex-row",
-                "justify-between",
-                "padding-x-16",
-                "margin-bottom-8",
-              ])}
+            <TouchableOpacity
+              onPress={close}
+              style={style.flatten(["margin-x-16"])}
             >
-              <Text
-                style={style.flatten(["color-label-text-2", "text-caption2"])}
-              >
-                <FormattedMessage id="validator.list.name" />
-              </Text>
-              <TooltipLabel
-                text={intl.formatMessage({
-                  id: "validator.list.totalShares",
-                })}
-              />
-            </View>
-            <CardDivider
-              style={style.flatten([
-                "background-color-card-separator",
-                "margin-bottom-0",
-              ])}
-            />
+              <CloseLargeIcon color={style.get("color-white").color} />
+            </TouchableOpacity>
           </View>
           <ScrollView
             style={{
@@ -216,92 +143,33 @@ export const ValidatorsBottomSheet: FunctionComponent<{
             persistentScrollbar={true}
             onLayout={onInit}
           >
-            {data.map((val, index) => {
+            {data.map((validator, index) => {
               return (
                 <View key={index}>
                   <RectButton
-                    key={val.operator_address}
-                    style={style.flatten([
-                      "padding-16",
-                      "flex-row",
-                      "items-center",
-                    ])}
+                    key={validator.operator_address}
+                    style={style.flatten(["flex-row"])}
                     onPress={() => {
-                      setToValidator(val);
+                      setToValidator(validator);
                     }}
                   >
-                    <ValidatorThumbnail
-                      style={style.flatten(["margin-right-12"])}
-                      size={40}
-                      url={bondedValidators.getValidatorThumbnail(
-                        val.operator_address
-                      )}
+                    <StakingValidatorItem
+                      containerStyle={style.flatten([
+                        "flex-1",
+                        "margin-top-0",
+                        "margin-x-0",
+                        "background-color-transparent",
+                      ])}
+                      validator={validator}
+                      hasStake={false}
                     />
-                    <View style={style.flatten(["flex-1"])}>
-                      <View
-                        style={style.flatten([
-                          "flex-row",
-                          "justify-between",
-                          "items-center",
-                          "margin-bottom-4",
-                        ])}
-                      >
-                        <Text
-                          style={style.flatten([
-                            "text-base-medium",
-                            "color-label-text-1",
-                            "max-width-160",
-                          ])}
-                          numberOfLines={1}
-                          ellipsizeMode="tail"
-                        >
-                          {val.description.moniker}
-                        </Text>
-                        <View
-                          style={style.flatten([
-                            "flex-row",
-                            "justify-end",
-                            "items-center",
-                          ])}
-                        >
-                          <Text
-                            style={style.flatten([
-                              "text-base-medium",
-                              "color-label-text-1",
-                            ])}
-                          >
-                            {formatCoin(
-                              new CoinPretty(
-                                chainStore.current.stakeCurrency,
-                                new Dec(val.tokens)
-                              ),
-                              false,
-                              0
-                            )}
-                          </Text>
-                          {renderBall(
-                            val.operator_address ===
-                              toValidator?.operator_address
-                          )}
-                        </View>
-                      </View>
-                      <Text
-                        style={style.flatten([
-                          "text-small-regular",
-                          "color-label-text-2",
-                        ])}
-                      >
-                        {intl.formatMessage(
-                          { id: "validator.details.commission.percent" },
-                          {
-                            percent: formatPercent(
-                              val.commission.commission_rates.rate,
-                              true
-                            ),
-                          }
-                        )}
-                      </Text>
-                    </View>
+                    <RadioItem
+                      selected={
+                        validator.operator_address ===
+                        toValidator?.operator_address
+                      }
+                      containerStyle={style.flatten(["margin-16"])}
+                    />
                   </RectButton>
                   <CardDivider
                     style={style.flatten([
@@ -314,12 +182,6 @@ export const ValidatorsBottomSheet: FunctionComponent<{
               );
             })}
           </ScrollView>
-          <View
-            style={style.flatten([
-              "height-1",
-              "background-color-card-separator",
-            ])}
-          />
           <Button
             text={intl.formatMessage({ id: "common.text.confirm" })}
             disabled={!toValidator}
@@ -335,3 +197,41 @@ export const ValidatorsBottomSheet: FunctionComponent<{
     disableSafeArea: true,
   }
 );
+
+const RadioItem: FunctionComponent<{
+  selected?: boolean;
+  containerStyle?: ViewStyle;
+}> = ({ selected = false, containerStyle }) => {
+  const style = useStyle();
+
+  return (
+    <View style={containerStyle}>
+      <View
+        style={style.flatten(
+          [
+            "width-20",
+            "height-20",
+            "items-center",
+            "justify-center",
+            "margin-2",
+            "border-width-1",
+            "border-radius-12",
+            "background-color-gray-100",
+          ],
+          [selected ? "border-color-primary" : "border-color-border"]
+        )}
+      >
+        <View
+          style={style.flatten(
+            ["width-12", "height-12", "border-radius-6"],
+            [
+              selected
+                ? "background-color-primary"
+                : "background-color-gray-100",
+            ]
+          )}
+        />
+      </View>
+    </View>
+  );
+};
