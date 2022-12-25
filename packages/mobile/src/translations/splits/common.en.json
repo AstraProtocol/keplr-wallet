@@ -65,13 +65,5 @@
   "common.text.view": "View",
   "common.text.viewLess": "View less",
   "common.text.viewMore": "View more",
-  "common.text.wrongPassword": "Invalid password",
-  "nft.collectible.empty": "No NFTs yet",
-  "nft.collectible.send": "Send NFT",
-  "nft.qrcode.checkinStand": "Show at check-in stand",
-  "nft.text.code": "E-Ticket",
-  "nft.text.confirm": "Confirm",
-  "nft.text.confirmSend": "Confirm and send",
-  "nft.text.sell": "Sell",
-  "nft.text.send": "Send"
+  "common.text.wrongPassword": "Invalid password"
 }

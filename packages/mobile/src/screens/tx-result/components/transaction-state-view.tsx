@@ -13,11 +13,13 @@ import {
 import { useStore } from "../../../stores";
 import { TxState } from "../../../stores/transaction";
 import { useStyle } from "../../../styles";
+import { useTransaction } from "../hook/use-transaction";
 
 export const TransactionStateView: FunctionComponent<{
   style?: ViewStyle;
 }> = observer(({ style }) => {
-  const { transactionStore, accountStore, chainStore } = useStore();
+  const { getTxText } = useTransaction();
+  const { transactionStore } = useStore();
 
   const [txState, setTxState] = useState(transactionStore.txState);
   const [txContent, setTxContent] = useState("");
@@ -37,79 +39,11 @@ export const TransactionStateView: FunctionComponent<{
   const styleBuilder = useStyle();
 
   function getMainText(type: string, state: TxState): string {
-    const account = accountStore.getAccount(chainStore.current.chainId);
-    const allMainText: Record<string, Record<string, string>> = {
-      [account.cosmos.msgOpts.send.native.type]: {
-        pending: intl.formatMessage({ id: "tx.result.state.send.pending" }),
-        success: intl.formatMessage(
-          { id: "tx.result.state.send.success" },
-          { denom: transactionStore.txAmount?.denom }
-        ),
-        failure: intl.formatMessage(
-          { id: "tx.result.state.send.failure" },
-          { denom: transactionStore.txAmount?.denom }
-        ),
-      },
-      [account.cosmos.msgOpts.delegate.type]: {
-        pending: intl.formatMessage({ id: "tx.result.state.delegate.pending" }),
-        success: intl.formatMessage({ id: "tx.result.state.delegate.success" }),
-        failure: intl.formatMessage({ id: "tx.result.state.delegate.failure" }),
-      },
-      [account.cosmos.msgOpts.undelegate.type]: {
-        pending: intl.formatMessage({
-          id: "tx.result.state.undelegate.pending",
-        }),
-        success: intl.formatMessage({
-          id: "tx.result.state.undelegate.success",
-        }),
-        failure: intl.formatMessage({
-          id: "tx.result.state.undelegate.failure",
-        }),
-      },
-      [account.cosmos.msgOpts.redelegate.type]: {
-        pending: intl.formatMessage({
-          id: "tx.result.state.redelegate.pending",
-        }),
-        success: intl.formatMessage({
-          id: "tx.result.state.redelegate.success",
-        }),
-        failure: intl.formatMessage({
-          id: "tx.result.state.redelegate.failure",
-        }),
-      },
-      [account.cosmos.msgOpts.withdrawRewards.type]: {
-        pending: intl.formatMessage({ id: "tx.result.state.withdraw.pending" }),
-        success: intl.formatMessage({ id: "tx.result.state.withdraw.success" }),
-        failure: intl.formatMessage({ id: "tx.result.state.withdraw.failure" }),
-      },
-      ["wallet-swap"]: {
-        pending: intl.formatMessage({ id: "tx.result.state.swap.pending" }),
-        success: intl.formatMessage({ id: "tx.result.state.swap.success" }),
-        failure: intl.formatMessage({ id: "tx.result.state.swap.failure" }),
-      },
-      ["transfer-nft"]: {
-        pending: intl.formatMessage({
-          id: "tx.result.state.transferNFT.pending",
-        }),
-        success: intl.formatMessage({
-          id: "tx.result.state.transferNFT.success",
-        }),
-        failure: intl.formatMessage({
-          id: "tx.result.state.transferNFT.failure",
-        }),
-      },
-    };
-
-    const mainText = allMainText[type];
-
-    if (!mainText) {
-      return "";
-    }
-
+    const mainText = getTxText(type) as Record<string, string>;
     const txStateString = state?.toLowerCase() ?? "";
-
-    return mainText[txStateString] ?? "";
+    return mainText ? mainText[txStateString] : "";
   }
+  
   let typeMsg = transactionStore.rawData?.type || "";
   if (msgs && msgs.length != 0 && msgs[0].type !== "sign/MsgSignData") {
     typeMsg = msgs[0].type;

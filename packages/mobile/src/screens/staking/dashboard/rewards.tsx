@@ -33,6 +33,10 @@ export const RewardsItem: FunctionComponent<{
   const isPending = hasUnbonding();
   const isRewardExist = hasRewards();
 
+  if (totalStakingAmount.toDec().isZero() && !isPending && !isRewardExist) {
+    return null;
+  }
+
   return (
     <View
       style={{

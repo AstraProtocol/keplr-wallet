@@ -65,13 +65,5 @@
   "common.text.view": "Xem",
   "common.text.viewLess": "Rút gọn",
   "common.text.viewMore": "Xem thêm",
-  "common.text.wrongPassword": "Mật khẩu sai",
-  "nft.collectible.empty": "Bạn chưa sở hữu bộ sưu tập nào",
-  "nft.collectible.send": "Gửi bộ sưu tập",
-  "nft.qrcode.checkinStand": "Đưa mã này cho nhân viên tại quầy check-in",
-  "nft.text.code": "Mã vé",
-  "nft.text.confirm": "Xác nhận",
-  "nft.text.confirmSend": "Xác nhận và gửi",
-  "nft.text.sell": "Bán",
-  "nft.text.send": "Gửi"
+  "common.text.wrongPassword": "Mật khẩu sai"
 }

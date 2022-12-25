@@ -1,10 +1,8 @@
 import { useAmountConfig } from "@keplr-wallet/hooks";
 import { CoinPretty } from "@keplr-wallet/unit";
-import React from "react";
 import { useIntl } from "react-intl";
-import { View, ViewStyle } from "react-native";
 import { formatCoin } from "../../../common";
-import { IRow, ListRowView } from "../../../components";
+import { IRow } from "../../../components";
 import { useWeb3Transfer } from "../../../hooks/use-web3-transfer";
 import { useSmartNavigation } from "../../../navigation-util";
 import { useStore } from "../../../stores";
@@ -205,6 +203,18 @@ export const useTransaction = () => {
     return type === account.cosmos.msgOpts.redelegate.type;
   };
 
+  const isWithdrawRewardsTransaction = (type?: string) => {
+    return type === account.cosmos.msgOpts.withdrawRewards.type;
+  };
+
+  const isSwapTransaction = (type?: string) => {
+    return type === "wallet-swap";
+  };
+
+  const isSendNFTTransaction = (type?: string) => {
+    return type === "transfer-nft";
+  };
+
   const sendTransaction = async () => {
     if (!transactionStore.rawData) {
       return;
@@ -252,21 +262,6 @@ export const useTransaction = () => {
     }
   };
 
-  // const getTxDetailsView = (
-  //   containerStyle: ViewStyle | undefined = undefined
-  // ) => {
-  //   if (!transactionStore.rawData) {
-  //     return null;
-  //   }
-
-  //   const rows = getTxDetailsRows(transactionStore.rawData);
-  //   return (
-  // <View style={{ ...containerStyle }}>
-  //   <ListRowView rows={rows} />
-  // </View>
-  //   );
-  // };
-
   const getTxAmount = () => {
     if (!transactionStore.rawData) {
       return;
@@ -281,12 +276,8 @@ export const useTransaction = () => {
     return value["amount"] as CoinPretty;
   };
 
-  const getTxText = () => {
-    if (!transactionStore.rawData) {
-      return;
-    }
-
-    const { type } = transactionStore.rawData;
+  const getTxText = (type: string | undefined = undefined) => {
+    type = type ?? transactionStore.rawData?.type;
 
     if (isSendTransaction(type)) {
       return {
@@ -324,11 +315,39 @@ export const useTransaction = () => {
       };
     }
 
+    if (isWithdrawRewardsTransaction(type)) {
+      return {
+        confirmation: intl.formatMessage({
+          id: "Tx.WithdrawRewards.Confirmation",
+        }),
+        pending: intl.formatMessage({ id: "Tx.WithdrawRewards.Pending" }),
+        success: intl.formatMessage({ id: "Tx.WithdrawRewards.Success" }),
+        failure: intl.formatMessage({ id: "Tx.WithdrawRewards.Failure" }),
+      };
+    }
+
+    if (isSwapTransaction(type)) {
+      return {
+        confirmation: intl.formatMessage({ id: "Tx.Swap.Confirmation" }),
+        pending: intl.formatMessage({ id: "Tx.Swap.Pending" }),
+        success: intl.formatMessage({ id: "Tx.Swap.Success" }),
+        failure: intl.formatMessage({ id: "Tx.Swap.Failure" }),
+      };
+    }
+
+    if (isSendNFTTransaction(type)) {
+      return {
+        confirmation: intl.formatMessage({ id: "Tx.SendNFT.Confirmation" }),
+        pending: intl.formatMessage({ id: "Tx.SendNFT.Pending" }),
+        success: intl.formatMessage({ id: "Tx.SendNFT.Success" }),
+        failure: intl.formatMessage({ id: "Tx.SendNFT.Failure" }),
+      };
+    }
+
     return;
   };
 
   return {
-    // getTxDetailsView,
     getTxDetailsRows,
     sendTransaction,
     getTxAmount,

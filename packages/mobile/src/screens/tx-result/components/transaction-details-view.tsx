@@ -76,7 +76,7 @@ export const TransactionDetailsView: FunctionComponent<{
 
   return (
     <View style={style}>
-      {hasData && <ListRowView rows={rows} />}
+      {hasData && <ListRowView hideBorder rows={rows} />}
       {chainInfo.raw.txExplorer && (
         <TextLink
           size="medium"

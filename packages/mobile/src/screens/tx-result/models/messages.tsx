@@ -452,7 +452,7 @@ export function renderMsgDelegate(value: MsgDelegate["value"]) {
       cols: [
         buildLeftColumn({
           text: intl.formatMessage({
-            id: "common.text.validators",
+            id: "StakingProvider",
           }),
         }),
         buildRightColumn({ text: value.validatorName ?? "" }),
@@ -463,7 +463,7 @@ export function renderMsgDelegate(value: MsgDelegate["value"]) {
       cols: [
         buildLeftColumn({
           text: intl.formatMessage({
-            id: "common.text.interest",
+            id: "APR",
           }),
         }),
         buildRightColumn({
@@ -476,7 +476,7 @@ export function renderMsgDelegate(value: MsgDelegate["value"]) {
       cols: [
         buildLeftColumn({
           text: intl.formatMessage({
-            id: "common.text.commission",
+            id: "Commission",
           }),
         }),
         buildRightColumn({

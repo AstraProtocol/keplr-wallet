@@ -71,7 +71,7 @@ export const TxConfirmationScreen: FunctionComponent = () => {
           {txAmountText}
         </Text>
         <View style={style.flatten(["padding-x-16", "margin-top-16"])}>
-          <ListRowView rows={rows} />
+          <ListRowView hideBorder rows={rows} />
         </View>
       </ScrollView>
       <Button
