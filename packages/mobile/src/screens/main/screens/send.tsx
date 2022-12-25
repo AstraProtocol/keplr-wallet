@@ -28,7 +28,6 @@ export const SendTokenScreen: FunctionComponent = observer(() => {
     chainStore,
     accountStore,
     queriesStore,
-    analyticsStore,
     transactionStore,
     userBalanceStore,
   } = useStore();
@@ -47,7 +46,7 @@ export const SendTokenScreen: FunctionComponent = observer(() => {
     >
   >();
 
-  const { estimateGas, transfer } = useWeb3Transfer();
+  const { estimateGas } = useWeb3Transfer();
 
   const chainId = route.params.chainId
     ? route.params.chainId
@@ -131,72 +130,73 @@ export const SendTokenScreen: FunctionComponent = observer(() => {
       const gasPrice = parseInt(price.slice(2), 16);
       let feeDec = new Dec(gasLimit).mul(new Dec(gasPrice));
 
-      const params = {
-        token: sendConfigs.amountConfig.sendCurrency?.coinDenom,
-        amount: Number(sendConfigs.amountConfig.amount),
-        fee: Number(
-          feeDec.mulTruncate(
-            DecUtils.getTenExponentN(
-              -sendConfigs.amountConfig.sendCurrency.coinDecimals
-            )
-          ) ?? "0"
-        ),
-        gas: gasLimit,
-        gas_price: gasPrice,
-        receiver_address: sendConfigs.recipientConfig.recipient,
-      };
+      // const params = {
+      //   token: sendConfigs.amountConfig.sendCurrency?.coinDenom,
+      //   amount: Number(sendConfigs.amountConfig.amount),
+      //   fee: Number(
+      //     feeDec.mulTruncate(
+      //       DecUtils.getTenExponentN(
+      //         -sendConfigs.amountConfig.sendCurrency.coinDecimals
+      //       )
+      //     ) ?? "0"
+      //   ),
+      //   gas: gasLimit,
+      //   gas_price: gasPrice,
+      //   receiver_address: sendConfigs.recipientConfig.recipient,
+      // };
 
-      try {
-        let dec = new Dec(sendConfigs.amountConfig.amount);
-        dec = dec.mulTruncate(
-          DecUtils.getTenExponentN(
-            sendConfigs.amountConfig.sendCurrency.coinDecimals
-          )
-        );
-        const amount = new CoinPretty(
-          sendConfigs.amountConfig.sendCurrency,
-          dec
-        );
+      // try {
+      let dec = new Dec(sendConfigs.amountConfig.amount);
+      dec = dec.mulTruncate(
+        DecUtils.getTenExponentN(
+          sendConfigs.amountConfig.sendCurrency.coinDecimals
+        )
+      );
+      const amount = new CoinPretty(sendConfigs.amountConfig.sendCurrency, dec);
 
-        transactionStore.updateRawData({
-          type: account.cosmos.msgOpts.send.native.type,
-          value: {
-            amount,
-            fee: new CoinPretty(sendConfigs.amountConfig.sendCurrency, feeDec),
-            recipient: sendConfigs.recipientConfig.recipient,
-          },
-        });
+      transactionStore.updateRawData({
+        type: account.cosmos.msgOpts.send.native.type,
+        value: {
+          amount,
+          fee: new CoinPretty(sendConfigs.amountConfig.sendCurrency, feeDec),
+          recipient: sendConfigs.recipientConfig.recipient,
+          gasLimit,
+          gasPrice,
+        },
+      });
 
-        await transfer(
-          sendConfigs.recipientConfig.recipient,
-          sendConfigs.amountConfig,
-          {
-            onBroadcasted: (txHash) => {
-              analyticsStore.logEvent("astra_hub_transfer_token", {
-                ...params,
-                tx_hash: "0x" + Buffer.from(txHash).toString("hex"),
-                success: true,
-              });
-              transactionStore.updateTxHash(txHash);
+      smartNavigation.navigateSmart("Tx.Confirmation", {});
 
-              smartNavigation.navigate("Tx", {
-                screen: "Tx.EvmResult",
-              });
-            },
-          }
-        );
-      } catch (e: any) {
-        analyticsStore.logEvent("astra_hub_transfer_token", {
-          ...params,
-          success: false,
-          error: e?.message,
-        });
-        if (e?.message === "Request rejected") {
-          return;
-        }
-        console.log("__DEBUG_ sendErr: ", e);
-        transactionStore.updateTxState("failure");
-      }
+      //   await transfer(
+      //     sendConfigs.recipientConfig.recipient,
+      //     sendConfigs.amountConfig,
+      //     {
+      //       onBroadcasted: (txHash) => {
+      //         analyticsStore.logEvent("astra_hub_transfer_token", {
+      //           ...params,
+      //           tx_hash: "0x" + Buffer.from(txHash).toString("hex"),
+      //           success: true,
+      //         });
+      //         transactionStore.updateTxHash(txHash);
+
+      //         smartNavigation.navigate("Tx", {
+      //           screen: "Tx.EvmResult",
+      //         });
+      //       },
+      //     }
+      //   );
+      // } catch (e: any) {
+      //   analyticsStore.logEvent("astra_hub_transfer_token", {
+      //     ...params,
+      //     success: false,
+      //     error: e?.message,
+      //   });
+      //   if (e?.message === "Request rejected") {
+      //     return;
+      //   }
+      //   console.log("__DEBUG_ sendErr: ", e);
+      //   transactionStore.updateTxState("failure");
+      // }
     }
   };
 
@@ -256,7 +256,7 @@ export const SendTokenScreen: FunctionComponent = observer(() => {
             disabled={
               amountErrorText.length !== 0 || addressErrorText.length !== 0
             }
-            loading={transactionStore.rawData !== undefined}
+            // loading={transactionStore.rawData !== undefined}
             onPress={onSendHandler}
             containerStyle={style.flatten(["margin-x-page", "margin-top-12"])}
           />

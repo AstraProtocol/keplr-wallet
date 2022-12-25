@@ -1,4 +1,5 @@
 import { Staking } from "@keplr-wallet/stores";
+import { observer } from "mobx-react-lite";
 import React, { FunctionComponent } from "react";
 import { useIntl } from "react-intl";
 import { Text, View, ViewStyle } from "react-native";
@@ -158,7 +159,7 @@ export const StakingValidatorItem: FunctionComponent<{
 export const DashboardMyValidatorItem: FunctionComponent<{
   containerStyle?: ViewStyle;
   validator?: Staking.Validator;
-}> = ({ containerStyle, validator }) => {
+}> = observer(({ containerStyle, validator }) => {
   if (!validator) {
     return null;
   }
@@ -289,7 +290,7 @@ export const DashboardMyValidatorItem: FunctionComponent<{
       />
     </RectButton>
   );
-};
+});
 
 export const DashboardValidatorItem: FunctionComponent<{
   containerStyle?: ViewStyle;

@@ -196,6 +196,11 @@ export class ObservableQueryInflation {
   }
 
   @computed
+  get queryEpochMintProvision(): ObservableQueryInflationEpochMintProvision {
+    return this._queryAstraInflationEpochMintProvision;
+  }
+
+  @computed
   get params(): InflationParams | undefined {
     return this._queryAstraInflationParams.params;
   }

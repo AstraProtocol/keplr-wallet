@@ -142,6 +142,8 @@ export const useStaking = () => {
   };
 
   return {
+    getChainAPR,
+    
     getValidators,
     getValidator,
     getValidatorThumbnail,
@@ -164,8 +166,11 @@ export const useStaking = () => {
     hasUnbonding,
 
     queryValidators,
+    queryRewards,
     queryDelegations,
     queryUnbondingDelegations,
     queryRedelegations,
+    queryPool,
+    queryInflation,
   };
 };

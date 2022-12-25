@@ -30,6 +30,7 @@ import {
   buildLeftColumn,
   buildRightColumn,
 } from "../../../components/foundation-view/item-row";
+import { useSmartNavigation } from "../../../navigation-util";
 import { ChainStore, useStore } from "../../../stores";
 import { useStyle } from "../../../styles";
 import { AmountInput } from "../../main/components";
@@ -64,6 +65,7 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
 
   const style = useStyle();
   const intl = useIntl();
+  const smartNavigation = useSmartNavigation();
 
   const account = accountStore.getAccount(chainStore.current.chainId);
   const queries = queriesStore.get(chainStore.current.chainId);
@@ -124,25 +126,25 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
     Keyboard.dismiss();
 
     if (account.isReadyToSendTx && amountIsValid && dstValidatorAddress) {
-      const params = {
-        token: sendConfigs.amountConfig.sendCurrency?.coinDenom,
-        amount: Number(sendConfigs.amountConfig.amount),
-        fee: Number(sendConfigs.feeConfig.fee?.toDec() ?? "0"),
-        gas: gasLimit,
-        gas_price: gasPrice,
-        from_validator_address: sendConfigs.srcValidatorAddress,
-        from_validator_name: srcValidator?.description.moniker,
-        from_commission: Number(
-          formatPercent(srcValidator?.commission.commission_rates.rate, true)
-        ),
-        to_validator_address: sendConfigs.dstValidatorAddress,
-        to_validator_name: dstValidator?.description.moniker,
-        to_commission: Number(
-          formatPercent(dstValidator?.commission.commission_rates.rate, true)
-        ),
-      };
+      // const params = {
+      //   token: sendConfigs.amountConfig.sendCurrency?.coinDenom,
+      //   amount: Number(sendConfigs.amountConfig.amount),
+      //   fee: Number(sendConfigs.feeConfig.fee?.toDec() ?? "0"),
+      //   gas: gasLimit,
+      //   gas_price: gasPrice,
+      //   from_validator_address: sendConfigs.srcValidatorAddress,
+      //   from_validator_name: srcValidator?.description.moniker,
+      //   from_commission: Number(
+      //     srcValidator?.commission.commission_rates.rate ?? 0
+      //   ),
+      //   to_validator_address: sendConfigs.dstValidatorAddress,
+      //   to_validator_name: dstValidator?.description.moniker,
+      //   to_commission: Number(
+      //     dstValidator?.commission.commission_rates.rate ?? 0
+      //   ),
+      // };
 
-      try {
+      // try {
         let dec = new Dec(sendConfigs.amountConfig.amount);
         dec = dec.mulTruncate(
           DecUtils.getTenExponentN(
@@ -161,45 +163,50 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
             fee: sendConfigs.feeConfig.fee,
             srcValidatorAddress: sendConfigs.srcValidatorAddress,
             srcValidatorName: srcValidator?.description.moniker || "",
+            srcCommission: srcValidator?.commission.commission_rates.rate,
             dstValidatorAddress: sendConfigs.dstValidatorAddress,
             dstValidatorName: dstValidator?.description.moniker || "",
+            dstCommission: dstValidator?.commission.commission_rates.rate,
+            gasLimit,
+            gasPrice,
           },
         });
-        const tx = account.cosmos.makeBeginRedelegateTx(
-          sendConfigs.amountConfig.amount,
-          sendConfigs.srcValidatorAddress,
-          sendConfigs.dstValidatorAddress
-        );
-        await tx.sendWithGasPrice(
-          { gas: gasLimit },
-          sendConfigs.memoConfig.memo,
-          {
-            preferNoSetMemo: true,
-            preferNoSetFee: true,
-          },
-          {
-            onBroadcasted: (txHash: Uint8Array) => {
-              analyticsStore.logEvent("astra_hub_redelegate_token", {
-                ...params,
-                tx_hash: Buffer.from(txHash).toString("hex"),
-                success: true,
-              });
-              transactionStore.updateTxHash(txHash);
-            },
-          }
-        );
-      } catch (e: any) {
-        analyticsStore.logEvent("astra_hub_redelegate_token", {
-          ...params,
-          success: false,
-          error: e?.message,
-        });
-        if (e?.message === "Request rejected") {
-          return;
-        }
-        console.log(e);
-        transactionStore.updateTxState("failure");
-      }
+        smartNavigation.navigateSmart("Tx.Confirmation", {});
+      //   const tx = account.cosmos.makeBeginRedelegateTx(
+      //     sendConfigs.amountConfig.amount,
+      //     sendConfigs.srcValidatorAddress,
+      //     sendConfigs.dstValidatorAddress
+      //   );
+      //   await tx.sendWithGasPrice(
+      //     { gas: gasLimit },
+      //     sendConfigs.memoConfig.memo,
+      //     {
+      //       preferNoSetMemo: true,
+      //       preferNoSetFee: true,
+      //     },
+      //     {
+      //       onBroadcasted: (txHash: Uint8Array) => {
+      //         analyticsStore.logEvent("astra_hub_redelegate_token", {
+      //           ...params,
+      //           tx_hash: Buffer.from(txHash).toString("hex"),
+      //           success: true,
+      //         });
+      //         transactionStore.updateTxHash(txHash);
+      //       },
+      //     }
+      //   );
+      // } catch (e: any) {
+      //   analyticsStore.logEvent("astra_hub_redelegate_token", {
+      //     ...params,
+      //     success: false,
+      //     error: e?.message,
+      //   });
+      //   if (e?.message === "Request rejected") {
+      //     return;
+      //   }
+      //   console.log(e);
+      //   transactionStore.updateTxState("failure");
+      // }
     }
   };
 
@@ -264,7 +271,7 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
           <Button
             text={intl.formatMessage({ id: "Continue" })}
             disabled={amountErrorText.length !== 0}
-            loading={account.txTypeInProgress === "redelegate"}
+            // loading={account.txTypeInProgress === "redelegate"}
             onPress={onContinueHandler}
             containerStyle={style.flatten(["margin-x-page", "margin-y-12"])}
           />

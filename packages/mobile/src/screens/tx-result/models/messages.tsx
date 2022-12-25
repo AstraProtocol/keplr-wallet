@@ -3,7 +3,7 @@
 import { Bech32Address } from "@keplr-wallet/cosmos";
 import { CoinPrimitive } from "@keplr-wallet/stores";
 import { Currency } from "@keplr-wallet/types";
-import { Coin, CoinPretty, CoinUtils, IntPretty } from "@keplr-wallet/unit";
+import { Coin, CoinPretty, CoinUtils } from "@keplr-wallet/unit";
 import yaml from "js-yaml";
 import React, { FunctionComponent, useEffect, useMemo, useState } from "react";
 import { Text } from "react-native";
@@ -35,6 +35,8 @@ export interface MsgSend {
     amount: CoinPretty;
     fee: CoinPretty;
     recipient: string;
+    gasLimit: number | string | undefined;
+    gasPrice: number | string | undefined;
   };
 }
 
@@ -60,8 +62,10 @@ export interface MsgDelegate {
     amount: CoinPretty;
     fee: CoinPretty;
     validatorAddress: string;
-    validatorName: string;
-    commission: IntPretty;
+    validatorName: string | undefined;
+    commission: number | string | undefined;
+    gasLimit: number | string | undefined;
+    gasPrice: number | string | undefined;
   };
 }
 
@@ -70,8 +74,10 @@ export interface MsgUndelegate {
     amount: CoinPretty;
     fee: CoinPretty;
     validatorAddress: string;
-    validatorName: string;
-    commission: IntPretty;
+    validatorName: string | undefined;
+    commission: number | string | undefined;
+    gasLimit: number | string | undefined;
+    gasPrice: number | string | undefined;
   };
 }
 
@@ -94,9 +100,13 @@ export interface MsgBeginRedelegate {
     amount: CoinPretty;
     fee: CoinPretty;
     srcValidatorAddress: string;
-    srcValidatorName: string;
+    srcValidatorName: string | undefined;
+    srcCommission: number | string | undefined;
     dstValidatorAddress: string;
-    dstValidatorName: string;
+    dstValidatorName: string | undefined;
+    dstCommission: number | string | undefined;
+    gasLimit: number | string | undefined;
+    gasPrice: number | string | undefined;
   };
 }
 
@@ -206,6 +216,55 @@ const common: {
   itemSpacing: 12,
 };
 
+export const getTransactionTimeRow = (date: Date | undefined = undefined) => {
+  const intl = useIntl();
+
+  return {
+    ...common,
+    cols: [
+      buildLeftColumn({
+        text: intl.formatMessage({
+          id: "TransactionTime",
+        }),
+        flex: 4,
+      }),
+      buildRightColumn({ text: formatDate(date ?? new Date()), flex: 6 }),
+    ],
+  };
+};
+
+export const getTransactionFeeRow = (feeAmount: CoinPretty) => {
+  const intl = useIntl();
+
+  return {
+    ...common,
+    cols: [
+      buildLeftColumn({
+        text: intl.formatMessage({
+          id: "TransactionFee",
+        }),
+      }),
+      buildRightColumn({ text: formatCoin(feeAmount, false, 6) }),
+    ],
+  };
+};
+
+export const getTransactionRow = (leftText: string, rightText: string) => {
+  return {
+    ...common,
+    cols: [
+      buildLeftColumn({
+        text: leftText,
+      }),
+      buildRightColumn({ text: rightText }),
+    ],
+  };
+};
+
+export const getSeparatorRow = () => {
+  return { type: "separator" } as IRow;
+};
+
 export function renderMsgSend(value: MsgSend["value"]): IRow[] {
   const intl = useIntl();
 
@@ -217,47 +276,22 @@ export function renderMsgSend(value: MsgSend["value"]): IRow[] {
     } catch {}
   }
 
-  const separatorRow: IRow = { type: "separator" };
-  const rows: IRow[] = join(
-    [
-      {
-        ...common,
-        alignItems: AlignItems.top,
-        cols: [
-          buildLeftColumn({
-            text: intl.formatMessage({
-              id: "tx.result.models.msgSend.reveiver",
-            }),
-            flex: 4,
+  const rows: IRow[] = [
+    {
+      ...common,
+      alignItems: AlignItems.top,
+      cols: [
+        buildLeftColumn({
+          text: intl.formatMessage({
+            id: "tx.result.models.msgSend.reveiver",
           }),
-          buildRightColumn({ text: _toAddress, flex: 6 }),
-        ],
-      },
-      {
-        ...common,
-        cols: [
-          buildLeftColumn({
-            text: intl.formatMessage({
-              id: "tx.result.models.msgSend.time",
-            }),
-            flex: 4,
-          }),
-          buildRightColumn({ text: formatDate(new Date()), flex: 6 }),
-        ],
-      },
-      {
-        ...common,
-        cols: [
-          buildLeftColumn({
-            text: intl.formatMessage({ id: "common.text.transactionFee" }),
-            flex: 3,
-          }),
-          buildRightColumn({ text: formatCoin(value.fee, false, 6), flex: 7 }),
-        ],
-      },
-    ],
-    separatorRow
-  );
+          flex: 4,
+        }),
+        buildRightColumn({ text: _toAddress, flex: 6 }),
+      ],
+    },
+    getTransactionFeeRow(value.fee),
+  ];
 
   return rows;
 }
@@ -265,93 +299,89 @@ export function renderMsgSend(value: MsgSend["value"]): IRow[] {
 export function renderMsgSwap(data: MsgSwap): IRow[] {
   const intl = useIntl();
 
-  const separatorRow: IRow = { type: "separator" };
   // const total = BigNumber.from(dataSign.value).add(
   //   BigNumber.from(dataSign.gas)
   // );
-  const rows: IRow[] = join(
-    [
-      // {
-      //   ...common,
-      //   cols: [
-      //     buildLeftColumn({
-      //       text: "Hex Data",
-      //       flex: 3,
-      //     }),
-      //     buildRightColumn({
-      //       text: data.data,
-      //       flex: 7,
-      //     }),
-      //   ],
-      // },
-      {
-        ...common,
-        cols: [
-          buildLeftColumn({
-            text: intl.formatMessage({ id: "swap.exchangeRate" }),
-            flex: 3,
+  const rows: IRow[] = [
+    // {
+    //   ...common,
+    //   cols: [
+    //     buildLeftColumn({
+    //       text: "Hex Data",
+    //       flex: 3,
+    //     }),
+    //     buildRightColumn({
+    //       text: data.data,
+    //       flex: 7,
+    //     }),
+    //   ],
+    // },
+    {
+      ...common,
+      cols: [
+        buildLeftColumn({
+          text: intl.formatMessage({ id: "swap.exchangeRate" }),
+          flex: 3,
+        }),
+        buildRightColumn({
+          text: data.exchageRate,
+          flex: 7,
+        }),
+      ],
+    },
+    {
+      ...common,
+      cols: [
+        buildLeftColumn({
+          text: intl.formatMessage({ id: "swap.transactionFee" }),
+          flex: 3,
+        }),
+        buildRightColumn({
+          text: data.txFee || "",
+          flex: 7,
+        }),
+      ],
+    },
+    {
+      ...common,
+      cols: [
+        buildLeftColumn({
+          text: intl.formatMessage({ id: "swap.liquidityFee" }),
+          flex: 5,
+        }),
+        buildRightColumn({
+          text: data.liquidityFee,
+          flex: 5,
+        }),
+      ],
+    },
+    {
+      ...common,
+      cols: [
+        buildLeftColumn({
+          text: intl.formatMessage({ id: "swap.titleSlippageDescribe" }),
+          flex: 3,
+        }),
+        buildRightColumn({
+          text: data.slippageTolerance,
+          flex: 7,
+        }),
+      ],
+    },
+    {
+      ...common,
+      cols: [
+        buildLeftColumn({
+          text: intl.formatMessage({
+            id: "tx.result.sign.time",
           }),
-          buildRightColumn({
-            text: data.exchageRate,
-            flex: 7,
-          }),
-        ],
-      },
-      {
-        ...common,
-        cols: [
-          buildLeftColumn({
-            text: intl.formatMessage({ id: "swap.transactionFee" }),
-            flex: 3,
-          }),
-          buildRightColumn({
-            text: data.txFee || "",
-            flex: 7,
-          }),
-        ],
-      },
-      {
-        ...common,
-        cols: [
-          buildLeftColumn({
-            text: intl.formatMessage({ id: "swap.liquidityFee" }),
-            flex: 5,
-          }),
-          buildRightColumn({
-            text: data.liquidityFee,
-            flex: 5,
-          }),
-        ],
-      },
-      {
-        ...common,
-        cols: [
-          buildLeftColumn({
-            text: intl.formatMessage({ id: "swap.titleSlippageDescribe" }),
-            flex: 3,
-          }),
-          buildRightColumn({
-            text: data.slippageTolerance,
-            flex: 7,
-          }),
-        ],
-      },
-      {
-        ...common,
-        cols: [
-          buildLeftColumn({
-            text: intl.formatMessage({
-              id: "tx.result.sign.time",
-            }),
-          }),
-          buildRightColumn({
-            text: formatDate(new Date()),
-          }),
-        ],
-      },
-    ],
-    separatorRow
-  );
+        }),
+        buildRightColumn({
+          text: formatDate(new Date()),
+        }),
+      ],
+    },
+  ];
 
   return rows;
 }
@@ -359,55 +389,31 @@ export function renderMsgSwap(data: MsgSwap): IRow[] {
 export function renderMsgBeginRedelegate(value: MsgBeginRedelegate["value"]) {
   const intl = useIntl();
 
-  const rows: IRow[] = join(
-    [
-      {
-        ...common,
-        cols: [
-          buildLeftColumn({
-            text: intl.formatMessage({
-              id: "tx.result.models.msgBeginRedelegate.from",
-            }),
+  const rows: IRow[] = [
+    {
+      ...common,
+      cols: [
+        buildLeftColumn({
+          text: intl.formatMessage({
+            id: "tx.result.models.msgBeginRedelegate.from",
           }),
-          buildRightColumn({ text: value.srcValidatorName }),
-        ],
-      },
-      {
-        ...common,
-        cols: [
-          buildLeftColumn({
-            text: intl.formatMessage({
-              id: "tx.result.models.msgBeginRedelegate.to",
-            }),
+        }),
+        buildRightColumn({ text: value.srcValidatorName ?? "" }),
+      ],
+    },
+    {
+      ...common,
+      cols: [
+        buildLeftColumn({
+          text: intl.formatMessage({
+            id: "tx.result.models.msgBeginRedelegate.to",
           }),
-          buildRightColumn({ text: value.dstValidatorName }),
-        ],
-      },
-      {
-        ...common,
-        cols: [
-          buildLeftColumn({
-            text: intl.formatMessage({
-              id: "tx.result.models.msgBeginRedelegate.time",
-            }),
-          }),
-          buildRightColumn({ text: formatDate(new Date()) }),
-        ],
-      },
-      {
-        ...common,
-        cols: [
-          buildLeftColumn({
-            text: intl.formatMessage({
-              id: "common.text.transactionFee",
-            }),
-          }),
-          buildRightColumn({ text: formatCoin(value.fee, false, 4) }),
-        ],
-      },
-    ],
-    { type: "separator" }
-  );
+        }),
+        buildRightColumn({ text: value.dstValidatorName ?? "" }),
+      ],
+    },
+    getTransactionFeeRow(value.fee),
+  ];
 
   return rows;
 }
@@ -415,44 +421,20 @@ export function renderMsgBeginRedelegate(value: MsgBeginRedelegate["value"]) {
 export function renderMsgUndelegate(value: MsgUndelegate["value"]): IRow[] {
   const intl = useIntl();
 
-  const rows: IRow[] = join(
-    [
-      {
-        ...common,
-        cols: [
-          buildLeftColumn({
-            text: intl.formatMessage({
-              id: "tx.result.models.msgUndelegate.from",
-            }),
+  const rows: IRow[] = [
+    {
+      ...common,
+      cols: [
+        buildLeftColumn({
+          text: intl.formatMessage({
+            id: "tx.result.models.msgUndelegate.from",
           }),
-          buildRightColumn({ text: value.validatorName }),
-        ],
-      },
-      {
-        ...common,
-        cols: [
-          buildLeftColumn({
-            text: intl.formatMessage({
-              id: "tx.result.models.msgUndelegate.time",
-            }),
-          }),
-          buildRightColumn({ text: formatDate(new Date()) }),
-        ],
-      },
-      {
-        ...common,
-        cols: [
-          buildLeftColumn({
-            text: intl.formatMessage({
-              id: "common.text.transactionFee",
-            }),
-          }),
-          buildRightColumn({ text: formatCoin(value.fee, false, 4) }),
-        ],
-      },
-    ],
-    { type: "separator" }
-  );
+        }),
+        buildRightColumn({ text: value.validatorName ?? "" }),
+      ],
+    },
+    getTransactionFeeRow(value.fee),
+  ];
 
   return rows;
 }
@@ -464,70 +446,46 @@ export function renderMsgDelegate(value: MsgDelegate["value"]) {
   const commissionText = formatPercent(value.commission);
   const apr = getValidatorAPR(value.validatorAddress);
 
-  const rows: IRow[] = join(
-    [
-      {
-        ...common,
-        cols: [
-          buildLeftColumn({
-            text: intl.formatMessage({
-              id: "common.text.validators",
-            }),
+  const rows: IRow[] = [
+    {
+      ...common,
+      cols: [
+        buildLeftColumn({
+          text: intl.formatMessage({
+            id: "common.text.validators",
           }),
-          buildRightColumn({ text: value.validatorName }),
-        ],
-      },
-      {
-        ...common,
-        cols: [
-          buildLeftColumn({
-            text: intl.formatMessage({
-              id: "common.text.interest",
-            }),
+        }),
+        buildRightColumn({ text: value.validatorName ?? "" }),
+      ],
+    },
+    {
+      ...common,
+      cols: [
+        buildLeftColumn({
+          text: intl.formatMessage({
+            id: "common.text.interest",
           }),
-          buildRightColumn({
-            text: formatPercent(apr),
+        }),
+        buildRightColumn({
+          text: formatPercent(apr),
+        }),
+      ],
+    },
+    {
+      ...common,
+      cols: [
+        buildLeftColumn({
+          text: intl.formatMessage({
+            id: "common.text.commission",
           }),
-        ],
-      },
-      {
-        ...common,
-        cols: [
-          buildLeftColumn({
-            text: intl.formatMessage({
-              id: "common.text.commission",
-            }),
-          }),
-          buildRightColumn({
-            text: commissionText,
-          }),
-        ],
-      },
-      {
-        ...common,
-        cols: [
-          buildLeftColumn({
-            text: intl.formatMessage({
-              id: "common.text.transactionTime",
-            }),
-          }),
-          buildRightColumn({ text: formatDate(new Date()) }),
-        ],
-      },
-      {
-        ...common,
-        cols: [
-          buildLeftColumn({
-            text: intl.formatMessage({
-              id: "common.text.transactionFee",
-            }),
-          }),
-          buildRightColumn({ text: formatCoin(value.fee, false, 4) }),
-        ],
-      },
-    ],
-    { type: "separator" }
-  );
+        }),
+        buildRightColumn({
+          text: commissionText,
+        }),
+      ],
+    },
+    getTransactionFeeRow(value.fee),
+  ];
 
   return rows;
 }
@@ -570,30 +528,10 @@ export function renderMsgWithdrawDelegatorReward(
   rows = [
     ...rows,
     ...validatorRows,
-    { type: "separator" },
-    {
-      ...common,
-      cols: [
-        buildLeftColumn({
-          text: intl.formatMessage({
-            id: "tx.result.models.msgWithdrawDelegatorReward.time",
-          }),
-        }),
-        buildRightColumn({ text: formatDate(new Date()) }),
-      ],
-    },
-    { type: "separator" },
-    {
-      ...common,
-      cols: [
-        buildLeftColumn({
-          text: intl.formatMessage({
-            id: "common.text.transactionFee",
-          }),
-        }),
-        buildRightColumn({ text: formatCoin(value.fee, false, 4) }),
-      ],
-    },
+    getSeparatorRow(),
+    getTransactionTimeRow(),
+    getSeparatorRow(),
+    getTransactionFeeRow(value.fee),
   ];
 
   return rows;
@@ -635,43 +573,39 @@ export function renderMsgVote(
     }
   })();
 
-  const separatorRow: IRow = { type: "separator" };
-  const rows: IRow[] = join(
-    [
-      {
-        ...common,
-        alignItems: AlignItems.top,
-        cols: [
-          buildLeftColumn({
-            text: intl.formatMessage({
-              id: "tx.result.models.msgVote.option.vote",
-            }),
-            flex: 3,
+  const rows: IRow[] = [
+    {
+      ...common,
+      alignItems: AlignItems.top,
+      cols: [
+        buildLeftColumn({
+          text: intl.formatMessage({
+            id: "tx.result.models.msgVote.option.vote",
           }),
-          buildRightColumn({ text: textualOption, flex: 7 }),
-        ],
-      },
-      {
-        ...common,
-        cols: [
-          buildLeftColumn({
-            text: intl.formatMessage({
-              id: "tx.result.models.msgVote.option.proposalLabel",
-            }),
-            flex: 3,
+          flex: 3,
+        }),
+        buildRightColumn({ text: textualOption, flex: 7 }),
+      ],
+    },
+    {
+      ...common,
+      cols: [
+        buildLeftColumn({
+          text: intl.formatMessage({
+            id: "tx.result.models.msgVote.option.proposalLabel",
           }),
-          buildRightColumn({
-            text: intl.formatMessage(
-              { id: "tx.result.models.msgVote.option.proposalValue" },
-              { proposalId }
-            ),
-            flex: 7,
-          }),
-        ],
-      },
-    ],
-    separatorRow
-  );
+          flex: 3,
+        }),
+        buildRightColumn({
+          text: intl.formatMessage(
+            { id: "tx.result.models.msgVote.option.proposalValue" },
+            { proposalId }
+          ),
+          flex: 7,
+        }),
+      ],
+    },
+  ];
 
   return rows;
 }
@@ -752,47 +686,22 @@ export function renderMsgTransferNFT(value: MsgTransferNFT["value"]): IRow[] {
     } catch {}
   }
 
-  const separatorRow: IRow = { type: "separator" };
-  const rows: IRow[] = join(
-    [
-      {
-        ...common,
-        alignItems: AlignItems.top,
-        cols: [
-          buildLeftColumn({
-            text: intl.formatMessage({
-              id: "tx.result.models.msgSend.reveiver",
-            }),
-            flex: 4,
+  const rows: IRow[] = [
+    {
+      ...common,
+      alignItems: AlignItems.top,
+      cols: [
+        buildLeftColumn({
+          text: intl.formatMessage({
+            id: "tx.result.models.msgSend.reveiver",
           }),
-          buildRightColumn({ text: _toAddress, flex: 6 }),
-        ],
-      },
-      {
-        ...common,
-        cols: [
-          buildLeftColumn({
-            text: intl.formatMessage({
-              id: "tx.result.models.msgSend.time",
-            }),
-            flex: 4,
-          }),
-          buildRightColumn({ text: formatDate(new Date()), flex: 6 }),
-        ],
-      },
-      {
-        ...common,
-        cols: [
-          buildLeftColumn({
-            text: intl.formatMessage({ id: "common.text.transactionFee" }),
-            flex: 3,
-          }),
-          buildRightColumn({ text: formatCoin(value.fee, false, 6), flex: 7 }),
-        ],
-      },
-    ],
-    separatorRow
-  );
+          flex: 4,
+        }),
+        buildRightColumn({ text: _toAddress, flex: 6 }),
+      ],
+    },
+    getTransactionFeeRow(value.fee),
+  ];
 
   return rows;
 }
@@ -1047,14 +956,22 @@ export function clearDecimals(dec: string): string {
   return dec;
 }
 
-export function join<T extends any>(items: T[], separtor?: T): T[] {
+export function join<T extends any>(items: T[], separator?: T): T[] {
   let newItems: T[] = [];
   items.forEach((item, index) => {
     newItems = [
       ...newItems,
       item,
-      ...(index < items.length - 1 && separtor ? [separtor] : []),
+      ...(index < items.length - 1 && separator ? [separator] : []),
     ];
   });
   return newItems;
+}
+
+export function insert<T extends any>(items: T[], item: T, index: number): T[] {
+  if (index < 0 || items.length < index) {
+    return items;
+  }
+
+  return [...items.slice(0, index), item, ...items.slice(index)];
 }

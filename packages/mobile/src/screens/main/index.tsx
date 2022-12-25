@@ -37,6 +37,7 @@ import { CustomTabBar } from "./components";
 import { useQueryBalances } from "./hook/use-query-balance";
 import { useQueryNfts } from "./hook/use-query-nft";
 import { NFTCell, NFTEmptyCell } from "./screens/nft/components/nft-cell";
+import { useStaking } from "../staking/hook/use-staking";
 
 export const MainScreen: FunctionComponent = observer(() => {
   const {
@@ -45,6 +46,11 @@ export const MainScreen: FunctionComponent = observer(() => {
     nfts: observableNFTs,
   } = useQueryNfts();
   const { waitBalanceResponses, getBalances } = useQueryBalances();
+  const {
+    queryRewards,
+    queryDelegations,
+    queryUnbondingDelegations,
+  } = useStaking();
 
   const [selectedTabIndex, setSelectedTabIndex] = useState(0);
   const [nfts, setNFTs] = useState([0] as any[]);
@@ -129,9 +135,6 @@ export const MainScreen: FunctionComponent = observer(() => {
   }, [chainStore.current.chainId]);
 
   const onRefresh = useCallback(async () => {
-    const account = accountStore.getAccount(chainStore.current.chainId);
-    const queries = queriesStore.get(chainStore.current.chainId);
-
     // Because the components share the states related to the queries,
     // fetching new query responses here would make query responses on all other components also refresh.
 
@@ -141,15 +144,9 @@ export const MainScreen: FunctionComponent = observer(() => {
 
     await Promise.all([
       waitBalanceResponses(),
-      queries.cosmos.queryRewards
-        .getQueryBech32Address(account.bech32Address)
-        .waitFreshResponse(),
-      queries.cosmos.queryDelegations
-        .getQueryBech32Address(account.bech32Address)
-        .waitFreshResponse(),
-      queries.cosmos.queryUnbondingDelegations
-        .getQueryBech32Address(account.bech32Address)
-        .waitFreshResponse(),
+      queryRewards.waitFreshResponse(),
+      queryDelegations.waitFreshResponse(),
+      queryUnbondingDelegations.waitFreshResponse(),
     ]);
   }, [accountStore, chainStore, queriesStore]);
 

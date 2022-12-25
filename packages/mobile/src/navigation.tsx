@@ -118,6 +118,7 @@ import { SetupBiometricsScreen } from "./screens/register/biometrics";
 import { RegisterCreateEntryScreen } from "./screens/register/create-entry";
 import { SessionProposalScreen } from "./screens/wallet-connect";
 import { WebViewScreen } from "./screens/web/default";
+import { TxConfirmationScreen } from "./screens/tx-result/confirmation";
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -293,6 +294,13 @@ export const TransactionNavigation: FunctionComponent = () => {
       headerMode="screen"
       initialRouteName="Tx.Result"
     >
+      <Stack.Screen
+        name="Tx.Confirmation"
+        component={TxConfirmationScreen}
+        options={{
+          headerShown: false,
+        }}
+      />
       <Stack.Screen
         name="Tx.Result"
         component={TxResultScreen}

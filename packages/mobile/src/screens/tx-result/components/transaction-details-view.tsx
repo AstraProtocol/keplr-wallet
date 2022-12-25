@@ -7,7 +7,13 @@ import { useSmartNavigation } from "../../../navigation-util";
 import { useStore } from "../../../stores";
 import { useStyle } from "../../../styles";
 import { renderAminoMessages } from "../models/amino";
-import { MsgSwap } from "../models/messages";
+import {
+  getSeparatorRow,
+  getTransactionTimeRow,
+  insert,
+  join,
+  MsgSwap,
+} from "../models/messages";
 
 export const TransactionDetailsView: FunctionComponent<{
   style?: ViewStyle;
@@ -37,6 +43,14 @@ export const TransactionDetailsView: FunctionComponent<{
       accountStore,
       transactionStore
     );
+    rows = insert(rows, getTransactionTimeRow(), rows.length - 1);
+
+    if (
+      rawData?.type !=
+      accountStore.getAccount(chainId).cosmos.msgOpts.withdrawRewards.type
+    ) {
+      rows = join(rows, getSeparatorRow());
+    }
   }
 
   const viewDetailsHandler = () => {

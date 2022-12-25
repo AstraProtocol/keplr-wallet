@@ -175,6 +175,9 @@ const {
     WebView: {
       upperScreenName: "Wallet",
     },
+    "Tx.Confirmation": {
+      upperScreenName: "Tx",
+    },
     "Tx.Result": {
       upperScreenName: "Tx",
     },
