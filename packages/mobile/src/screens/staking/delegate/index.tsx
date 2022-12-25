@@ -92,7 +92,7 @@ export const DelegateScreen: FunctionComponent = observer(() => {
     sendConfigs.recipientConfig.setRawRecipient(validatorAddress);
   }, [sendConfigs.recipientConfig, validatorAddress]);
 
-  const validator = getValidator(validatorAddress)!;
+  const validator = getValidator(validatorAddress);
 
   const hasStake = isStakingTo(validatorAddress);
 

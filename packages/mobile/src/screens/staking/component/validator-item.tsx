@@ -1,5 +1,4 @@
 import { Staking } from "@keplr-wallet/stores";
-import { observer } from "mobx-react-lite";
 import React, { FunctionComponent } from "react";
 import { useIntl } from "react-intl";
 import { Text, View, ViewStyle } from "react-native";
@@ -22,9 +21,13 @@ import { useStaking } from "../hook/use-staking";
 
 export const StakingValidatorItem: FunctionComponent<{
   containerStyle?: ViewStyle;
-  validator: Staking.Validator;
+  validator?: Staking.Validator;
   hasStake?: boolean;
-}> = observer(({ containerStyle, validator, hasStake = undefined }) => {
+}> = ({ containerStyle, validator, hasStake = undefined }) => {
+  if (!validator) {
+    return null;
+  }
+
   const style = useStyle();
   const intl = useIntl();
   const {
@@ -44,46 +47,47 @@ export const StakingValidatorItem: FunctionComponent<{
 
   const thumbnail = getValidatorThumbnail(validatorAddress);
 
-  const staked = getStakingAmountOf(validatorAddress);
-  const rewards = getRewardsAmountOf(validatorAddress);
-  const votingPower = getTotalSharesAmountOf(validatorAddress);
+  const stakingAmount = getStakingAmountOf(validatorAddress);
+  const rewardsAmount = getRewardsAmountOf(validatorAddress);
+  const totalSharesAmount = getTotalSharesAmountOf(validatorAddress);
   const apr = getValidatorAPR(validatorAddress);
+
+  const aprText = intl.formatMessage({ id: "APR" }) + " " + formatPercent(apr);
+  const commissionText =
+    intl.formatMessage({ id: "Commission" }) +
+    " " +
+    formatPercent(validator.commission.commission_rates.rate);
+  const totalSharesText =
+    intl.formatMessage({
+      id: "TotalShares",
+    }) +
+    " " +
+    formatCoin(totalSharesAmount, false, 0);
+  const dotText = intl.formatMessage({ id: "_dot_" });
 
   const rows = [
     ...(hasStake
       ? [
           {
             key: intl.formatMessage({
-              id: "validator.details.delegated.invested",
+              id: "StakingAmount",
             }),
-            value: formatCoin(staked, false, 2),
+            value: formatCoin(stakingAmount, false, 2),
           },
           {
             key: intl.formatMessage({
-              id: "validator.details.delegated.profit",
+              id: "RewardsAmount",
             }),
-            value: "+" + formatCoin(rewards, false, 4),
+            value: "+" + formatCoin(rewardsAmount, false, 4),
             valueColor: style.get("color-rewards-text").color,
           },
         ]
       : [
           {
-            key:
-              intl.formatMessage({ id: "common.text.interest" }) +
-              " " +
-              formatPercent(apr) +
-              ` ${intl.formatMessage({ id: "_dot_" })} ` +
-              intl.formatMessage({ id: "common.text.commission" }) +
-              " " +
-              formatPercent(validator.commission.commission_rates.rate),
+            key: aprText + ` ${dotText} ` + commissionText,
           },
           {
-            key:
-              intl.formatMessage({
-                id: "stake.delegate.validator.totalShares",
-              }) +
-              " " +
-              formatCoin(votingPower, false, 0),
+            key: totalSharesText,
           },
         ]),
   ];
@@ -149,12 +153,16 @@ export const StakingValidatorItem: FunctionComponent<{
       </View>
     </View>
   );
-});
+};
 
 export const DashboardMyValidatorItem: FunctionComponent<{
   containerStyle?: ViewStyle;
-  validator: Staking.Validator;
-}> = observer(({ containerStyle, validator }) => {
+  validator?: Staking.Validator;
+}> = ({ containerStyle, validator }) => {
+  if (!validator) {
+    return null;
+  }
+
   const {
     getValidatorAPR,
     getValidatorThumbnail,
@@ -162,6 +170,10 @@ export const DashboardMyValidatorItem: FunctionComponent<{
     getStakingAmountOf,
     getUnbondingAmountOf,
   } = useStaking();
+
+  const style = useStyle();
+  const intl = useIntl();
+  const smartNavigation = useSmartNavigation();
 
   const validatorAddress = validator.operator_address;
 
@@ -171,13 +183,16 @@ export const DashboardMyValidatorItem: FunctionComponent<{
   const unbondingAmount = getUnbondingAmountOf(validatorAddress);
   const apr = getValidatorAPR(validatorAddress);
 
+  const aprText = intl.formatMessage({ id: "APR" }) + " " + formatPercent(apr);
+  const commissionText =
+    intl.formatMessage({ id: "Commission" }) +
+    " " +
+    formatPercent(validator.commission.commission_rates.rate);
+  const dotText = intl.formatMessage({ id: "_dot_" });
+
   if (stakingAmount.toDec().isZero() && rewardsAmount.toDec().isZero()) {
     return null;
   }
-
-  const style = useStyle();
-  const intl = useIntl();
-  const smartNavigation = useSmartNavigation();
 
   const rows: IRow[] = [
     {
@@ -185,7 +200,7 @@ export const DashboardMyValidatorItem: FunctionComponent<{
       cols: [
         buildLeftColumn({
           text: intl.formatMessage({
-            id: "staking.delegate.invested",
+            id: "StakingAmount",
           }),
         }),
         buildRightColumn({ text: formatCoin(stakingAmount, false, 2) }),
@@ -196,7 +211,7 @@ export const DashboardMyValidatorItem: FunctionComponent<{
       cols: [
         buildLeftColumn({
           text: intl.formatMessage({
-            id: "staking.delegate.profit",
+            id: "RewardsAmount",
           }),
         }),
         buildRightColumn({
@@ -210,7 +225,7 @@ export const DashboardMyValidatorItem: FunctionComponent<{
       cols: [
         buildLeftColumn({
           text: intl.formatMessage({
-            id: "staking.unbonding.unbondingAmount",
+            id: "UnstakingAmount",
           }),
         }),
         buildRightColumn({
@@ -249,23 +264,7 @@ export const DashboardMyValidatorItem: FunctionComponent<{
         ])}
         thumbnail={thumbnail}
         name={validator.description.moniker}
-        value={
-          intl.formatMessage({
-            id: "common.text.interest",
-          }) +
-          " " +
-          formatPercent(apr) +
-          ` ${intl.formatMessage({ id: "_dot_" })} ` +
-          intl.formatMessage(
-            { id: "validator.details.commission.percent" },
-            {
-              percent: formatPercent(
-                validator.commission.commission_rates.rate,
-                true
-              ),
-            }
-          )
-        }
+        value={aprText + ` ${dotText} ` + commissionText}
         right={
           <View
             style={style.flatten([
@@ -290,12 +289,12 @@ export const DashboardMyValidatorItem: FunctionComponent<{
       />
     </RectButton>
   );
-});
+};
 
 export const DashboardValidatorItem: FunctionComponent<{
   containerStyle?: ViewStyle;
   validator: Staking.Validator;
-}> = observer(({ containerStyle, validator }) => {
+}> = ({ containerStyle, validator }) => {
   const {
     getValidatorThumbnail,
     getValidatorAPR,
@@ -314,18 +313,15 @@ export const DashboardValidatorItem: FunctionComponent<{
 
   const rows = [
     {
-      key: intl.formatMessage({ id: "common.text.interest" }),
-      value: `~${intl.formatMessage(
-        { id: "common.text.apr" },
-        { percent: formatPercent(apr, true) }
-      )}`,
+      key: intl.formatMessage({ id: "APR" }),
+      value: formatPercent(apr) + "/" + intl.formatMessage({ id: "Year" }),
     },
     {
-      key: intl.formatMessage({ id: "common.text.commission" }),
+      key: intl.formatMessage({ id: "Commission" }),
       value: formatPercent(validator.commission.commission_rates.rate),
     },
     {
-      key: intl.formatMessage({ id: "common.text.totalShares" }),
+      key: intl.formatMessage({ id: "TotalShares" }),
       value: formatCoin(totalSharesAmount, false, 0),
     },
   ];
@@ -402,7 +398,7 @@ export const DashboardValidatorItem: FunctionComponent<{
           })}
           <Button
             size="medium"
-            text={intl.formatMessage({ id: "common.text.stake" })}
+            text={intl.formatMessage({ id: "Stake" })}
             containerStyle={style.flatten(["margin-top-16"])}
             onPress={() => {
               smartNavigation.navigateSmart("Delegate", {
@@ -425,4 +421,4 @@ export const DashboardValidatorItem: FunctionComponent<{
       </View>
     </RectButton>
   );
-});
+};

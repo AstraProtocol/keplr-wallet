@@ -33,10 +33,6 @@ export const DelegationsItem: FunctionComponent<{
   const getDelegationItems = (delegations: Staking.Delegation[]) => {
     return delegations.map((del) => {
       const validator = validatorsMap.get(del.delegation.validator_address);
-      if (!validator) {
-        return null;
-      }
-
       return <DashboardMyValidatorItem validator={validator} />;
     });
   };

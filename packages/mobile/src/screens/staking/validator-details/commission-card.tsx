@@ -5,7 +5,7 @@ import { Text, View, ViewStyle } from "react-native";
 import { Button } from "../../../components/button";
 import { Card, CardBody } from "../../../components/card";
 
-import { FormattedMessage, useIntl } from "react-intl";
+import { useIntl } from "react-intl";
 import { formatCoin, formatDate, formatPercent } from "../../../common/utils";
 import { useSmartNavigation } from "../../../navigation-util";
 import { useStyle } from "../../../styles";
@@ -51,9 +51,8 @@ export const CommissionsCard: FunctionComponent<{
             <Text
               style={style.flatten([
                 "text-left",
-                "color-gray-10",
+                "color-label-text-1",
                 "body3",
-                // "margin-top-16"
               ])}
             >
               {validator.description.details}
@@ -70,13 +69,31 @@ export const CommissionsCard: FunctionComponent<{
             <View style={style.flatten(["flex-1"])}>
               <TooltipLabel
                 text={intl.formatMessage({
-                  id: "InterestRate",
+                  id: "APR",
                 })}
-                textStyle={style.flatten(["text-small-regular"])}
+                textStyle={style.flatten(["text-small-medium"])}
+                bottomSheetTitle={intl.formatMessage({
+                  id: "APR",
+                })}
+                bottomSheetContentView={
+                  <Text
+                    style={style.flatten([
+                      "color-label-text-1",
+                      "text-base-regular",
+                      "margin-x-16",
+                      "margin-top-8",
+                      "margin-bottom-24",
+                    ])}
+                  >
+                    Phần trăm lợi nhuận theo năm. Lãi xuất biến động liên tục,
+                    nên phần thưởng dự tính có thể khác với phần thưởng thực tế
+                    nhận được.
+                  </Text>
+                }
               />
               <Text
                 style={style.flatten([
-                  "color-gray-10",
+                  "color-label-text-1",
                   "text-x-large-medium",
                   "margin-top-2",
                 ])}
@@ -90,23 +107,35 @@ export const CommissionsCard: FunctionComponent<{
                   }
                 )}
               </Text>
-              {/* <TooltipLabel
-                text={intl.formatMessage(
-                  { id: "validator.details.votingPower" },
-                  { percent: 6.51 }
-                )}
-              /> */}
             </View>
             <View style={style.flatten(["flex-1"])}>
               <TooltipLabel
                 text={intl.formatMessage({
-                  id: "OperatingFee",
+                  id: "Commission",
                 })}
-                textStyle={style.flatten(["text-small-regular"])}
+                textStyle={style.flatten(["text-small-medium"])}
+                bottomSheetTitle={intl.formatMessage({
+                  id: "Commission",
+                })}
+                bottomSheetContentView={
+                  <Text
+                    style={style.flatten([
+                      "color-label-text-1",
+                      "text-base-regular",
+                      "margin-x-16",
+                      "margin-top-8",
+                      "margin-bottom-24",
+                    ])}
+                  >
+                    1 phần từ phần thưởng của bạn sẽ được chia cho nhà cung cấp
+                    staking. Phí này sẽ dùng để họ bảo mật hệ thống và xử lý các
+                    giao dịch.
+                  </Text>
+                }
               />
               <Text
                 style={style.flatten([
-                  "color-gray-10",
+                  "color-label-text-1",
                   "text-x-large-medium",
                   "margin-top-2",
                 ])}
@@ -121,11 +150,28 @@ export const CommissionsCard: FunctionComponent<{
                 text={intl.formatMessage({
                   id: "TotalShares",
                 })}
-                textStyle={style.flatten(["text-small-regular"])}
+                textStyle={style.flatten(["text-small-medium"])}
+                bottomSheetTitle={intl.formatMessage({
+                  id: "TotalShares",
+                })}
+                bottomSheetContentView={
+                  <Text
+                    style={style.flatten([
+                      "color-label-text-1",
+                      "text-base-regular",
+                      "margin-x-16",
+                      "margin-top-8",
+                      "margin-bottom-24",
+                    ])}
+                  >
+                    Bao gồm ASA của nhà cung cấp staking và ASA bởi người dùng
+                    đang stake.
+                  </Text>
+                }
               />
               <Text
                 style={style.flatten([
-                  "color-gray-10",
+                  "color-label-text-1",
                   "text-x-large-medium",
                   "margin-top-2",
                 ])}
@@ -138,11 +184,29 @@ export const CommissionsCard: FunctionComponent<{
                 text={intl.formatMessage({
                   id: "Uptime",
                 })}
-                textStyle={style.flatten(["text-small-regular"])}
+                textStyle={style.flatten(["text-small-medium"])}
+                bottomSheetTitle={intl.formatMessage({
+                  id: "Uptime",
+                })}
+                bottomSheetContentView={
+                  <Text
+                    style={style.flatten([
+                      "color-label-text-1",
+                      "text-base-regular",
+                      "margin-x-16",
+                      "margin-top-8",
+                      "margin-bottom-24",
+                    ])}
+                  >
+                    Thời gian hoạt động của nhà cung cấp staking. Trong lúc nhà
+                    cung cấp ngừng hoạt động, bạn sẽ không nhận được phần
+                    thưởng.
+                  </Text>
+                }
               />
               <Text
                 style={style.flatten([
-                  "color-gray-10",
+                  "color-label-text-1",
                   "text-x-large-medium",
                   "margin-top-2",
                 ])}
@@ -179,7 +243,10 @@ export const CommissionsCard: FunctionComponent<{
             ])}
           >
             <Text
-              style={style.flatten(["color-gray-10", "text-base-semi-bold"])}
+              style={style.flatten([
+                "color-label-text-1",
+                "text-base-semi-bold",
+              ])}
             >
               {intl.formatMessage({
                 id: "validator.details.commission.details",
@@ -197,17 +264,37 @@ export const CommissionsCard: FunctionComponent<{
             <TooltipLabel
               text={intl.formatMessage({ id: "validator.details.maxRate" })}
               textStyle={style.flatten(["text-base-regular"])}
+              bottomSheetTitle={intl.formatMessage({
+                id: "validator.details.maxRate",
+              })}
+              bottomSheetContentView={
+                <Text
+                  style={style.flatten([
+                    "color-label-text-1",
+                    "text-base-regular",
+                    "margin-x-16",
+                    "margin-top-8",
+                    "margin-bottom-24",
+                  ])}
+                >
+                  Tỷ lệ này được cài đặt bởi nhà cung cấp staking khi thiết lập.
+                  Nhà cung cấp không thể đặt mức phí vượt quá phần trăm mà họ đã
+                  chọn.
+                </Text>
+              }
             />
-            <Text style={style.flatten(["color-gray-10", "text-base-regular"])}>
-              <FormattedMessage
-                id="validator.details.percentValue"
-                values={{
+            <Text
+              style={style.flatten(["color-label-text-1", "text-base-regular"])}
+            >
+              {intl.formatMessage(
+                { id: "validator.details.percentValue" },
+                {
                   percent: formatPercent(
                     validator.commission.commission_rates.max_rate,
                     true
                   ),
-                }}
-              />
+                }
+              )}
             </Text>
           </View>
           <View
@@ -223,17 +310,36 @@ export const CommissionsCard: FunctionComponent<{
                 id: "validator.details.maxChangeRate",
               })}
               textStyle={style.flatten(["text-base-regular"])}
+              bottomSheetTitle={intl.formatMessage({
+                id: "validator.details.maxChangeRate",
+              })}
+              bottomSheetContentView={
+                <Text
+                  style={style.flatten([
+                    "color-label-text-1",
+                    "text-base-regular",
+                    "margin-x-16",
+                    "margin-top-8",
+                    "margin-bottom-24",
+                  ])}
+                >
+                  Đấy là phần trăm phí vận hành mà nhà cung cấp có thể thay đổi
+                  tối đa hàng ngày
+                </Text>
+              }
             />
-            <Text style={style.flatten(["color-gray-10", "text-base-regular"])}>
-              <FormattedMessage
-                id="validator.details.percentValue"
-                values={{
+            <Text
+              style={style.flatten(["color-label-text-1", "text-base-regular"])}
+            >
+              {intl.formatMessage(
+                { id: "validator.details.percentValue" },
+                {
                   percent: formatPercent(
                     validator.commission.commission_rates.max_change_rate,
                     true
                   ),
-                }}
-              />
+                }
+              )}
             </Text>
           </View>
           <View
@@ -248,7 +354,9 @@ export const CommissionsCard: FunctionComponent<{
               text={intl.formatMessage({ id: "validator.details.updateTime" })}
               textStyle={style.flatten(["text-base-regular"])}
             />
-            <Text style={style.flatten(["color-gray-10", "text-base-regular"])}>
+            <Text
+              style={style.flatten(["color-label-text-1", "text-base-regular"])}
+            >
               {dateText}
             </Text>
           </View>

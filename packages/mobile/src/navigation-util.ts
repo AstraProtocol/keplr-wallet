@@ -7,7 +7,6 @@ import {
   RegisterConfig,
 } from "@keplr-wallet/hooks";
 import { NFTData } from "@keplr-wallet/stores/build/query/nft";
-import { AppCurrency } from "@keplr-wallet/types";
 import { CoinPretty } from "@keplr-wallet/unit";
 import { SignClientTypes } from "@walletconnect/types";
 import { createSmartNavigatorProvider, SmartNavigator } from "./hooks";
@@ -186,6 +185,9 @@ const {
       upperScreenName: "Wallet",
     },
     SessionProposal: {
+      upperScreenName: "Wallet",
+    },
+    FAQ: {
       upperScreenName: "Wallet",
     },
     "NFT.Details": {

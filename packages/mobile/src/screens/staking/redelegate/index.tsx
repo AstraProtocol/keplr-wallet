@@ -68,7 +68,7 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
   const account = accountStore.getAccount(chainStore.current.chainId);
   const queries = queriesStore.get(chainStore.current.chainId);
 
-  const srcValidator = getValidator(validatorAddress)!;
+  const srcValidator = getValidator(validatorAddress);
   const rewardsAmount = getRewardsAmountOf(validatorAddress);
 
   const staked = queries.cosmos.queryDelegations

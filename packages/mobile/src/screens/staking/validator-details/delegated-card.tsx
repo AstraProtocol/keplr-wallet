@@ -141,7 +141,7 @@ export const DelegatedCard: FunctionComponent<{
             <PropertyView
               iconType={PropertyViewIconType.unbonding}
               label={intl.formatMessage(
-                { id: "UnstakingAmount" },
+                { id: "TotalUnstakingAmount" },
                 { denom: unbondingAmount.denom }
               )}
               value={formatCoin(unbondingAmount, false, 2)}

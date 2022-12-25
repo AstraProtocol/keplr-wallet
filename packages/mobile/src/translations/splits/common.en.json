@@ -1,5 +1,4 @@
 {
-  "_dot_": "•",
   "common.alert.content.accessTestnet": "You are connecting to Astra Official Testnet.",
   "common.alert.content.notShareMnemonic": "Anyone has secret phrase can access your wallet",
   "common.alert.title.notShareMnemonic": "Do not share your secret phrase",

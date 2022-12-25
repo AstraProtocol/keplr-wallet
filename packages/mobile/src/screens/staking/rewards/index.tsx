@@ -2,18 +2,7 @@ import React, { FunctionComponent, useEffect, useState } from "react";
 import { ChainStore, useStore } from "../../../stores";
 import { useStyle } from "../../../styles";
 
-import { View, Text, ScrollView, SafeAreaView } from "react-native";
-import { Button } from "../../../components/button";
-import { useSmartNavigation } from "../../../navigation-util";
-import { RewardDetails } from "./rewards";
 import { FeeType, useSendTxConfig } from "@keplr-wallet/hooks";
-import { EthereumEndpoint } from "../../../config";
-import { useIntl } from "react-intl";
-import {
-  formatCoin,
-  MIN_REWARDS_AMOUNT,
-  TX_GAS_DEFAULT,
-} from "../../../common/utils";
 import { MsgWithdrawDelegatorReward } from "@keplr-wallet/proto-types/cosmos/distribution/v1beta1/tx";
 import {
   AccountStore,
@@ -22,6 +11,16 @@ import {
   SecretAccount,
 } from "@keplr-wallet/stores";
 import { CoinPretty, Dec } from "@keplr-wallet/unit";
+import { useIntl } from "react-intl";
+import { SafeAreaView, ScrollView, Text, View } from "react-native";
+import {
+  formatCoin,
+  MIN_REWARDS_AMOUNT,
+  TX_GAS_DEFAULT,
+} from "../../../common/utils";
+import { Button } from "../../../components/button";
+import { EthereumEndpoint } from "../../../config";
+import { RewardDetails } from "./rewards";
 
 export type StakableRewards = {
   delegatorAddress?: string;

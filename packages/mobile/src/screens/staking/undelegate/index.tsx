@@ -70,7 +70,7 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
   const account = accountStore.getAccount(chainStore.current.chainId);
   const queries = queriesStore.get(chainStore.current.chainId);
 
-  const validator = getValidator(validatorAddress)!;
+  const validator = getValidator(validatorAddress);
 
   const staked = queries.cosmos.queryDelegations
     .getQueryBech32Address(account.bech32Address)

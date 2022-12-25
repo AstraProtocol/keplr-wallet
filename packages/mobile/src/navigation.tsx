@@ -109,6 +109,7 @@ import { DappsWebpageScreen } from "./screens/web/webpages";
 import { useIntl } from "react-intl";
 import { SmartNavigatorProvider } from "./navigation-util";
 import { SwapProvider } from "./providers/swap/provider";
+import { FAQScreen } from "./screens/faq";
 import { HistoryScreen } from "./screens/history";
 import { NFTGalleryScreen } from "./screens/main/screens/nft/nft-gallery";
 import { NFTSendConfirmScreen } from "./screens/main/screens/nft/nft-send-confirm";
@@ -457,7 +458,7 @@ export const WalletNavigation: FunctionComponent = () => {
       <Stack.Screen
         options={{
           // title: intl.formatMessage({ id: "validator.list.new.title" }),
-          headerShown: false
+          headerShown: false,
         }}
         name="Validator.List"
         component={ValidatorListScreen}
@@ -505,6 +506,13 @@ export const WalletNavigation: FunctionComponent = () => {
           headerShown: false,
         }}
         component={CameraScreen}
+      />
+      <Stack.Screen
+        name="FAQ"
+        options={{
+          headerShown: false,
+        }}
+        component={FAQScreen}
       />
       <Stack.Screen
         name="SessionProposal"

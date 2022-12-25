@@ -154,7 +154,9 @@ export const MainScreen: FunctionComponent = observer(() => {
   }, [accountStore, chainStore, queriesStore]);
 
   const onEndReached = async () => {
-    fetchNextPageNFTs();
+    if (nftSupportEnabled) {
+      fetchNextPageNFTs();
+    }
   };
 
   useEffect(() => {
@@ -206,7 +208,11 @@ export const MainScreen: FunctionComponent = observer(() => {
       {
         index: 2,
         title: "item",
-        data: [...(!nftSupportEnabled || selectedTabIndex === 0 ? getBalances() : nfts)],
+        data: [
+          ...(!nftSupportEnabled || selectedTabIndex === 0
+            ? getBalances()
+            : nfts),
+        ],
       },
     ];
   }, [selectedTabIndex, nfts, waitBalanceResponses]);

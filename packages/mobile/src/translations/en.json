@@ -1,4 +1,5 @@
 {
+  "_dot_": "•",
   "AstraWallet": "Astra Wallet",
   "Assets": "Assets",
   "Staking": "Staking",
@@ -13,13 +14,15 @@
   "StakingProvider": "Staking provider",
   "TotalShares": "Total shares",
   "Uptime": "Active period",
-  "InterestRate": "APR",
-  "OperatingFee": "Commission fee",
+  "APR": "APR",
+  "Commission": "Commission",
+  "OperatingFeeDetails": "Commission details",
   "TransactionFee": "Transaction fee",
   "Redelegate": "Redelegate",
   "Unstake": "Unstake",
   "TotalStakingAmount": "Total staking amount",
   "StakingAmount": "Staking amount",
+  "TotalUnstakingAmount": "Total unstaking amount",
   "UnstakingAmount": "Unstaking amount",
   "TotalRewardsAmount": "Total rewards amount",
   "RewardsAmount": "Rewards amount",
@@ -28,6 +31,9 @@
   "Understand": "I understand",
   "Available": "Available",
   "Amount": "Amount",
+  "Year": "year",
+  "Month": "month",
+  "Day": "day",
 
 
   "camera.qrcode.error": "This QR is not supported",
