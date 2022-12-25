@@ -101,7 +101,6 @@ export const Colors = {
   disabled: "#EEEEF3",
   divider: "#F5F5F5",
   transparent: "rgba(255,255,255,0)",
-  "modal-backdrop": "rgba(9,18,50,0.6)",
   "card-modal-handle": "#DCDCE3",
   "setting-screen-background": "#FAFBFD",
   "camera-loading-background": "rgba(255,255,255,0.95)",
@@ -111,10 +110,11 @@ export const Colors = {
 };
 
 export const MainColors = {
-  "primary": Colors["blue-70"],
-  "background": Colors["gray-100"],
+  primary: Colors["blue-70"],
+  background: Colors["gray-100"],
   "button-primary": Colors["blue-70"],
-  "border": Colors["gray-70"],
+  border: Colors["gray-70"],
+  "modal-backdrop": "rgba(9,18,50,0.6)",
 };
 
 export const AlertInlineColors = {
@@ -176,7 +176,7 @@ export const StepViewColors = {
 
   "step-tick-success-active": Colors["green-50"],
   "step-tick-success-inactive": Colors["green-2"],
-  
+
   "step-line-success-active": Colors["green-2"],
   "step-line-success-inactive": Colors["gray-90"],
 };

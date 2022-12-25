@@ -1,5 +1,5 @@
 import { observer } from "mobx-react-lite";
-import React, { Fragment, FunctionComponent, useEffect, useState } from "react";
+import React, { Fragment, FunctionComponent, useState } from "react";
 import {
   Image,
   Text,
@@ -29,8 +29,6 @@ export const TooltipLabel: FunctionComponent<{
     const style = useStyle();
 
     const [isOpen, setIsOpen] = useState(false);
-
-    useEffect(() => {}, [isOpen]);
 
     return (
       <Fragment>

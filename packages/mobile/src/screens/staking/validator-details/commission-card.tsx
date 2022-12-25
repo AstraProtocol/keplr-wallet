@@ -11,6 +11,11 @@ import { useSmartNavigation } from "../../../navigation-util";
 import { useStyle } from "../../../styles";
 import { TooltipLabel } from "../component";
 import { useStaking } from "../hook/use-staking";
+import {
+  CommissionInfo0,
+  CommissionInfo1,
+  CommissionInfo2,
+} from "./commission-icon";
 
 export const CommissionsCard: FunctionComponent<{
   containerStyle?: ViewStyle;
@@ -43,6 +48,74 @@ export const CommissionsCard: FunctionComponent<{
   const totalStakesAmount = getTotalSharesAmountOf(validatorAddress);
   const apr = getValidatorAPR(validatorAddress);
 
+  const getDescView = (
+    desc: string,
+    containerStyle: ViewStyle | undefined = undefined
+  ) => {
+    return (
+      <View
+        style={{
+          ...style.flatten(["margin-x-16", "margin-top-8", "margin-bottom-24"]),
+          ...containerStyle,
+        }}
+      >
+        <Text
+          style={style.flatten(["color-label-text-1", "text-base-regular"])}
+        >
+          {desc}
+        </Text>
+      </View>
+    );
+  };
+
+  const getCommissionDescView = () => {
+    return (
+      <View>
+        <View
+          style={style.flatten(["flex-row", "items-center", "padding-x-16"])}
+        >
+          <CommissionInfo0 />
+          <View style={style.flatten(["flex-1", "margin-left-8"])}>
+            <View style={style.flatten(["flex-row"])}>
+              <CommissionInfo1 />
+              <Text
+                style={style.flatten([
+                  "color-label-text-2",
+                  "text-small-regular",
+                  "margin-x-16",
+                ])}
+              >
+                {intl.formatMessage({
+                  id: "Tooltip.Commission.Info.1",
+                })}
+              </Text>
+            </View>
+            <View style={style.flatten(["flex-row", "margin-top-12"])}>
+              <CommissionInfo2 />
+              <Text
+                style={style.flatten([
+                  "color-label-text-2",
+                  "text-small-regular",
+                  "margin-x-16",
+                ])}
+              >
+                {intl.formatMessage({
+                  id: "Tooltip.Commission.Info.2",
+                })}
+              </Text>
+            </View>
+          </View>
+        </View>
+        {getDescView(
+          intl.formatMessage({
+            id: "Tooltip.Commission.Desc",
+          }),
+          style.flatten(["margin-top-24"])
+        )}
+      </View>
+    );
+  };
+
   return (
     <Card style={containerStyle}>
       {validator ? (
@@ -73,23 +146,13 @@ export const CommissionsCard: FunctionComponent<{
                 })}
                 textStyle={style.flatten(["text-small-medium"])}
                 bottomSheetTitle={intl.formatMessage({
-                  id: "APR",
+                  id: "Tooltip.APR.Title",
                 })}
-                bottomSheetContentView={
-                  <Text
-                    style={style.flatten([
-                      "color-label-text-1",
-                      "text-base-regular",
-                      "margin-x-16",
-                      "margin-top-8",
-                      "margin-bottom-24",
-                    ])}
-                  >
-                    Phần trăm lợi nhuận theo năm. Lãi xuất biến động liên tục,
-                    nên phần thưởng dự tính có thể khác với phần thưởng thực tế
-                    nhận được.
-                  </Text>
-                }
+                bottomSheetContentView={getDescView(
+                  intl.formatMessage({
+                    id: "Tooltip.APR.Desc",
+                  })
+                )}
               />
               <Text
                 style={style.flatten([
@@ -115,23 +178,9 @@ export const CommissionsCard: FunctionComponent<{
                 })}
                 textStyle={style.flatten(["text-small-medium"])}
                 bottomSheetTitle={intl.formatMessage({
-                  id: "Commission",
+                  id: "Tooltip.Commission.Title",
                 })}
-                bottomSheetContentView={
-                  <Text
-                    style={style.flatten([
-                      "color-label-text-1",
-                      "text-base-regular",
-                      "margin-x-16",
-                      "margin-top-8",
-                      "margin-bottom-24",
-                    ])}
-                  >
-                    1 phần từ phần thưởng của bạn sẽ được chia cho nhà cung cấp
-                    staking. Phí này sẽ dùng để họ bảo mật hệ thống và xử lý các
-                    giao dịch.
-                  </Text>
-                }
+                bottomSheetContentView={getCommissionDescView()}
               />
               <Text
                 style={style.flatten([
@@ -152,22 +201,13 @@ export const CommissionsCard: FunctionComponent<{
                 })}
                 textStyle={style.flatten(["text-small-medium"])}
                 bottomSheetTitle={intl.formatMessage({
-                  id: "TotalShares",
+                  id: "Tooltip.TotalShares.Title",
                 })}
-                bottomSheetContentView={
-                  <Text
-                    style={style.flatten([
-                      "color-label-text-1",
-                      "text-base-regular",
-                      "margin-x-16",
-                      "margin-top-8",
-                      "margin-bottom-24",
-                    ])}
-                  >
-                    Bao gồm ASA của nhà cung cấp staking và ASA bởi người dùng
-                    đang stake.
-                  </Text>
-                }
+                bottomSheetContentView={getDescView(
+                  intl.formatMessage({
+                    id: "Tooltip.TotalShares.Desc",
+                  })
+                )}
               />
               <Text
                 style={style.flatten([
@@ -186,23 +226,13 @@ export const CommissionsCard: FunctionComponent<{
                 })}
                 textStyle={style.flatten(["text-small-medium"])}
                 bottomSheetTitle={intl.formatMessage({
-                  id: "Uptime",
+                  id: "Tooltip.Uptime.Title",
                 })}
-                bottomSheetContentView={
-                  <Text
-                    style={style.flatten([
-                      "color-label-text-1",
-                      "text-base-regular",
-                      "margin-x-16",
-                      "margin-top-8",
-                      "margin-bottom-24",
-                    ])}
-                  >
-                    Thời gian hoạt động của nhà cung cấp staking. Trong lúc nhà
-                    cung cấp ngừng hoạt động, bạn sẽ không nhận được phần
-                    thưởng.
-                  </Text>
-                }
+                bottomSheetContentView={getDescView(
+                  intl.formatMessage({
+                    id: "Tooltip.Uptime.Desc",
+                  })
+                )}
               />
               <Text
                 style={style.flatten([
@@ -249,7 +279,7 @@ export const CommissionsCard: FunctionComponent<{
               ])}
             >
               {intl.formatMessage({
-                id: "validator.details.commission.details",
+                id: "CommissionDetails",
               })}
             </Text>
           </View>
@@ -262,26 +292,16 @@ export const CommissionsCard: FunctionComponent<{
             ])}
           >
             <TooltipLabel
-              text={intl.formatMessage({ id: "validator.details.maxRate" })}
+              text={intl.formatMessage({ id: "CommissionMaxRate" })}
               textStyle={style.flatten(["text-base-regular"])}
               bottomSheetTitle={intl.formatMessage({
-                id: "validator.details.maxRate",
+                id: "Tooltip.CommissionMaxRate.Title",
               })}
-              bottomSheetContentView={
-                <Text
-                  style={style.flatten([
-                    "color-label-text-1",
-                    "text-base-regular",
-                    "margin-x-16",
-                    "margin-top-8",
-                    "margin-bottom-24",
-                  ])}
-                >
-                  Tỷ lệ này được cài đặt bởi nhà cung cấp staking khi thiết lập.
-                  Nhà cung cấp không thể đặt mức phí vượt quá phần trăm mà họ đã
-                  chọn.
-                </Text>
-              }
+              bottomSheetContentView={getDescView(
+                intl.formatMessage({
+                  id: "Tooltip.CommissionMaxRate.Desc",
+                })
+              )}
             />
             <Text
               style={style.flatten(["color-label-text-1", "text-base-regular"])}
@@ -307,26 +327,17 @@ export const CommissionsCard: FunctionComponent<{
           >
             <TooltipLabel
               text={intl.formatMessage({
-                id: "validator.details.maxChangeRate",
+                id: "CommissionMaxChangeRate",
               })}
               textStyle={style.flatten(["text-base-regular"])}
               bottomSheetTitle={intl.formatMessage({
-                id: "validator.details.maxChangeRate",
+                id: "Tooltip.CommissionMaxChangeRate.Title",
               })}
-              bottomSheetContentView={
-                <Text
-                  style={style.flatten([
-                    "color-label-text-1",
-                    "text-base-regular",
-                    "margin-x-16",
-                    "margin-top-8",
-                    "margin-bottom-24",
-                  ])}
-                >
-                  Đấy là phần trăm phí vận hành mà nhà cung cấp có thể thay đổi
-                  tối đa hàng ngày
-                </Text>
-              }
+              bottomSheetContentView={getDescView(
+                intl.formatMessage({
+                  id: "Tooltip.CommissionMaxChangeRate.Desc",
+                })
+              )}
             />
             <Text
               style={style.flatten(["color-label-text-1", "text-base-regular"])}

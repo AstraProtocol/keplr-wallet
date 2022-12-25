@@ -104,6 +104,7 @@ export const V1MainColors = {
   background: V1Colors["gray-100"],
   "button-primary": V1Colors["purple-50"],
   border: V1Colors["gray-70"],
+  "modal-backdrop": "rgba(0, 0, 0, 0.8)",
 };
 
 export const V1AlertInlineColors = {
