@@ -2,7 +2,6 @@ import { observer } from "mobx-react-lite";
 import React, { FunctionComponent } from "react";
 import { useIntl } from "react-intl";
 import {
-  Image,
   ImageBackground,
   Text,
   TouchableOpacity,
@@ -11,6 +10,7 @@ import {
 } from "react-native";
 import { useSmartNavigation } from "../../../navigation-util";
 import { useStyle } from "../../../styles";
+import { TooltipIcon } from "../component/tooltip-icon";
 import { GradientBackground } from "./gradient-background";
 
 export const DashboardHeader: FunctionComponent<{
@@ -29,7 +29,7 @@ export const DashboardHeader: FunctionComponent<{
     >
       <ImageBackground
         source={require("../dashboard/dashboard-banner-bg.png")}
-        resizeMode="contain"
+        resizeMode="cover"
         style={style.flatten(["padding-x-24", "padding-y-20", "items-center"])}
         imageStyle={style.flatten([
           "border-radius-32",
@@ -111,11 +111,7 @@ export const DashboardHeader: FunctionComponent<{
           }}
           style={style.flatten(["margin-left-4"])}
         >
-          <Image
-            style={style.flatten(["width-16", "height-16"])}
-            resizeMode="contain"
-            source={require("../../../assets/image/icon_tooltip.png")}
-          />
+          <TooltipIcon />
         </TouchableOpacity>
       </View>
     </View>

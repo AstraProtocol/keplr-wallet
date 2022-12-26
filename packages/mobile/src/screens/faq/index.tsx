@@ -20,7 +20,7 @@ export const FAQScreen: FunctionComponent = () => {
   return (
     <View style={style.flatten(["flex-1", "background-color-background"])}>
       <CustomNavigationBar
-        title={intl.formatMessage({ id: "nft.collectible.send" })}
+        title={intl.formatMessage({ id: "FAQ" })}
         containerStyle={{
           ...style.flatten(["background-color-background"]),
           marginTop: safeAreaInsets.top,
@@ -43,12 +43,9 @@ export const FAQScreen: FunctionComponent = () => {
             />
           );
         }}
-        contentContainerStyle={style.flatten(["padding-y-16"])}
-      />
-      <View
-        style={{
-          ...style.flatten(["background-color-background"]),
-          height: safeAreaInsets.bottom,
+        contentContainerStyle={{
+          paddingTop: 16,
+          paddingBottom: safeAreaInsets.bottom + 16,
         }}
       />
     </View>

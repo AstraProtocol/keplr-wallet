@@ -1,8 +1,8 @@
 import { Staking } from "@keplr-wallet/stores";
 import { observer } from "mobx-react-lite";
-import React, { FunctionComponent } from "react";
+import React, { FunctionComponent, useState } from "react";
 import { useIntl } from "react-intl";
-import { Text, View, ViewStyle } from "react-native";
+import { Text, TouchableOpacity, View, ViewStyle } from "react-native";
 import { formatCoin, formatPercent } from "../../../common";
 import {
   buildLeftColumn,
@@ -13,12 +13,13 @@ import {
   ListRowView,
   RectButton,
   RightArrowIcon,
-  ValidatorItem,
   ValidatorThumbnail,
 } from "../../../components";
 import { useSmartNavigation } from "../../../navigation-util";
 import { useStyle } from "../../../styles";
 import { useStaking } from "../hook/use-staking";
+import { TooltipIcon } from "./tooltip-icon";
+import { TooltipBottomSheet } from "./tooltip-label";
 
 export const StakingValidatorItem: FunctionComponent<{
   containerStyle?: ViewStyle;
@@ -256,28 +257,12 @@ export const DashboardMyValidatorItem: FunctionComponent<{
       underlayColor={style.get("color-transparent").color}
       activeOpacity={0}
     >
-      <ValidatorItem
-        containerStyle={style.flatten([
-          "background-color-transparent",
-          "border-width-0",
-          "border-radius-0",
-          "height-72",
-        ])}
-        thumbnail={thumbnail}
+      <ValidatorInfo
+        hideButton
         name={validator.description.moniker}
-        value={aprText + ` ${dotText} ` + commissionText}
-        right={
-          <View
-            style={style.flatten([
-              "width-24",
-              "height-24",
-              "items-center",
-              "justify-center",
-            ])}
-          >
-            <RightArrowIcon height={14} />
-          </View>
-        }
+        thumbnail={thumbnail}
+        data={[{ key: aprText + ` ${dotText} ` + commissionText }]}
+        active={!validator.jailed}
       />
       <CardDivider style={style.flatten(["background-color-card-separator"])} />
       <ListRowView
@@ -295,12 +280,9 @@ export const DashboardMyValidatorItem: FunctionComponent<{
 export const DashboardValidatorItem: FunctionComponent<{
   containerStyle?: ViewStyle;
   validator: Staking.Validator;
-}> = ({ containerStyle, validator }) => {
-  const {
-    getValidatorThumbnail,
-    getValidatorAPR,
-    getTotalSharesAmountOf,
-  } = useStaking();
+  hideStakeButton?: boolean;
+}> = ({ containerStyle, validator, hideStakeButton = false }) => {
+  const { getValidatorAPR, getTotalSharesAmountOf } = useStaking();
 
   const style = useStyle();
   const intl = useIntl();
@@ -308,7 +290,6 @@ export const DashboardValidatorItem: FunctionComponent<{
 
   const validatorAddress = validator.operator_address;
 
-  const thumbnail = getValidatorThumbnail(validatorAddress);
   const apr = getValidatorAPR(validatorAddress);
   const totalSharesAmount = getTotalSharesAmountOf(validatorAddress);
 
@@ -347,79 +328,191 @@ export const DashboardValidatorItem: FunctionComponent<{
       underlayColor={style.get("color-transparent").color}
       activeOpacity={0}
     >
-      <View
-        style={style.flatten([
+      <ValidatorInfo
+        hideStatus
+        hideButton={hideStakeButton}
+        name={validator.description.moniker}
+        data={rows}
+        buttonText={intl.formatMessage({ id: "Stake" })}
+        onButtonPress={() => {
+          smartNavigation.navigateSmart("Delegate", {
+            validatorAddress: validatorAddress,
+          });
+        }}
+      />
+    </RectButton>
+  );
+};
+
+const ValidatorInfo: FunctionComponent<{
+  containerStyle?: ViewStyle;
+  name?: string;
+  thumbnail?: string;
+  data: { key?: string; value?: string; valueColor?: string }[];
+  hideStatus?: boolean;
+  hideButton?: boolean;
+  active?: boolean;
+  buttonText?: string;
+  onButtonPress?: () => void;
+}> = ({
+  containerStyle,
+  name,
+  thumbnail,
+  data,
+  hideStatus,
+  hideButton,
+  active,
+  buttonText,
+  onButtonPress,
+}) => {
+  const style = useStyle();
+  const intl = useIntl();
+
+  const [isOpen, setIsOpen] = useState(false);
+
+  return (
+    <View
+      style={{
+        ...style.flatten([
           "border-color-card-border",
           "padding-x-16",
           "flex-row",
           "items-start",
           "background-color-transparent",
           "padding-y-16",
-        ])}
-      >
-        <ValidatorThumbnail size={40} url={thumbnail} />
-        <View
-          style={style.flatten(["flex-1", "items-stretch", "margin-left-8"])}
+        ]),
+        ...containerStyle,
+      }}
+    >
+      <ValidatorThumbnail size={40} url={thumbnail} />
+      <View style={style.flatten(["flex-1", "items-stretch", "margin-left-8"])}>
+        <Text
+          style={style.flatten(["text-medium-medium", "color-label-text-1"])}
+          numberOfLines={1}
+          ellipsizeMode="tail"
         >
-          <Text
-            style={style.flatten(["text-medium-medium", "color-label-text-1"])}
-            numberOfLines={1}
-            ellipsizeMode="tail"
-          >
-            {validator.description.moniker}
-          </Text>
-          {rows.map(({ key, value }) => {
-            return (
-              <View
+          {name}
+        </Text>
+        {data.map(({ key, value, valueColor }) => {
+          return (
+            <View
+              style={style.flatten([
+                "flex-row",
+                "items-center",
+                "margin-top-8",
+                // `margin-top-${index != 0 ? 8 : 0}`,
+              ])}
+            >
+              <Text
                 style={style.flatten([
-                  "flex-row",
-                  "items-center",
-                  "margin-top-8",
+                  "text-small-regular",
+                  "color-label-text-2",
                 ])}
               >
+                {key}
+              </Text>
+              {value && (
                 <Text
-                  style={style.flatten([
-                    "text-small-regular",
-                    "color-label-text-2",
-                  ])}
-                >
-                  {key}
-                </Text>
-                <Text
-                  style={style.flatten([
-                    "text-small-regular",
-                    "color-label-text-1",
-                    "margin-left-4",
-                  ])}
+                  style={{
+                    ...style.flatten([
+                      "text-small-regular",
+                      "color-label-text-1",
+                      "margin-left-4",
+                    ]),
+                    ...(valueColor ? { color: valueColor } : {}),
+                  }}
                 >
                   {value}
                 </Text>
-              </View>
-            );
-          })}
+              )}
+            </View>
+          );
+        })}
+        {hideStatus != true && (
+          <View
+            style={style.flatten(["flex-row", "items-start", "margin-top-8"])}
+          >
+            <View
+              style={style.flatten([
+                "padding-x-8",
+                "padding-y-2",
+                "border-radius-16",
+                `background-color-alert-inline-${
+                  active ? "success" : "warning"
+                }-background` as any,
+              ])}
+            >
+              <Text
+                style={style.flatten([
+                  "text-x-small-regular",
+                  `color-alert-inline-${
+                    active ? "success" : "warning"
+                  }-main` as any,
+                ])}
+              >
+                {intl.formatMessage({
+                  id: `${active ? "Active" : "Inactive"}`,
+                })}
+              </Text>
+            </View>
+            {!active && (
+              <TouchableOpacity
+                activeOpacity={1}
+                onPress={() => {
+                  setIsOpen(!isOpen);
+                }}
+                style={style.flatten(["margin-left-4"])}
+              >
+                <TooltipIcon />
+              </TouchableOpacity>
+            )}
+          </View>
+        )}
+        {hideButton != true && buttonText && (
           <Button
             size="medium"
-            text={intl.formatMessage({ id: "Stake" })}
+            text={buttonText}
             containerStyle={style.flatten(["margin-top-16"])}
-            onPress={() => {
-              smartNavigation.navigateSmart("Delegate", {
-                validatorAddress: validatorAddress,
-              });
-            }}
+            onPress={onButtonPress}
           />
-        </View>
-        <View
-          style={style.flatten([
-            "width-24",
-            "height-24",
-            "items-center",
-            "justify-center",
-            "margin-left-8",
-          ])}
-        >
-          <RightArrowIcon height={14} />
-        </View>
+        )}
       </View>
-    </RectButton>
+      <View
+        style={style.flatten([
+          "width-24",
+          "height-24",
+          "items-center",
+          "justify-center",
+          "margin-left-8",
+        ])}
+      >
+        <RightArrowIcon height={14} />
+      </View>
+      <TooltipBottomSheet
+        isOpen={isOpen}
+        close={() => {
+          setIsOpen(!isOpen);
+        }}
+        title={intl.formatMessage({ id: "Inactive" })}
+        contentView={
+          <View
+            style={{
+              ...style.flatten([
+                "margin-x-16",
+                "margin-top-8",
+                "margin-bottom-24",
+              ]),
+              ...containerStyle,
+            }}
+          >
+            <Text
+              style={style.flatten(["color-label-text-1", "text-base-regular"])}
+            >
+              {intl.formatMessage({ id: "Inactive" })}
+            </Text>
+          </View>
+        }
+      />
+    </View>
   );
 };

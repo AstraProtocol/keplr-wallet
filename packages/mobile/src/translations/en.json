@@ -39,6 +39,8 @@
   "Year": "year",
   "Month": "month",
   "Day": "day",
+  "Active": "Active",
+  "Inactive": "Inactive",
 
   "Dashboard.Banner.1": "Staking",
   "Dashboard.Banner.2": "17%/year",

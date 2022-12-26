@@ -39,6 +39,8 @@
   "Year": "năm",
   "Month": "tháng",
   "Day": "ngày",
+  "Active": "Hoạt động",
+  "Inactive": "Không hoạt động",
 
   "Dashboard.Banner.1": "Staking lãi tới",
   "Dashboard.Banner.2": "17%/năm",

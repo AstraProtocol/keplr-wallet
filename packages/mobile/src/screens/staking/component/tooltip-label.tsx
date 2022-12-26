@@ -1,7 +1,6 @@
 import { observer } from "mobx-react-lite";
 import React, { Fragment, FunctionComponent, useState } from "react";
 import {
-  Image,
   Text,
   TextStyle,
   TouchableOpacity,
@@ -11,6 +10,7 @@ import {
 import { CloseLargeIcon } from "../../../components/icon/outlined";
 import { registerModal } from "../../../modals/base";
 import { useStyle } from "../../../styles";
+import { TooltipIcon } from "./tooltip-icon";
 
 export const TooltipLabel: FunctionComponent<{
   textStyle?: TextStyle;
@@ -54,16 +54,12 @@ export const TooltipLabel: FunctionComponent<{
               }}
               style={style.flatten(["margin-left-4"])}
             >
-              <Image
-                style={style.flatten(["width-16", "height-16"])}
-                resizeMode="contain"
-                source={require("../../../assets/image/icon_tooltip.png")}
-              />
+              <TooltipIcon size={16} />
             </TouchableOpacity>
           )}
         </View>
         {bottomSheetContentView && (
-          <BottomSheet
+          <TooltipBottomSheet
             isOpen={isOpen}
             close={() => {
               setIsOpen(!isOpen);
@@ -77,7 +73,7 @@ export const TooltipLabel: FunctionComponent<{
   }
 );
 
-const BottomSheet: FunctionComponent<{
+export const TooltipBottomSheet: FunctionComponent<{
   isOpen: boolean;
   close: () => void;
   title?: string;

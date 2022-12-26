@@ -1,6 +1,11 @@
 import { getPlatformFontWeight } from "./builder/utils";
 
 const XSmallTypos = {
+  "text-x-small-regular": {
+    fontSize: 10,
+    lineHeight: 16,
+    ...getPlatformFontWeight("400"),
+  },
   "text-x-small-medium": {
     fontSize: 10,
     lineHeight: 12,

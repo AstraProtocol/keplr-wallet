@@ -58,7 +58,8 @@ const YellowColors = {
   "yellow-80": "#E88300",
   "yellow-90": "#CC6900",
   "yellow-100": "#B55400",
-  "yellow-overlay": "#FFB24D26",
+
+  "yellow-60-15": "#FFB24D26",
 };
 
 const GreenColors = {
@@ -114,7 +115,7 @@ export const V1AlertInlineColors = {
   "alert-inline-info-border": V1Colors["blue-60"],
   "alert-inline-warning-main": V1Colors["yellow-60"],
   "alert-inline-warning-content": V1Colors["gray-10"],
-  "alert-inline-warning-background": V1Colors["yellow-overlay"],
+  "alert-inline-warning-background": V1Colors["yellow-60-15"],
   "alert-inline-warning-border": V1Colors["yellow-60"],
   "alert-inline-success-main": V1Colors["green-50"],
   "alert-inline-success-content": V1Colors["gray-10"],

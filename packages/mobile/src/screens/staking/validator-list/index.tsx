@@ -34,12 +34,8 @@ export const ValidatorListScreen: FunctionComponent = observer(() => {
         renderItem={({ item }: { item: Staking.Validator; index: number }) => {
           return <DashboardValidatorItem validator={item} />;
         }}
-        contentContainerStyle={style.flatten(["padding-bottom-16"])}
-      />
-      <View
-        style={{
-          ...style.flatten(["background-color-background"]),
-          height: safeAreaInsets.bottom,
+        contentContainerStyle={{
+          paddingBottom: safeAreaInsets.bottom + 16,
         }}
       />
     </View>
