@@ -204,7 +204,7 @@ export const VerifyMnemonicScreen: FunctionComponent = observer(() => {
       />
       <View style={style.flatten(["height-16"])} />
       <Button
-        text={intl.formatMessage({ id: "common.text.continue" })}
+        text={intl.formatMessage({ id: "Continue" })}
         loading={isCreating}
         disabled={wordSet.join(" ") !== newMnemonicConfig.mnemonic}
         onPress={submit}

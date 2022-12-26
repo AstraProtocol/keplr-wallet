@@ -109,7 +109,7 @@ export const RegisterEndScreen: FunctionComponent = observer(() => {
       </View>
       <View style={style.flatten(["flex-1"])} />
       <Button
-        text={intl.formatMessage({ id: "common.text.continue" })}
+        text={intl.formatMessage({ id: "Continue" })}
         onPress={onContinueHandler}
         containerStyle={style.flatten(["margin-bottom-12"])}
       />

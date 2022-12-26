@@ -164,7 +164,7 @@ export const TransactionSignRequestView: FunctionComponent<{
             }}
           />
           <Button
-            text={intl.formatMessage({ id: "common.text.verify" })}
+            text={intl.formatMessage({ id: "Confirm" })}
             onPress={async () => {
               onApprove(source);
             }}

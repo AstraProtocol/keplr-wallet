@@ -139,8 +139,8 @@ export const NFTDetailsScreen: FunctionComponent = observer(() => {
             }}
           >
             {isExpanded
-              ? intl.formatMessage({ id: "common.text.viewLess" })
-              : intl.formatMessage({ id: "common.text.viewMore" })}
+              ? intl.formatMessage({ id: "ViewLess" })
+              : intl.formatMessage({ id: "ViewMore" })}
           </TextLink>
           <View style={style.flatten(["flex-row", "margin-top-16"])}>
             <Button

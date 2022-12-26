@@ -49,8 +49,8 @@ export const DelegationsItem: FunctionComponent<{
         <Text style={style.flatten(["text-large-semi-bold", "color-white"])}>
           {intl.formatMessage({
             id: hasDelegations
-              ? "common.text.myValidators"
-              : "common.text.validators",
+              ? "MyStaking"
+              : "StakingProviders",
           })}
         </Text>
       </CardBody>

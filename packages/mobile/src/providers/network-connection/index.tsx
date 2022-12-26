@@ -83,7 +83,7 @@ const NetworkConnectionModal: FunctionComponent = () => {
         </Text>
         <Button
           containerStyle={style.flatten(["margin-top-24"])}
-          text={intl.formatMessage({ id: "common.text.retry" })}
+          text={intl.formatMessage({ id: "Retry" })}
           onPress={context.onRetryHandler}
         />
       </View>

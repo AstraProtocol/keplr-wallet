@@ -62,7 +62,7 @@ export const NFTSendConfirmScreen: FunctionComponent = observer(() => {
       type: "items",
       cols: [
         buildLeftColumn({
-          text: intl.formatMessage({ id: "component.amount.input.fee" }),
+          text: intl.formatMessage({ id: "TransactionFee" }),
         }),
         buildRightColumn({ text: formatCoin(route.params.fee, false, 6) }),
       ],

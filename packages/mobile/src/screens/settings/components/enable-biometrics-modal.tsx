@@ -36,7 +36,7 @@ export const EnableBiometricsModal: FunctionComponent<{
     } catch (e) {
       setIsLoading(false);
       console.log("failed to verify Biometrics", e);
-      setErrorText(intl.formatMessage({ id: "common.text.wrongPassword" }));
+      setErrorText(intl.formatMessage({ id: "WrongPassword" }));
       return;
     }
 
@@ -105,7 +105,7 @@ export const EnableBiometricsModal: FunctionComponent<{
           <Button
             color="neutral"
             mode="outline"
-            text={intl.formatMessage({ id: "common.text.cancel" })}
+            text={intl.formatMessage({ id: "Cancel" })}
             onPress={() => {
               Keyboard.dismiss();
               close();
@@ -113,7 +113,7 @@ export const EnableBiometricsModal: FunctionComponent<{
             containerStyle={style.flatten(["flex-1"])}
           />
           <Button
-            text={intl.formatMessage({ id: "common.text.enable" })}
+            text={intl.formatMessage({ id: "Enable" })}
             onPress={enableBiometrics}
             disabled={password.length == 0}
             loading={isLoading}

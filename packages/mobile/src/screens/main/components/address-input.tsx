@@ -103,7 +103,7 @@ export const AddressInput: FunctionComponent<{
               containerStyle={style.flatten(["margin-left-8"])}
               size="medium"
               mode="ghost"
-              text={intl.formatMessage({ id: "common.text.paste" })}
+              text={intl.formatMessage({ id: "Paste" })}
               onPress={async () => {
                 const text = await Clipboard.getStringAsync();
                 if (text) {

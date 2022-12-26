@@ -183,7 +183,7 @@ export const ValidatorsBottomSheet: FunctionComponent<{
             })}
           </ScrollView>
           <Button
-            text={intl.formatMessage({ id: "common.text.confirm" })}
+            text={intl.formatMessage({ id: "Confirm" })}
             disabled={!toValidator}
             onPress={onContinueHandler}
             containerStyle={style.flatten(["margin-x-page", "margin-top-12"])}

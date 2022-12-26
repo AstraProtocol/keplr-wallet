@@ -87,7 +87,7 @@ export const NewPincodeScreen: FunctionComponent = observer(() => {
       } catch (e) {
         console.log(e);
         setPasswordErrorText(
-          intl.formatMessage({ id: "common.text.wrongPassword" })
+          intl.formatMessage({ id: "WrongPassword" })
         );
         setIsCreating(false);
         return;
@@ -188,14 +188,14 @@ export const NewPincodeScreen: FunctionComponent = observer(() => {
   const actionButtonTitle =
     registerType === RegisterType.recover
       ? intl.formatMessage({ id: "register.button.restoreAccount" })
-      : intl.formatMessage({ id: "register.button.createAccount" });
+      : intl.formatMessage({ id: "CreateNewWallet" });
 
   function updateNavigationTitle() {
     let textId;
     if (registerType === RegisterType.recover) {
       textId = "register.recoverMnemonic.title";
     } else {
-      textId = "register.setPincode.title";
+      textId = "CreateNewWallet";
     }
 
     smartNavigation.setOptions({
@@ -273,7 +273,7 @@ export const NewPincodeScreen: FunctionComponent = observer(() => {
         <NormalInput
           returnKeyType="next"
           value={password}
-          label={intl.formatMessage({ id: "common.text.password" })}
+          label={intl.formatMessage({ id: "Password" })}
           error={canVerify ? "" : passwordErrorText}
           info={passwordInfor}
           secureTextEntry={true}

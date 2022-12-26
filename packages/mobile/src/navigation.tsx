@@ -199,7 +199,7 @@ export const RegisterNavigation: FunctionComponent = () => {
       />
       <Stack.Screen
         options={{
-          title: intl.formatMessage({ id: "register.tutorial.title" }),
+          title: intl.formatMessage({ id: "CreateNewWallet" }),
         }}
         name="Register.Tutorial"
         component={RegisterTutorialcreen}
@@ -207,7 +207,7 @@ export const RegisterNavigation: FunctionComponent = () => {
 
       <Stack.Screen
         options={{
-          title: intl.formatMessage({ id: "register.newUser.title" }),
+          title: intl.formatMessage({ id: "CreateNewWallet" }),
         }}
         name="Register.NewUser"
         component={RegisterNewUserScreen}
@@ -221,14 +221,14 @@ export const RegisterNavigation: FunctionComponent = () => {
       />
       <Stack.Screen
         options={{
-          title: intl.formatMessage({ id: "register.newMnemonic.title" }),
+          title: intl.formatMessage({ id: "CreateNewWallet" }),
         }}
         name="Register.NewMnemonic"
         component={NewMnemonicScreen}
       />
       <Stack.Screen
         options={{
-          title: intl.formatMessage({ id: "register.verifyMnemonic.title" }),
+          title: intl.formatMessage({ id: "CreateNewWallet" }),
         }}
         name="Register.VerifyMnemonic"
         component={VerifyMnemonicScreen}
@@ -473,7 +473,7 @@ export const WalletNavigation: FunctionComponent = () => {
       />
       <Stack.Screen
         options={{
-          title: intl.formatMessage({ id: "staking.reward.title" }),
+          title: intl.formatMessage({ id: "ClaimRewards" }),
         }}
         name="Staking.Rewards"
         component={StakingRewardScreen}
@@ -496,7 +496,7 @@ export const WalletNavigation: FunctionComponent = () => {
       />
       <Stack.Screen
         options={{
-          title: intl.formatMessage({ id: "wallet.history.title" }),
+          title: intl.formatMessage({ id: "TransactionHistory" }),
         }}
         name="Wallet.History"
         component={HistoryScreen}
@@ -791,7 +791,7 @@ export const MainTabNavigation: FunctionComponent = () => {
               name = intl.formatMessage({ id: "Staking" });
               break;
             case "D-apps":
-              name = intl.formatMessage({ id: "tabs.d-apps" });
+              name = intl.formatMessage({ id: "Dapps" });
               break;
             case "History":
               name = intl.formatMessage({ id: "History" });

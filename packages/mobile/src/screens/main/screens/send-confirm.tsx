@@ -85,7 +85,7 @@ export const SendConfirmScreen: FunctionComponent = observer(() => {
       <AddressInput style={style.flatten(["margin-top-16"])} />
       <AmountInput style={style.flatten(["padding-12", "margin-top-16"])} />
       <Button
-        text={intl.formatMessage({ id: "common.text.verify" })}
+        text={intl.formatMessage({ id: "Confirm" })}
         size="large"
         disabled={!account.isReadyToSendMsgs || !txStateIsValid}
         loading={account.isSendingMsg === "send"}

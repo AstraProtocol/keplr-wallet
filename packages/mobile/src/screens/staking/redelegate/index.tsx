@@ -115,7 +115,7 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
       type: "items",
       cols: [
         buildLeftColumn({
-          text: intl.formatMessage({ id: "common.text.transactionFee" }),
+          text: intl.formatMessage({ id: "TransactionFee" }),
         }),
         buildRightColumn({ text: feeText }),
       ],

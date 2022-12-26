@@ -149,6 +149,36 @@ export const useTransaction = () => {
     );
   };
 
+  const sendWithdrawRewardsTransaction = async (value?: any) => {
+    const data = value as MsgWithdrawDelegatorReward["value"];
+
+    const validatorAddresses = data.validatorRewards.map(
+      ({ validatorAddress }) => validatorAddress
+    );
+
+    const tx = account.cosmos.makeWithdrawDelegationRewardTx(
+      validatorAddresses
+    );
+    await tx.sendWithGasPrice(
+      { gas: Number(data.gasLimit ?? 0) },
+      "",
+      {
+        preferNoSetMemo: true,
+        preferNoSetFee: true,
+      },
+      {
+        onBroadcasted: (txHash) => {
+          // analyticsStore.logEvent("astra_hub_claim_reward", {
+          //   ...params,
+          //   tx_hash: Buffer.from(txHash).toString("hex"),
+          //   success: true,
+          // });
+          transactionStore.updateTxHash(txHash);
+        },
+      }
+    );
+  };
+
   const getTxDetailsRows = (): IRow[] => {
     if (!transactionStore.rawData) {
       return [];
@@ -245,11 +275,9 @@ export const useTransaction = () => {
         await sendRedelegateTransaction(value);
       }
 
-      // if (type === account.cosmos.msgOpts.withdrawRewards.type) {
-      //   await renderMsgWithdrawDelegatorReward(
-      //     value as MsgWithdrawDelegatorReward["value"]
-      //   );
-      // }
+      if (isWithdrawRewardsTransaction(type)) {
+        await sendWithdrawRewardsTransaction(value);
+      }
 
       // if (type === "wallet-swap") {
       //   const msgEther = transactionStore.txMsgs;

@@ -79,7 +79,7 @@ export const UpdateWalletNameModal: FunctionComponent<{
           <Button
             color="neutral"
             mode="outline"
-            text={intl.formatMessage({ id: "common.text.cancel" })}
+            text={intl.formatMessage({ id: "Cancel" })}
             onPress={() => {
               Keyboard.dismiss();
               close();
@@ -87,7 +87,7 @@ export const UpdateWalletNameModal: FunctionComponent<{
             containerStyle={style.flatten(["flex-1"])}
           />
           <Button
-            text={intl.formatMessage({ id: "common.text.save" })}
+            text={intl.formatMessage({ id: "Save" })}
             onPress={updateName}
             disabled={name.length == 0}
             loading={isLoading}

@@ -92,6 +92,8 @@ export interface MsgWithdrawDelegatorReward {
         rewards: CoinPretty;
       }
     ];
+    gasLimit: number | string | undefined;
+    gasPrice: number | string | undefined;
   };
 }
 
@@ -333,7 +335,7 @@ export function renderMsgSwap(data: MsgSwap): IRow[] {
       ...common,
       cols: [
         buildLeftColumn({
-          text: intl.formatMessage({ id: "swap.transactionFee" }),
+          text: intl.formatMessage({ id: "TransactionFee" }),
           flex: 3,
         }),
         buildRightColumn({

@@ -194,7 +194,7 @@ export const RecoverMnemonicScreen: FunctionComponent = observer(() => {
                     <Button
                       size="medium"
                       mode="ghost"
-                      text={intl.formatMessage({ id: "common.text.paste" })}
+                      text={intl.formatMessage({ id: "Paste" })}
                       onPress={async () => {
                         const text = await Clipboard.getStringAsync();
                         if (text) {
@@ -251,7 +251,7 @@ export const RecoverMnemonicScreen: FunctionComponent = observer(() => {
       >
         <View style={style.flatten(["height-1", "background-color-gray-70"])} />
         <Button
-          text={intl.formatMessage({ id: "common.text.verify" })}
+          text={intl.formatMessage({ id: "Confirm" })}
           loading={isCreating}
           onPress={onSubmitEditing}
           disabled={!canVerify}

@@ -4,7 +4,6 @@
   "swap.amount.swapAll": "Tối đa",
   "swap.amount.available": "Khả dụng <b>amount</b>",
   "swap.exchangeRate": "Tỷ giá",
-  "swap.transactionFee": "Phí giao dịch",
   "swap.liquidityFee": "Phí thanh khoản",
   "swap.priceSlippage": "Trượt giá",
   "swap.priceSlippage.describe": "Giá thực tế sau khi đặt lệnh có thể khác với giá đưa ra ở trên, hãy chọn mức trượt giá tối đa mà bạn mong muốn. Nếu trượt giá cao hơn mức bạn chọn, lệnh sẽ bị huỷ.",

@@ -67,7 +67,7 @@ export const PasswordInputScreen: FunctionComponent = observer(() => {
   const getInputPlaceholder = () => {
     let title;
     if (type === "deleteWallet") {
-      title = intl.formatMessage({ id: "common.text.password" });
+      title = intl.formatMessage({ id: "Password" });
     }
 
     return title;
@@ -77,10 +77,10 @@ export const PasswordInputScreen: FunctionComponent = observer(() => {
     let title;
     switch (type) {
       case "updatePassword":
-        title = "common.text.continue";
+        title = "Continue";
         break;
       case "viewMnemonic":
-        title = "common.text.view";
+        title = "View";
         break;
       case "deleteWallet":
         title = "deleteAccount.button.delete";
@@ -134,7 +134,7 @@ export const PasswordInputScreen: FunctionComponent = observer(() => {
       analyticsStore.logEvent("astra_hub_input_password", {
         screen: type,
         success: false,
-        error: intl.formatMessage({ id: "common.text.wrongPassword" }),
+        error: intl.formatMessage({ id: "WrongPassword" }),
       });
       showError();
       setIsLoading(false);
@@ -283,7 +283,7 @@ export const PasswordInputScreen: FunctionComponent = observer(() => {
   }
 
   function showError() {
-    setError(intl.formatMessage({ id: "common.text.wrongPassword" }));
+    setError(intl.formatMessage({ id: "WrongPassword" }));
     setInputDataValid(false);
   }
 

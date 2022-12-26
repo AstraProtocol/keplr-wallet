@@ -173,7 +173,7 @@ export const WebScreen: FunctionComponent = () => {
           ])}
         >
           <Text style={style.flatten(["color-white", "title2"])}>
-            {intl.formatMessage({ id: "tabs.d-apps" })}
+            {intl.formatMessage({ id: "Dapps" })}
           </Text>
         </View>
         <View style={style.flatten(["height-1", "background-color-gray-70"])} />

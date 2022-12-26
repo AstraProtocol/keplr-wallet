@@ -64,7 +64,7 @@ export const UnbondingScreen: FunctionComponent = observer(() => {
         { id: "staking.unbonding.validatorTotalAmount" },
         { name: validator.description.moniker }
       )
-    : intl.formatMessage({ id: "staking.unbonding.totalAmount" });
+    : intl.formatMessage({ id: "TotalUnstakingAmount" });
 
   const getSimpleItem = (
     key: React.Key | null | undefined,

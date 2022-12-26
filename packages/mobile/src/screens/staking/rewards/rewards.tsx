@@ -46,7 +46,7 @@ export const RewardDetails: FunctionComponent<{
               "margin-bottom-8",
             ])}
           >
-            <FormattedMessage id="staking.rewards.details.label" />
+            <FormattedMessage id="MyStaking" />
           </Text>
           {stakableRewardsList.map((stakableRewards, index) => {
             const {
@@ -86,7 +86,7 @@ export const RewardDetails: FunctionComponent<{
         style={{ paddingVertical: 0, marginTop: 16, marginBottom: 24 }}
         columns={[
           {
-            text: intl.formatMessage({ id: "component.amount.input.fee" }),
+            text: intl.formatMessage({ id: "TransactionFee" }),
             textColor: style.get("color-label-text-2").color,
           },
           {

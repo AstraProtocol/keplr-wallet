@@ -37,7 +37,7 @@ export const AccountLanguageItem: FunctionComponent<{
   return (
     <React.Fragment>
       <BottomSheet
-        label={intl.formatMessage({ id: "settings.language" })}
+        label={intl.formatMessage({ id: "Language" })}
         isOpen={isOpenModal}
         close={() => setIsOpenModal(false)}
         maxItemsToShow={4}
@@ -47,7 +47,7 @@ export const AccountLanguageItem: FunctionComponent<{
       />
       <AccountItem
         {...accountItemProps}
-        label={intl.formatMessage({ id: "settings.language" })}
+        label={intl.formatMessage({ id: "Language" })}
         left={<LanguageIcon />}
         right={<RightView paragraph={selectedLang.label} />}
         onPress={() => {

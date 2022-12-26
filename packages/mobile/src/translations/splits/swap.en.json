@@ -4,7 +4,6 @@
   "swap.amount.swapAll": "Max",
   "swap.amount.available": "Balance <b>amount</b>",
   "swap.exchangeRate": "Price",
-  "swap.transactionFee": "Transaction Fee",
   "swap.liquidityFee": "Liquidity Fee",
   "swap.priceSlippage": "Slippage",
   "swap.priceSlippage.describe": "The actual price after placing the order may be different from the price given above, choose the maximum slippage you want. If the slippage is higher than your selected level, the order will be cancelled.",

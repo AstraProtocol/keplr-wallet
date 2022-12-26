@@ -34,7 +34,7 @@ export const AccountNetworkItem: FunctionComponent<{
   return (
     <React.Fragment>
       <BottomSheet
-        label={intl.formatMessage({ id: "settings.network" })}
+        label={intl.formatMessage({ id: "Network" })}
         isOpen={isOpenModal}
         close={() => setIsOpenModal(false)}
         maxItemsToShow={4}
@@ -44,7 +44,7 @@ export const AccountNetworkItem: FunctionComponent<{
       />
       <AccountItem
         {...accountItemProps}
-        label={intl.formatMessage({ id: "settings.network" })}
+        label={intl.formatMessage({ id: "Network" })}
         left={<NetworkIcon />}
         right={
           <RightView paragraph={chainStore.current.chainName.toUpperCase()} />

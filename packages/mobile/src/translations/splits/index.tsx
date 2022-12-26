@@ -1,5 +1,3 @@
-import CommonEnMsgs from "./common.en.json";
-import CommonViMsgs from "./common.vi.json";
 import RegisterEnMsgs from "./register.en.json";
 import RegisterViMsgs from "./register.vi.json";
 import SwapEnMsgs from "./swap.en.json";
@@ -11,7 +9,6 @@ import WalletConnectViMsgs from "./walletconnect.vi.json";
 
 export const ViMsgs = [
   ValidatorViMsgs,
-  CommonViMsgs,
   WalletConnectViMsgs,
   SwapViMsgs,
   RegisterViMsgs,
@@ -19,7 +16,6 @@ export const ViMsgs = [
 
 export const EnMsgs = [
   ValidatorEnMsgs,
-  CommonEnMsgs,
   WalletConnectEnMsgs,
   SwapEnMsgs,
   RegisterEnMsgs,

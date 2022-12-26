@@ -57,7 +57,7 @@ export const EstimateRewardsView: FunctionComponent<{
           {numOfYear +
             " " +
             intl.formatMessage({
-              id: "common.text.date.year",
+              id: "Year",
             })}
         </Text>
       </Text>

@@ -383,7 +383,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
           value={password}
           error={
             isFailed
-              ? intl.formatMessage({ id: "common.text.wrongPassword" })
+              ? intl.formatMessage({ id: "WrongPassword" })
               : ""
           }
           secureTextEntry={true}

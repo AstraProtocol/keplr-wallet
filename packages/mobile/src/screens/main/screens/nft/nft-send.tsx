@@ -111,7 +111,7 @@ export const NFTSendScreen: FunctionComponent = observer(() => {
       cols: [
         buildLeftColumn({
           text: intl.formatMessage(
-            { id: "component.amount.input.fee" },
+            { id: "TransactionFee" },
             { denom: sendConfigs.amountConfig.sendCurrency.coinDenom }
           ),
         }),
@@ -297,7 +297,7 @@ export const NFTSendScreen: FunctionComponent = observer(() => {
           }}
         >
           <Button
-            text={intl.formatMessage({ id: "wallet.send.continue" })}
+            text={intl.formatMessage({ id: "Continue" })}
             disabled={addressErrorText.length !== 0}
             loading={transactionStore.rawData !== undefined}
             onPress={onSendHandler}

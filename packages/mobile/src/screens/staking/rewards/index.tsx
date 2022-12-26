@@ -133,6 +133,8 @@ export const StakingRewardScreen: FunctionComponent = () => {
                 };
               }
             ) ?? [],
+          gasLimit,
+          gasPrice,
         },
       });
 
@@ -181,7 +183,7 @@ export const StakingRewardScreen: FunctionComponent = () => {
           "text-center",
         ])}
       >
-        {intl.formatMessage({ id: "staking.rewards.totalProfit" })}
+        {intl.formatMessage({ id: "TotalRewardsAmount" })}
       </Text>
       <Text
         style={style.flatten([
@@ -211,7 +213,7 @@ export const StakingRewardScreen: FunctionComponent = () => {
       <View style={style.flatten(["height-1", "background-color-gray-70"])} />
       <Button
         containerStyle={style.flatten(["margin-y-12", "margin-x-page"])}
-        text={intl.formatMessage({ id: "staking.rewards.withdrawRewards" })}
+        text={intl.formatMessage({ id: "ClaimRewards" })}
         onPress={withdrawAllRewards}
         loading={account.txTypeInProgress === "withdrawRewards"}
       />

@@ -252,7 +252,7 @@ export const SendTokenScreen: FunctionComponent = observer(() => {
           }}
         >
           <Button
-            text={intl.formatMessage({ id: "wallet.send.continue" })}
+            text={intl.formatMessage({ id: "Continue" })}
             disabled={
               amountErrorText.length !== 0 || addressErrorText.length !== 0
             }

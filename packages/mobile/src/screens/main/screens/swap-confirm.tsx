@@ -411,7 +411,7 @@ export const SwapConfirmScreen: FunctionComponent = observer(() => {
                 "margin-right-8",
               ])}
             >
-              {intl.formatMessage({ id: "swap.transactionFee" })}
+              {intl.formatMessage({ id: "TransactionFee" })}
             </Text>
             <Text
               style={style.flatten([

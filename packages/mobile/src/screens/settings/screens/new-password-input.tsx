@@ -117,7 +117,7 @@ export const NewPasswordInputScreen: FunctionComponent = observer(() => {
         <NormalInput
           returnKeyType="next"
           value={password}
-          label={intl.formatMessage({ id: "common.text.newPassword" })}
+          label={intl.formatMessage({ id: "NewPassword" })}
           info={intl.formatMessage(
             {
               id: "common.text.minimumCharacters",
@@ -191,7 +191,7 @@ export const NewPasswordInputScreen: FunctionComponent = observer(() => {
         >
           <Button
             containerStyle={style.flatten(["margin-x-page", "margin-top-12"])}
-            text={intl.formatMessage({ id: "common.text.changePassword" })}
+            text={intl.formatMessage({ id: "ChangePassword" })}
             loading={isCreating}
             onPress={onCreate}
             disabled={!inputDataValid}
