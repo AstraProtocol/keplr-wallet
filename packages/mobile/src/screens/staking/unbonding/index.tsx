@@ -248,7 +248,7 @@ export const UnbondingScreen: FunctionComponent = observer(() => {
                 });
               }}
             >
-              {intl.formatMessage({ id: "staking.unbonding.history" })}
+              {intl.formatMessage({ id: "History" }).toLocaleLowerCase()}
             </Text>
           </Text>
         </View>

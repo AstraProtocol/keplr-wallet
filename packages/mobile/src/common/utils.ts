@@ -97,22 +97,40 @@ export const formatPercent = (
 };
 
 export const formatUnbondingTime = (sec: number, intl: IntlShape) => {
-  const relativeEndTimeDays = sec / (3600 * 24);
-  const relativeEndTimeHours = sec / 3600;
+  const minuteSeconds = 60;
+  const hourSeconds = 60 * minuteSeconds;
+  const daySeconds = 24 * hourSeconds;
 
-  if (relativeEndTimeDays >= 1) {
-    return intl.formatMessage(
-      { id: "validator.details.unbonding.days" },
-      { days: Math.round(relativeEndTimeDays) }
-    );
-  } else if (relativeEndTimeHours > 0) {
-    return intl.formatMessage(
-      { id: "validator.details.unbonding.hours" },
-      { hours: Math.round(relativeEndTimeHours) }
-    );
+  const days = Math.floor(sec / daySeconds);
+  const hours = Math.floor((sec - days * daySeconds) / hourSeconds);
+  const minutes = Math.floor(
+    (sec - (days * daySeconds + hours * hourSeconds)) / minuteSeconds
+  );
+  const seconds =
+    sec - (days * daySeconds + hours * hourSeconds + minutes * minuteSeconds);
+
+  let dateTexts = [] as string[];
+  if (days > 0) {
+    dateTexts = [...dateTexts, days + " " + intl.formatMessage({ id: "Day" })];
   }
+  if (hours > 0) {
+    dateTexts = [
+      ...dateTexts,
+      hours + " " + intl.formatMessage({ id: "Hour" }),
+    ];
+  }
+  if (minutes > 0) {
+    dateTexts = [
+      ...dateTexts,
+      minutes + " " + intl.formatMessage({ id: "Minute" }),
+    ];
+  }
+  dateTexts = [
+    ...dateTexts,
+    seconds + " " + intl.formatMessage({ id: "Second" }),
+  ];
 
-  return "";
+  return dateTexts[0] + (dateTexts.length > 1 ? ` ${dateTexts[1]}` : "");
 };
 
 export const removeZeroFractionDigits = (text: string) => {

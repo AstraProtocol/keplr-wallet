@@ -1,12 +1,12 @@
-import React, { FunctionComponent, useState } from "react";
+import React, { FunctionComponent } from "react";
 import { useIntl } from "react-intl";
 import { View, ViewStyle } from "react-native";
-import { IRow, ListRowView } from "../../../components";
+import { ListRowView } from "../../../components";
 import { TextLink } from "../../../components/button";
 import { useSmartNavigation } from "../../../navigation-util";
 import { useStore } from "../../../stores";
 import { useStyle } from "../../../styles";
-import { renderAminoMessages } from "../models/amino";
+import { useTransaction } from "../hook/use-transaction";
 import {
   getSeparatorRow,
   getTransactionTimeRow,
@@ -16,33 +16,21 @@ import {
 } from "../models/messages";
 
 export const TransactionDetailsView: FunctionComponent<{
-  style?: ViewStyle;
-}> = ({ style }) => {
-  const styleBuilder = useStyle();
-
+  containerStyle?: ViewStyle;
+}> = ({ containerStyle }) => {
+  const { getTxDetailsRows } = useTransaction();
   const { chainStore, transactionStore, accountStore } = useStore();
 
-  const [hasData] = useState(() => {
-    if (transactionStore.rawData) {
-      return true;
-    }
-    return false;
-  });
+  const style = useStyle();
+  const intl = useIntl();
+  const smartNavigation = useSmartNavigation();
 
   const chainId = chainStore.current.chainId;
   const chainInfo = chainStore.getChain(chainId);
   const rawData = transactionStore.rawData;
 
-  const intl = useIntl();
-  const smartNavigation = useSmartNavigation();
-
-  let rows: IRow[] = [];
-  if (hasData) {
-    rows = renderAminoMessages(
-      chainStore.current.chainId,
-      accountStore,
-      transactionStore
-    );
+  let rows = (() => {
+    let rows = getTxDetailsRows();
     rows = insert(rows, getTransactionTimeRow(), rows.length - 1);
 
     if (
@@ -51,7 +39,8 @@ export const TransactionDetailsView: FunctionComponent<{
     ) {
       rows = join(rows, getSeparatorRow());
     }
-  }
+    return rows;
+  })();
 
   const viewDetailsHandler = () => {
     let txHash = "";
@@ -64,7 +53,7 @@ export const TransactionDetailsView: FunctionComponent<{
       rawData.type === "wallet-swap" &&
       transactionStore.txState !== "failure"
     ) {
-      const rawDataValue = transactionStore.rawData.value;
+      const rawDataValue = rawData.value;
       txHash = (rawDataValue as MsgSwap).transactionHash || "";
     }
 
@@ -75,13 +64,13 @@ export const TransactionDetailsView: FunctionComponent<{
   };
 
   return (
-    <View style={style}>
-      {hasData && <ListRowView hideBorder rows={rows} />}
+    <View style={containerStyle}>
+      <ListRowView hideBorder rows={rows} />
       {chainInfo.raw.txExplorer && (
         <TextLink
           size="medium"
           onPress={viewDetailsHandler}
-          style={styleBuilder.flatten(["margin-y-16"])}
+          style={style.flatten(["margin-y-16"])}
         >
           {intl.formatMessage(
             { id: "tx.result.viewDetails" },

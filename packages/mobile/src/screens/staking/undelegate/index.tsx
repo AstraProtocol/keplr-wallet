@@ -237,7 +237,7 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
           validator={validator}
         />
         <AmountInput
-          labelText={intl.formatMessage({ id: "stake.undelegate.amountLabel" })}
+          labelText={intl.formatMessage({ id: "Amount" })}
           amountConfig={sendConfigs.amountConfig}
           feeConfig={sendConfigs.feeConfig}
           onAmountChanged={(amount, errorText, isFocus) => {

@@ -30,7 +30,7 @@ export const TransactionActionView: FunctionComponent<{
         style={{ flexDirection: "row", marginTop: 12, marginHorizontal: 16 }}
       >
         <Button
-          text={intl.formatMessage({ id: "tx.result.action.homepage" })}
+          text={intl.formatMessage({ id: "Home" })}
           color={txState == "failure" ? "neutral" : "primary"}
           containerStyle={styleBuilder.flatten(["flex-1"])}
           onPress={async () => {
@@ -39,7 +39,7 @@ export const TransactionActionView: FunctionComponent<{
         />
         {txState == "failure" && (
           <Button
-            text={intl.formatMessage({ id: "tx.result.action.reInvest" })}
+            text={intl.formatMessage({ id: "Back" })}
             containerStyle={styleBuilder.flatten(["margin-left-8", "flex-1"])}
             onPress={async () => {
               smartNavigation.goBack();

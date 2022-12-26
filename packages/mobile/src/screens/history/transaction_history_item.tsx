@@ -14,17 +14,18 @@ export const TransactionItem: FunctionComponent<{
   const intl = useIntl();
 
   var statusTextColor = style.get("color-yellow-50");
-  var statusText = intl.formatMessage({ id: "history.status.unknown" });
+  var statusText = intl.formatMessage({ id: "Unknown" });
   switch (item?.status) {
     case "success":
       statusTextColor = style.get("color-green-50");
-      statusText = intl.formatMessage({ id: "history.status.success" });
+      statusText = intl.formatMessage({ id: "Success" });
       break;
     case "failure":
       statusTextColor = style.get("color-red-50");
-      statusText = intl.formatMessage({ id: "history.status.failure" });
+      statusText = intl.formatMessage({ id: "Failure" });
       break;
   }
+  statusText = intl.formatMessage({ id: "_dot_" }) + " " + statusText;
 
   return (
     <View style={style.flatten(["padding-0"])}>

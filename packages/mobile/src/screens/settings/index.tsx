@@ -191,7 +191,7 @@ export const SettingsScreen: FunctionComponent = observer(() => {
           <View style={style.get("height-32")} />
           <AccountItem
             {...accountItemProps}
-            label={intl.formatMessage({ id: "settings.faq" })}
+            label={intl.formatMessage({ id: "FAQ" })}
             right={<AllIcon />}
             left={<FaqIcon />}
             onPress={() => {

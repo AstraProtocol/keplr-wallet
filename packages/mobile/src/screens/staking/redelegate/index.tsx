@@ -243,7 +243,7 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
           }}
         />
         <AmountInput
-          labelText={intl.formatMessage({ id: "stake.redelegate.amountLabel" })}
+          labelText={intl.formatMessage({ id: "Amount" })}
           amountConfig={sendConfigs.amountConfig}
           feeConfig={sendConfigs.feeConfig}
           onAmountChanged={(amount, errorText, isFocus) => {

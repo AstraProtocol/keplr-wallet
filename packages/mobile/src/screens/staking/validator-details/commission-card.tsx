@@ -16,6 +16,7 @@ import {
   CommissionInfo1,
   CommissionInfo2,
 } from "./commission-icon";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export const CommissionsCard: FunctionComponent<{
   containerStyle?: ViewStyle;
@@ -31,6 +32,7 @@ export const CommissionsCard: FunctionComponent<{
   const style = useStyle();
   const intl = useIntl();
   const smartNavigation = useSmartNavigation();
+  const safeAreaInsets = useSafeAreaInsets();
 
   const validator = useMemo(() => {
     return queryValidators.validators.find(
@@ -55,7 +57,8 @@ export const CommissionsCard: FunctionComponent<{
     return (
       <View
         style={{
-          ...style.flatten(["margin-x-16", "margin-top-8", "margin-bottom-24"]),
+          ...style.flatten(["margin-x-16", "margin-top-8"]),
+          marginBottom: safeAreaInsets.bottom + 24,
           ...containerStyle,
         }}
       >

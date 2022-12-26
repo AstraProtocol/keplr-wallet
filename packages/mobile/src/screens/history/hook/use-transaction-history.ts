@@ -60,14 +60,22 @@ export const useTransactionHistory = () => {
     };
   };
 
-  const formatAmount = (amount: { amount: string; denom: string }, hideDenom: boolean = false, maximumFractionDigits: number = 2) => {
+  const formatAmount = (
+    amount: { amount: string; denom: string },
+    hideDenom: boolean = false,
+    maximumFractionDigits: number = 2
+  ) => {
     let amountText = "";
 
     let currency = chainStore.current.currencies.find(
       (cur) => cur.coinMinimalDenom === amount.denom
     );
     if (currency) {
-      amountText = formatCoin(new CoinPretty(currency, amount.amount), hideDenom, maximumFractionDigits);
+      amountText = formatCoin(
+        new CoinPretty(currency, amount.amount),
+        hideDenom,
+        maximumFractionDigits
+      );
     }
 
     return amountText;
@@ -136,8 +144,11 @@ export const useTransactionHistory = () => {
 
     const content = msg.content as SendContent;
 
-    let action = content.fromAddress === bech32Address ? "sender" : "receiver";
-    action = intl.formatMessage({ id: `history.action.MsgSend.${action}` });
+    const action = intl.formatMessage({
+      id: `History.${
+        content.fromAddress === bech32Address ? "Send" : "Receive"
+      }`,
+    });
 
     return {
       action,
@@ -170,9 +181,9 @@ export const useTransactionHistory = () => {
         }
       );
 
-    let actionMessageId = "history.action.MsgDelegate.sender";
+    let actionMessageId = "History.Stake";
     if (tx.messageTypes.indexOf(SupportedMsgs.MsgExec) != -1) {
-      actionMessageId = "history.action.MsgExec.MsgDelegate";
+      actionMessageId = "History.Stake.Auto";
     }
 
     return {
@@ -191,10 +202,8 @@ export const useTransactionHistory = () => {
 
     const content = msg.content as UndelegateContent;
 
-    let action =
-      content.delegatorAddress === bech32Address ? "sender" : "receiver";
-    action = intl.formatMessage({
-      id: `history.action.MsgUndelegate.${action}`,
+    const action = intl.formatMessage({
+      id: "History.Unstake",
     });
 
     return {
@@ -213,10 +222,8 @@ export const useTransactionHistory = () => {
 
     const content = msg.content as BeginRedelegateContent;
 
-    let action =
-      content.delegatorAddress === bech32Address ? "sender" : "receiver";
-    action = intl.formatMessage({
-      id: `history.action.MsgBeginRedelegate.${action}`,
+    const action = intl.formatMessage({
+      id: "History.Redelegate",
     });
 
     return {
@@ -235,10 +242,8 @@ export const useTransactionHistory = () => {
 
     const content = msg.content as WithdrawDelegatorRewardContent;
 
-    let action =
-      content.delegatorAddress === bech32Address ? "sender" : "receiver";
-    action = intl.formatMessage({
-      id: `history.action.MsgWithdrawDelegatorReward.${action}`,
+    const action = intl.formatMessage({
+      id: "History.WithdrawRewards",
     });
 
     return {
@@ -257,13 +262,12 @@ export const useTransactionHistory = () => {
 
     const grant = content.params.maybeGenericGrant.grant;
 
-    let action = grant.authorization.msg.split(".").pop() || "";
-    action = intl.formatMessage({
-      id: `history.action.MsgGrant.${action}`,
+    const action = intl.formatMessage({
+      id: "History.Grant.Stake",
     });
 
     const expirationText =
-      intl.formatMessage({ id: "common.text.expire" }) +
+      intl.formatMessage({ id: "Expire" }) +
       ": " +
       moment(grant.expiration).format("DD/MM/YYYY");
 
@@ -276,8 +280,8 @@ export const useTransactionHistory = () => {
       return {};
     }
 
-    let action = intl.formatMessage({
-      id: `history.action.MsgRevoke.MsgDelegate`,
+    const action = intl.formatMessage({
+      id: "History.Revoke.Stake",
     });
 
     return {
@@ -314,32 +318,34 @@ export const useTransactionHistory = () => {
     });
 
     let action = content.msgName;
-    let actionMessageId = `history.action.MsgEthereumTx.${msg.evmType}`;
+    let actionMessageId = "";
 
     switch (msg.evmType) {
       case "swapExactTokensForETH":
         // swap USDT > ASA
         amountText = formatAmount(getAmountFromLog(tx));
+        actionMessageId = `History.Swap.USDT/ASA`;
         break;
       case "swapExactETHForTokens":
         // swap ASA > USDT
+        actionMessageId = `History.Swap.ASA/USDT`;
         break;
       case "transferFrom":
         // transfer nft
         amountText = "";
         action =
           content.params.from === account.ethereumHexAddress
-            ? "sender"
-            : "receiver";
-        actionMessageId = `history.action.MsgEthereumTx.${msg.evmType}.${action}`;
+            ? "SendNFT"
+            : "ReceiveNFT";
+        actionMessageId = `History.${action}`;
         break;
       default:
         // transfer
         action =
           content.params.from === account.ethereumHexAddress
-            ? "sender"
-            : "receiver";
-        actionMessageId = `history.action.MsgSend.${action}`;
+            ? "Send"
+            : "Receive";
+        actionMessageId = `History.${action}`;
         break;
     }
 

@@ -98,7 +98,7 @@ export const SendTokenScreen: FunctionComponent = observer(() => {
       type: "items",
       cols: [
         buildLeftColumn({
-          text: intl.formatMessage({ id: "stake.delegate.available" }),
+          text: intl.formatMessage({ id: "Available" }),
         }),
         buildRightColumn({ text: userBalanceStore.getBalanceString() }),
       ],

@@ -10,11 +10,17 @@ import {
   MsgBeginRedelegate,
   MsgDelegate,
   MsgSend,
+  MsgSwap,
+  MsgTransferNFT,
   MsgUndelegate,
+  MsgWithdrawDelegatorReward,
   renderMsgBeginRedelegate,
   renderMsgDelegate,
   renderMsgSend,
+  renderMsgSwap,
+  renderMsgTransferNFT,
   renderMsgUndelegate,
+  renderMsgWithdrawDelegatorReward,
 } from "../models/messages";
 
 export const useTransaction = () => {
@@ -166,23 +172,23 @@ export const useTransaction = () => {
       return renderMsgBeginRedelegate(value as MsgBeginRedelegate["value"]);
     }
 
-    // if (type === account.cosmos.msgOpts.withdrawRewards.type) {
-    //   return renderMsgWithdrawDelegatorReward(
-    //     value as MsgWithdrawDelegatorReward["value"]
-    //   );
-    // }
+    if (isWithdrawRewardsTransaction(type)) {
+      return renderMsgWithdrawDelegatorReward(
+        value as MsgWithdrawDelegatorReward["value"]
+      );
+    }
 
-    // if (type === "wallet-swap") {
-    //   const msgEther = transactionStore.txMsgs;
-    //   if (msgEther && msgEther.length > 0) {
-    //     return renderMsgSwap(value as MsgSwap);
-    //   }
-    //   return [];
-    // }
+    if (isSwapTransaction(type)) {
+      const msgEther = transactionStore.txMsgs;
+      if (msgEther && msgEther.length > 0) {
+        return renderMsgSwap(value as MsgSwap);
+      }
+      return [];
+    }
 
-    // if (type === "transfer-nft") {
-    //   return renderMsgTransferNFT(value as MsgTransferNFT["value"]);
-    // }
+    if (isSendNFTTransaction(type)) {
+      return renderMsgTransferNFT(value as MsgTransferNFT["value"]);
+    }
 
     return [];
   };

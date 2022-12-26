@@ -373,7 +373,7 @@ export function renderMsgSwap(data: MsgSwap): IRow[] {
       cols: [
         buildLeftColumn({
           text: intl.formatMessage({
-            id: "tx.result.sign.time",
+            id: "TransactionTime",
           }),
         }),
         buildRightColumn({
@@ -550,7 +550,7 @@ export function renderMsgVote(
     switch (option) {
       case 0:
         return intl.formatMessage({
-          id: "tx.result.models.msgVote.option.empty",
+          id: "Empty",
         });
       case 1:
         return intl.formatMessage({
@@ -561,7 +561,7 @@ export function renderMsgVote(
           id: "tx.result.models.msgVote.option.abstain",
         });
       case 3:
-        return intl.formatMessage({ id: "tx.result.models.msgVote.option.no" });
+        return intl.formatMessage({ id: "No" });
       case 4:
         return intl.formatMessage({
           id: "tx.result.models.msgVote.option.noWithVeto",

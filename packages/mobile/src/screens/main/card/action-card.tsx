@@ -24,7 +24,7 @@ export const ActionsCard: FunctionComponent<{
       <CardBody style={style.flatten(["padding-y-0"])}>
         <View style={style.flatten(["flex-row", "justify-center"])}>
           <Button
-            text={intl.formatMessage({ id: "main.receive" })}
+            text={intl.formatMessage({ id: "Receive" })}
             leftIcon={
               <ReceiveIcon color={style.get("color-white").color} size={20} />
             }
@@ -34,7 +34,7 @@ export const ActionsCard: FunctionComponent<{
           />
           <Button
             containerStyle={style.flatten(["margin-left-8"])}
-            text={intl.formatMessage({ id: "main.send" })}
+            text={intl.formatMessage({ id: "Send" })}
             leftIcon={
               <SendIcon color={style.get("color-white").color} size={20} />
             }
@@ -47,7 +47,7 @@ export const ActionsCard: FunctionComponent<{
           {swapEnabled && (
             <Button
               containerStyle={style.flatten(["margin-left-8"])}
-              text={intl.formatMessage({ id: "main.swap" })}
+              text={intl.formatMessage({ id: "Swap" })}
               leftIcon={
                 <SwapIcon color={style.get("color-white").color} size={20} />
               }

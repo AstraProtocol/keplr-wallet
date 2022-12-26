@@ -9,8 +9,8 @@ import {
   AppStateStatus,
   FlatList,
   RefreshControl,
-  SafeAreaView,
   Text,
+  TouchableOpacity,
   View,
 } from "react-native";
 import { useStore } from "../../stores";
@@ -20,8 +20,7 @@ import { observer } from "mobx-react-lite";
 
 import { ChainUpdaterService } from "@keplr-wallet/background";
 import { RouteProp, useFocusEffect, useRoute } from "@react-navigation/native";
-import { FormattedMessage } from "react-intl";
-import { RectButton } from "react-native-gesture-handler";
+import { useIntl } from "react-intl";
 import { usePrevious } from "../../hooks";
 import { useSmartNavigation } from "../../navigation-util";
 import {
@@ -29,6 +28,7 @@ import {
   useTransactionHistory,
 } from "./hook/use-transaction-history";
 import { TransactionItem } from "./transaction_history_item";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export type PageRequestInfo = {
   totalRecord: number;
@@ -64,6 +64,8 @@ export const HistoryScreen: FunctionComponent = observer(() => {
   const { getTxs, parseTx } = useTransactionHistory();
 
   const style = useStyle();
+  const intl = useIntl();
+  const safeAreaInsets = useSafeAreaInsets();
 
   const currentChain = chainStore.current;
   const currentChainId = currentChain.chainId;
@@ -184,6 +186,11 @@ export const HistoryScreen: FunctionComponent = observer(() => {
     <View style={style.flatten(["flex-grow-1", "background-color-background"])}>
       <FlatList
         style={style.flatten(["flex-1", "padding-x-page"])}
+        contentContainerStyle={{
+          paddingBottom:
+            safeAreaInsets.bottom +
+            (route.params?.isNavigated !== true ? 44 : 0),
+        }}
         data={histories}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={refreshHandler} />
@@ -198,7 +205,7 @@ export const HistoryScreen: FunctionComponent = observer(() => {
               "flex-1",
             ])}
           >
-            <FormattedMessage id="history.emptyHistory" />
+            {intl.formatMessage({ id: "History.Empty" })}
           </Text>
         }
         ItemSeparatorComponent={() => (
@@ -221,7 +228,7 @@ export const HistoryScreen: FunctionComponent = observer(() => {
                   "flex-1",
                 ])}
               >
-                <FormattedMessage id="common.loading" />
+                {intl.formatMessage({ id: "Loading" })}
               </Text>
             )}
           </View>
@@ -229,9 +236,9 @@ export const HistoryScreen: FunctionComponent = observer(() => {
         onEndReached={loadMoreHandler}
         keyExtractor={(_item, index) => `transaction_${index}`}
         renderItem={({ item }) => (
-          <RectButton
-            style={style.flatten(["margin-y-16"])}
-            activeOpacity={0}
+          <TouchableOpacity
+            style={style.flatten(["padding-y-16"])}
+            activeOpacity={1}
             onPress={() => {
               const chainId = chainStore.current.chainId;
               const txExplorer = chainStore.getChain(chainId).raw.txExplorer;
@@ -248,13 +255,9 @@ export const HistoryScreen: FunctionComponent = observer(() => {
             }}
           >
             <TransactionItem item={item} />
-          </RectButton>
+          </TouchableOpacity>
         )}
       />
-      {route.params?.isNavigated !== true ? (
-        <View style={style.flatten(["height-44"])} />
-      ) : null}
-      <SafeAreaView />
     </View>
   );
 });

@@ -70,7 +70,7 @@ export const AddressInput: FunctionComponent<{
       <NormalInput
         value={recipientConfig.rawRecipient}
         label={intl.formatMessage({
-          id: "component.address.input.receiver.label",
+          id: "ReceiverAddress",
         })}
         error={showError ? errorText : ""}
         multiline={true}

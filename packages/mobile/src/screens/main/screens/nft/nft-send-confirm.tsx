@@ -51,7 +51,7 @@ export const NFTSendConfirmScreen: FunctionComponent = observer(() => {
       type: "items",
       cols: [
         buildLeftColumn({
-          text: intl.formatMessage({ id: "tx.result.models.msgSend.reveiver" }),
+          text: intl.formatMessage({ id: "ReceiverAddress" }),
           flex: 4,
         }),
         buildRightColumn({ text: route.params.receiver, flex: 6 }),

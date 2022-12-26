@@ -49,7 +49,7 @@ export const SelectValidatorItem: FunctionComponent<{
       <SelectorButtonWithoutModal
         label={intl.formatMessage({ id: "stake.redelegate.to" })}
         placeHolder={intl.formatMessage({
-          id: "stake.redelegate.selectValidator",
+          id: "SelectStakingProvider",
         })}
         selected={
           validator

@@ -785,19 +785,19 @@ export const MainTabNavigation: FunctionComponent = () => {
           let name = "";
           switch (route.name) {
             case "NewMain":
-              name = intl.formatMessage({ id: "tabs.main" });
+              name = intl.formatMessage({ id: "Assets" });
               break;
             case "Stake":
-              name = intl.formatMessage({ id: "tabs.stake" });
+              name = intl.formatMessage({ id: "Staking" });
               break;
             case "D-apps":
               name = intl.formatMessage({ id: "tabs.d-apps" });
               break;
             case "History":
-              name = intl.formatMessage({ id: "tabs.history" });
+              name = intl.formatMessage({ id: "History" });
               break;
             case "Setting":
-              name = intl.formatMessage({ id: "tabs.setting" });
+              name = intl.formatMessage({ id: "Settings" });
               break;
           }
           return (

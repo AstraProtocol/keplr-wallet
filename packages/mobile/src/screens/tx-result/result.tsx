@@ -202,7 +202,7 @@ export const TxResultScreen: FunctionComponent = observer(() => {
           <TransactionStateView />
           <TransactionTitleView />
           <TransactionDetailsView
-            style={{
+            containerStyle={{
               marginTop: 38,
               marginBottom: 16,
               marginHorizontal: 16,
