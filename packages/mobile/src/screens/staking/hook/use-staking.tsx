@@ -57,7 +57,10 @@ export const useStaking = () => {
       });
   };
 
-  const getValidator = (validatorAddress: string) => {
+  const getValidator = (validatorAddress?: string) => {
+    if (!validatorAddress) {
+      return;
+    }
     return queryValidators.getValidator(validatorAddress);
   };
 
@@ -83,6 +86,20 @@ export const useStaking = () => {
     );
   };
 
+  const getUnbondingTime = () => {
+    return queries.cosmos.queryStakingParams.unbondingTimeSec ?? 172800;
+  };
+
+  const getTotalUnbondings = () => {
+    return queryUnbondingDelegations.unbondingBalances;
+  };
+
+  const getUnbondingOf = (validatorAddress: string) => {
+    return getTotalUnbondings().find(
+      (unbonding) => unbonding.validatorAddress === validatorAddress
+    );
+  };
+
   const getTotalUnbondingAmount = () => {
     return queryUnbondingDelegations.total;
   };
@@ -91,9 +108,7 @@ export const useStaking = () => {
     const stakingAmount = getStakingAmountOf(validatorAddress);
 
     const zeroAmount = new CoinPretty(stakingAmount.currency, new Dec(0));
-    const unbonding = queryUnbondingDelegations.unbondingBalances.find(
-      (unbonding) => validatorAddress === unbonding.validatorAddress
-    );
+    const unbonding = getUnbondingOf(validatorAddress);
 
     return (
       unbonding?.entries.reduce((coin, entry) => {
@@ -144,7 +159,7 @@ export const useStaking = () => {
 
   return {
     getChainAPR,
-    
+
     getValidators,
     getValidator,
     getValidatorThumbnail,
@@ -161,6 +176,10 @@ export const useStaking = () => {
 
     getDelegations,
     getRedelegationsTo,
+
+    getUnbondingTime,
+    getUnbondingOf,
+    getTotalUnbondings,
 
     isStakingTo,
     hasRewards,

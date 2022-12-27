@@ -68,10 +68,9 @@ export const DelegateScreen: FunctionComponent = observer(() => {
   const style = useStyle();
   const intl = useIntl();
   const smartNavigation = useSmartNavigation();
-  const { getValidator, isStakingTo } = useStaking();
+  const { getValidator, isStakingTo, getUnbondingTime } = useStaking();
 
   const account = accountStore.getAccount(chainStore.current.chainId);
-  const queries = queriesStore.get(chainStore.current.chainId);
 
   const sendConfigs = useDelegateTxConfig(
     chainStore,
@@ -106,8 +105,7 @@ export const DelegateScreen: FunctionComponent = observer(() => {
   sendConfigs.feeConfig.setFeeType(feeType);
   const feeText = `${FEE_RESERVATION} ${sendConfigs.amountConfig.sendCurrency.coinDenom}`;
 
-  const unbondingTime =
-    queries.cosmos.queryStakingParams.unbondingTimeSec ?? 172800;
+  const unbondingTime = getUnbondingTime();
   const unbondingTimeText = formatUnbondingTime(unbondingTime, intl, 1);
 
   const [amountIsValid, setAmountIsValid] = useState(false);
@@ -193,7 +191,7 @@ export const DelegateScreen: FunctionComponent = observer(() => {
           content={intl.formatMessage(
             { id: "stake.delegate.warning" },
             {
-              days: unbondingTimeText,
+              time: unbondingTimeText,
               denom: sendConfigs.amountConfig.sendCurrency.coinDenom,
             }
           )}
@@ -247,13 +245,13 @@ export const DelegateScreen: FunctionComponent = observer(() => {
         <View
           style={{
             ...style.flatten(["background-color-background", "justify-center"]),
-            height: 48 + 44 + 2 * 12,
+            height: /*48 +*/ 44 + 2 * 12,
           }}
         >
-          <EstimateRewardsView
+          {/* <EstimateRewardsView
             validatorAddress={validatorAddress}
             stakingAmount={stakingAmount}
-          />
+          /> */}
           <Button
             text={intl.formatMessage({ id: "Continue" })}
             disabled={amountErrorText.length !== 0}

@@ -2,6 +2,41 @@ import React, { FunctionComponent } from "react";
 import Svg, { ClipPath, Defs, G, Path, Rect } from "react-native-svg";
 
 export const TooltipIcon: FunctionComponent<{ size?: number | string }> = ({
+  size = 24,
+}) => {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+      <G clipPath="url(#clip0_7354_216037)">
+        <Path
+          d="M12 11C12.5523 11 13 11.4477 13 12L13 16C13 16.5523 12.5523 17 12 17C11.4477 17 11 16.5523 11 16L11 12C11 11.4477 11.4477 11 12 11Z"
+          fill="#979AC2"
+        />
+        <Path
+          d="M12 9.5C12.6904 9.5 13.25 8.94036 13.25 8.25C13.25 7.55964 12.6904 7 12 7C11.3096 7 10.75 7.55964 10.75 8.25C10.75 8.94036 11.3096 9.5 12 9.5Z"
+          fill="#979AC2"
+        />
+        <Path
+          fillRule="evenodd"
+          clipRule="evenodd"
+          d="M2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12ZM12 4C7.58172 4 4 7.58172 4 12C4 16.4183 7.58172 20 12 20C16.4183 20 20 16.4183 20 12C20 7.58172 16.4183 4 12 4Z"
+          fill="#979AC2"
+        />
+      </G>
+      <Defs>
+        <ClipPath id="clip0_7354_216037">
+          <Rect
+            width="20"
+            height="20"
+            fill="white"
+            transform="translate(2 2)"
+          />
+        </ClipPath>
+      </Defs>
+    </Svg>
+  );
+};
+
+export const QuestionIcon: FunctionComponent<{ size?: number | string }> = ({
   size = 20,
 }) => {
   return (

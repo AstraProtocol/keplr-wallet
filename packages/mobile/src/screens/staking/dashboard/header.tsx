@@ -10,7 +10,7 @@ import {
 } from "react-native";
 import { useSmartNavigation } from "../../../navigation-util";
 import { useStyle } from "../../../styles";
-import { TooltipIcon } from "../component/tooltip-icon";
+import { QuestionIcon } from "../component/tooltip-icon";
 import { GradientBackground } from "./gradient-background";
 
 export const DashboardHeader: FunctionComponent<{
@@ -111,7 +111,7 @@ export const DashboardHeader: FunctionComponent<{
           }}
           style={style.flatten(["margin-left-4"])}
         >
-          <TooltipIcon />
+          <QuestionIcon />
         </TouchableOpacity>
       </View>
     </View>

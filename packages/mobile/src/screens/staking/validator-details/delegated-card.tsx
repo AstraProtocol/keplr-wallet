@@ -2,7 +2,7 @@ import { observer } from "mobx-react-lite";
 import React, { FunctionComponent, useMemo, useState } from "react";
 import { useIntl } from "react-intl";
 import { Text, View, ViewStyle } from "react-native";
-import { formatCoin } from "../../../common/utils";
+import { formatCoin, formatUnbondingTime } from "../../../common/utils";
 import { Button } from "../../../components";
 import { Card } from "../../../components/card";
 import { registerModal } from "../../../modals/base";
@@ -20,6 +20,7 @@ export const DelegatedCard: FunctionComponent<{
     getStakingAmountOf,
     getRewardsAmountOf,
     getRedelegationsTo,
+    getUnbondingTime,
   } = useStaking();
 
   const style = useStyle();
@@ -30,6 +31,9 @@ export const DelegatedCard: FunctionComponent<{
     displayCannotRedelegateModal,
     setDisplayCannotRedelegateModal,
   ] = useState(false);
+
+  const unbondingTime = getUnbondingTime();
+  const unbondingTimeText = formatUnbondingTime(unbondingTime, intl, 1);
 
   const stakingAmount = getStakingAmountOf(validatorAddress);
   const rewardsAmount = getRewardsAmountOf(validatorAddress);
@@ -177,7 +181,7 @@ export const DelegatedCard: FunctionComponent<{
           })}
           content={intl.formatMessage(
             { id: "common.modal.cannotRedelegate.content" },
-            { date: redelegationCompletionTime }
+            { date: redelegationCompletionTime, time: unbondingTimeText }
           )}
           buttonText={intl.formatMessage({
             id: "Understand",

@@ -1,32 +1,26 @@
+import { Staking } from "@keplr-wallet/stores";
 import { observer } from "mobx-react-lite";
 import React, { FunctionComponent, useState } from "react";
 import { useIntl } from "react-intl";
+import { Text, View } from "react-native";
+import { RectButton } from "react-native-gesture-handler";
+import { BottomArrowIcon } from "../../../components";
+import { useStyle } from "../../../styles";
+import { StakingValidatorItem } from "../component";
 import { ValidatorsBottomSheet } from "./validator-list-bottom-sheet";
-import { SelectorButtonWithoutModal } from "../../../components/input";
-import { Staking } from "@keplr-wallet/stores";
-import { useStore } from "../../../stores";
 
 export const SelectValidatorItem: FunctionComponent<{
   currentValidator: string;
   onSelectedValidator: (address: string) => void;
 }> = observer(({ currentValidator, onSelectedValidator }) => {
+  const style = useStyle();
   const intl = useIntl();
-  const { chainStore, queriesStore } = useStore();
 
   const [isOpenModal, setIsOpenModal] = useState(false);
 
   const [validator, setValidator] = useState<Staking.Validator | undefined>(
     undefined
   );
-
-  const queries = queriesStore.get(chainStore.current.chainId);
-
-  const queryValidators = queries.cosmos.queryValidators.getQueryStatus(
-    Staking.BondStatus.Unspecified
-  );
-  const thumbnailUrl = validator?.operator_address
-    ? queryValidators.getValidatorThumbnail(validator?.operator_address)
-    : undefined;
 
   const setSelectedValidator = (validator: Staking.Validator | undefined) => {
     if (validator) {
@@ -46,26 +40,48 @@ export const SelectValidatorItem: FunctionComponent<{
         setSelectedValidator={setSelectedValidator}
         currentValidator={currentValidator}
       />
-      <SelectorButtonWithoutModal
-        label={intl.formatMessage({ id: "To" })}
-        placeHolder={intl.formatMessage({
-          id: "SelectStakingProvider",
-        })}
-        selected={
-          validator
-            ? {
-                key: validator.operator_address,
-                label:
-                  validator.description.moniker || validator.operator_address,
-                thumbnailUrl: thumbnailUrl,
-              }
-            : undefined
-        }
+      <RectButton
+        activeOpacity={1}
         onPress={() => {
           setIsOpenModal(true);
         }}
-        containerStyle={{ paddingBottom: 0 }}
-      />
+      >
+        <View
+          style={style.flatten([
+            "flex-row",
+            "background-color-card-background",
+            "border-radius-12",
+          ])}
+        >
+          {validator ? (
+            <StakingValidatorItem
+              containerStyle={style.flatten([
+                "flex-1",
+                "margin-top-0",
+                "margin-x-0",
+                "background-color-transparent",
+              ])}
+              validator={validator}
+              hasStake={false}
+            />
+          ) : (
+            <View style={style.flatten(["flex-1", "margin-16"])}>
+              <Text
+                style={style.flatten([
+                  "flex-1",
+                  "text-base-regular",
+                  "color-label-text-1",
+                ])}
+              >
+                {intl.formatMessage({
+                  id: "SelectStakingProvider",
+                })}
+              </Text>
+            </View>
+          )}
+          <BottomArrowIcon containerStyle={style.flatten(["margin-16"])} />
+        </View>
+      </RectButton>
     </React.Fragment>
   );
 });

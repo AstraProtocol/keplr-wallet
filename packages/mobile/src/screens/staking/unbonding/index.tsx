@@ -14,7 +14,6 @@ import { useStore } from "../../../stores";
 import { useStyle } from "../../../styles";
 import { useStaking } from "../hook/use-staking";
 import { AnimatedNavigationBar } from "./animated-navigation-bar";
-import { useQueryUnbonding } from "./hook/use-query-unbonding";
 
 export const UnbondingScreen: FunctionComponent = observer(() => {
   const route = useRoute<
@@ -36,16 +35,19 @@ export const UnbondingScreen: FunctionComponent = observer(() => {
 
   const { chainStore } = useStore();
   const {
+    getValidator,
+    getValidatorThumbnail,
+    getUnbondingAmountOf,
+    getTotalUnbondingAmount,
     getUnbondingTime,
-    getUnbondings,
+    getTotalUnbondings,
     getUnbondingOf,
-    getUnbondingsTotal,
-  } = useQueryUnbonding();
-  const { getValidator, getValidatorThumbnail } = useStaking();
+  } = useStaking();
 
-  const unbondingTimeText = formatUnbondingTime(getUnbondingTime(), intl, 1);
+  const unbondingTime = getUnbondingTime();
+  const unbondingTimeText = formatUnbondingTime(unbondingTime, intl, 1);
 
-  let unbondings = getUnbondings();
+  let unbondings = getTotalUnbondings();
   if (validatorAddress) {
     const unbonding = getUnbondingOf(validatorAddress);
     if (unbonding) {
@@ -53,11 +55,10 @@ export const UnbondingScreen: FunctionComponent = observer(() => {
     }
   }
 
-  const balance = getUnbondingsTotal(unbondings);
-
-  const validator = validatorAddress
-    ? getValidator(validatorAddress)
-    : undefined;
+  const validator = getValidator(validatorAddress);
+  const unbondingAmount = validatorAddress
+    ? getUnbondingAmountOf(validatorAddress)
+    : getTotalUnbondingAmount();
 
   const title = validator
     ? intl.formatMessage(
@@ -218,7 +219,7 @@ export const UnbondingScreen: FunctionComponent = observer(() => {
               "text-3x-large-medium",
             ])}
           >
-            {formatCoin(balance, false, 2)}
+            {formatCoin(unbondingAmount, false, 2)}
           </Text>
         </View>
         <View style={style.flatten(["background-color-background"])}>
@@ -226,7 +227,7 @@ export const UnbondingScreen: FunctionComponent = observer(() => {
             type="info"
             content={intl.formatMessage(
               { id: "staking.unbonding.noticeWithdrawalPeriod" },
-              { coin: balance.denom, days: unbondingTimeText }
+              { coin: unbondingAmount.denom, days: unbondingTimeText }
             )}
           />
           <Text

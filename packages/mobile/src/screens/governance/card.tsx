@@ -3,7 +3,7 @@ import { observer } from "mobx-react-lite";
 import { useStore } from "../../stores";
 import { useStyle } from "../../styles";
 import { Governance, ObservableQueryProposal } from "@keplr-wallet/stores";
-import { Chip } from "../../components/chip";
+import { _Chip } from "../../components/chip";
 import { CardBody } from "../../components/card";
 import { Text, View } from "react-native";
 import { LoadingSpinner } from "../../components/spinner";
@@ -17,17 +17,17 @@ export const GovernanceProposalStatusChip: FunctionComponent<{
 }> = ({ status }) => {
   switch (status) {
     case Governance.ProposalStatus.DEPOSIT_PERIOD:
-      return <Chip text="Deposit period" color="primary" mode="outline" />;
+      return <_Chip text="Deposit period" color="primary" mode="outline" />;
     case Governance.ProposalStatus.VOTING_PERIOD:
-      return <Chip text="Voting period" color="primary" mode="fill" />;
+      return <_Chip text="Voting period" color="primary" mode="fill" />;
     case Governance.ProposalStatus.PASSED:
-      return <Chip text="Passed" color="primary" mode="light" />;
+      return <_Chip text="Passed" color="primary" mode="light" />;
     case Governance.ProposalStatus.REJECTED:
-      return <Chip text="Rejected" color="danger" mode="light" />;
+      return <_Chip text="Rejected" color="danger" mode="light" />;
     case Governance.ProposalStatus.FAILED:
-      return <Chip text="Failed" color="danger" mode="fill" />;
+      return <_Chip text="Failed" color="danger" mode="fill" />;
     default:
-      return <Chip text="Unspecified" color="danger" mode="fill" />;
+      return <_Chip text="Unspecified" color="danger" mode="fill" />;
   }
 };
 

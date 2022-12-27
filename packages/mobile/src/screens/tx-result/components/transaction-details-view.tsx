@@ -31,12 +31,12 @@ export const TransactionDetailsView: FunctionComponent<{
 
   let rows = (() => {
     let rows = getTxDetailsRows();
-    rows = insert(rows, getTransactionTimeRow(), rows.length - 1);
 
     if (
       rawData?.type !=
       accountStore.getAccount(chainId).cosmos.msgOpts.withdrawRewards.type
     ) {
+      rows = insert(rows, getTransactionTimeRow(), rows.length - 1);
       rows = join(rows, getSeparatorRow());
     }
     return rows;
@@ -67,16 +67,14 @@ export const TransactionDetailsView: FunctionComponent<{
     <View style={containerStyle}>
       <ListRowView hideBorder rows={rows} />
       {chainInfo.raw.txExplorer && (
-        <TextLink
-          size="medium"
-          onPress={viewDetailsHandler}
-          style={style.flatten(["margin-y-16"])}
-        >
-          {intl.formatMessage(
-            { id: "tx.result.viewDetails" },
-            { page: chainInfo.raw.txExplorer.name }
-          )}
-        </TextLink>
+        <View style={style.flatten(["margin-y-16", "items-center"])}>
+          <TextLink size="medium" onPress={viewDetailsHandler}>
+            {intl.formatMessage(
+              { id: "tx.result.viewDetails" },
+              { page: chainInfo.raw.txExplorer.name }
+            )}
+          </TextLink>
+        </View>
       )}
     </View>
   );

@@ -1,8 +1,40 @@
 import React, { FunctionComponent } from "react";
+import { Text, View, ViewStyle } from "react-native";
 import { useStyle } from "../../styles";
-import { Text, View } from "react-native";
 
 export const Chip: FunctionComponent<{
+  containerStyle?: ViewStyle;
+  type?: "info" | "success" | "error" | "warning";
+  size?: "small" | "medium";
+  text: string;
+}> = ({ containerStyle, type = "info", size = "medium", text }) => {
+  const style = useStyle();
+
+  return (
+    <View
+      style={{
+        ...style.flatten([
+          "padding-x-8",
+          `padding-y-${size === "medium" ? 4 : 2}` as any,
+          "border-radius-16",
+          `background-color-alert-inline-${type}-background` as any,
+        ]),
+        ...containerStyle,
+      }}
+    >
+      <Text
+        style={style.flatten(
+          [`color-alert-inline-${type}-main` as any],
+          [size === "medium" ? "text-small-regular" : "text-x-small-regular"]
+        )}
+      >
+        {text}
+      </Text>
+    </View>
+  );
+};
+
+export const _Chip: FunctionComponent<{
   color?: "primary" | "secondary" | "danger";
   mode?: "fill" | "light" | "outline";
   text: string;

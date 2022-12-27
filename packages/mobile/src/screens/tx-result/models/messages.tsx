@@ -449,7 +449,7 @@ export function renderMsgWithdrawDelegatorReward(
   let rows: IRow[] = [
     getTransactionRow(
       intl.formatMessage({
-        id: "tx.result.models.msgWithdrawDelegatorReward.withdraw",
+        id: "From",
       }),
       ""
     ),

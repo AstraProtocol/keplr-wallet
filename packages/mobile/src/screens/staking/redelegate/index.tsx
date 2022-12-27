@@ -173,8 +173,18 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
             },
             { rewards: formatCoin(rewardsAmount, false, 4) }
           )}
-          style={style.flatten(["margin-top-4", "margin-bottom-20"])}
+          style={style.flatten(["margin-top-4"])}
         />
+        <Text
+          style={style.flatten([
+            "text-base-bold",
+            "color-label-text-1",
+            "margin-top-24",
+            "margin-bottom-4",
+          ])}
+        >
+          {intl.formatMessage({ id: "To" })}
+        </Text>
         <SelectValidatorItem
           currentValidator={validatorAddress}
           onSelectedValidator={(address) => {
@@ -200,7 +210,9 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
         />
       </KeyboardAwareScrollView>
       <View style={style.flatten(["flex-1", "justify-end"])}>
-        <View style={style.flatten(["height-1", "background-color-card-separator"])} />
+        <View
+          style={style.flatten(["height-1", "background-color-card-separator"])}
+        />
         <View
           style={{
             ...style.flatten(["background-color-background", "justify-center"]),

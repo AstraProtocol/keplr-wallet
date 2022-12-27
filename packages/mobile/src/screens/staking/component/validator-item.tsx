@@ -3,6 +3,7 @@ import { observer } from "mobx-react-lite";
 import React, { FunctionComponent, useState } from "react";
 import { useIntl } from "react-intl";
 import { Text, TouchableOpacity, View, ViewStyle } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { formatCoin, formatPercent } from "../../../common";
 import {
   buildLeftColumn,
@@ -15,6 +16,7 @@ import {
   RightArrowIcon,
   ValidatorThumbnail,
 } from "../../../components";
+import { Chip } from "../../../components/chip";
 import { useSmartNavigation } from "../../../navigation-util";
 import { useStyle } from "../../../styles";
 import { useStaking } from "../hook/use-staking";
@@ -103,7 +105,7 @@ export const StakingValidatorItem: FunctionComponent<{
           "margin-x-16",
           "margin-top-12",
           "padding-16",
-          "border-radius-16",
+          "border-radius-12",
           "background-color-card-background",
         ]),
         ...containerStyle,
@@ -258,6 +260,7 @@ export const DashboardMyValidatorItem: FunctionComponent<{
       activeOpacity={0}
     >
       <ValidatorInfo
+        hideStatus={!validator.jailed}
         hideButton
         name={validator.description.moniker}
         thumbnail={thumbnail}
@@ -367,6 +370,7 @@ const ValidatorInfo: FunctionComponent<{
 }) => {
   const style = useStyle();
   const intl = useIntl();
+  const safeAreaInsets = useSafeAreaInsets();
 
   const [isOpen, setIsOpen] = useState(false);
 
@@ -432,29 +436,13 @@ const ValidatorInfo: FunctionComponent<{
           <View
             style={style.flatten(["flex-row", "items-start", "margin-top-8"])}
           >
-            <View
-              style={style.flatten([
-                "padding-x-8",
-                "padding-y-2",
-                "border-radius-16",
-                `background-color-alert-inline-${
-                  active ? "success" : "warning"
-                }-background` as any,
-              ])}
-            >
-              <Text
-                style={style.flatten([
-                  "text-x-small-regular",
-                  `color-alert-inline-${
-                    active ? "success" : "warning"
-                  }-main` as any,
-                ])}
-              >
-                {intl.formatMessage({
-                  id: `${active ? "Active" : "Inactive"}`,
-                })}
-              </Text>
-            </View>
+            <Chip
+              size="small"
+              type={active ? "success" : "error"}
+              text={intl.formatMessage({
+                id: active ? "Active" : "Inactive",
+              })}
+            />
             {!active && (
               <TouchableOpacity
                 activeOpacity={1}
@@ -497,12 +485,8 @@ const ValidatorInfo: FunctionComponent<{
         contentView={
           <View
             style={{
-              ...style.flatten([
-                "margin-x-16",
-                "margin-top-8",
-                "margin-bottom-24",
-              ]),
-              ...containerStyle,
+              ...style.flatten(["margin-x-16", "margin-top-8"]),
+              marginBottom: safeAreaInsets.bottom + 24,
             }}
           >
             <Text

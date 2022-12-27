@@ -50,7 +50,7 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
     >
   >();
 
-  const { getValidator } = useStaking();
+  const { getValidator, getUnbondingTime } = useStaking();
 
   const validatorAddress = route.params.validatorAddress;
 
@@ -101,8 +101,7 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
   sendConfigs.feeConfig.setFeeType(feeType);
   const feeText = formatCoin(sendConfigs.feeConfig.fee, false, 4);
 
-  const unbondingTime =
-    queries.cosmos.queryStakingParams.unbondingTimeSec ?? 172800;
+  const unbondingTime = getUnbondingTime();
   const unbondingTimeText = formatUnbondingTime(unbondingTime, intl, 1);
 
   const [amountIsValid, setAmountIsValid] = useState(false);
@@ -169,7 +168,7 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
           type="warning"
           content={intl.formatMessage(
             { id: "common.inline.staking.noticeWithdrawalPeriod" },
-            { denom: staked.denom, days: unbondingTimeText }
+            { denom: staked.denom, time: unbondingTimeText }
           )}
         />
         <Text
@@ -204,7 +203,9 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
         />
       </KeyboardAwareScrollView>
       <View style={style.flatten(["flex-1", "justify-end"])}>
-        <View style={style.flatten(["height-1", "background-color-card-separator"])} />
+        <View
+          style={style.flatten(["height-1", "background-color-card-separator"])}
+        />
         <View
           style={style.flatten([
             "background-color-background",
