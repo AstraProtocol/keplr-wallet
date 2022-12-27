@@ -1,7 +1,7 @@
 import { Currency, CurrencyAmount } from "@solarswap/sdk";
 import { observer } from "mobx-react-lite";
 import React, { FunctionComponent, useCallback, useMemo } from "react";
-import { FormattedMessage, useIntl } from "react-intl";
+import { useIntl } from "react-intl";
 import { StyleSheet, Text, TextInput, View } from "react-native";
 import FastImage from "react-native-fast-image";
 import { VectorCharacter } from "../../../components";
@@ -18,6 +18,7 @@ interface SwapAmountProps {
   showSwapAll?: boolean;
   field: SwapField;
   onUserInput: (value: string, field: SwapField) => void;
+  label: string;
   value: string;
 }
 export const AmountSwap: FunctionComponent<SwapAmountProps> = observer(
@@ -29,6 +30,7 @@ export const AmountSwap: FunctionComponent<SwapAmountProps> = observer(
     showSwapAll = true,
     field,
     onUserInput,
+    label,
     value,
   }) => {
     const handleClickSwapAll = useCallback(() => {
@@ -74,10 +76,7 @@ export const AmountSwap: FunctionComponent<SwapAmountProps> = observer(
               <Text
                 style={style.flatten(["color-label-text-2", "text-caption2"])}
               >
-                <FormattedMessage
-                  id="swap.amount.inputText"
-                  values={{ token: currency?.symbol }}
-                />
+                {label}
               </Text>
               {showBalance && (
                 <Text
@@ -86,36 +85,24 @@ export const AmountSwap: FunctionComponent<SwapAmountProps> = observer(
                     "text-small-regular",
                   ])}
                 >
-                  <FormattedMessage
-                    id="swap.amount.available"
-                    values={{
-                      // eslint-disable-next-line react/display-name
-                      b: () => (
-                        <Text
-                          style={style.flatten([
-                            "color-label-text-1",
-                            "text-small-regular",
-                          ])}
-                        >
-                          {balance?.toSignificant(SIGNIFICANT_DECIMAL_PLACES)}
-                        </Text>
-                      ),
-                    }}
-                  />
+                  {intl.formatMessage({ id: "Available" }) + " "}
+                  <Text
+                    style={style.flatten([
+                      "color-label-text-1",
+                      "text-small-regular",
+                    ])}
+                  >
+                    {balance?.toSignificant(SIGNIFICANT_DECIMAL_PLACES)}
+                  </Text>
                 </Text>
               )}
             </View>
           </View>
           <View
-            style={StyleSheet.flatten([
-              {
-                lineHeight: 32,
-                height: 32,
-                marginTop: 4,
-                marginRight: -12,
-              },
-              style.flatten(["flex-row", "flex-nowrap"]),
-            ])}
+            style={{
+              ...style.flatten(["flex-row", "items-center", "margin-top-4"]),
+              marginRight: -12,
+            }}
           >
             <View style={style.flatten(["self-center", "margin-right-8"])}>
               {cointImg ? (
@@ -142,8 +129,8 @@ export const AmountSwap: FunctionComponent<SwapAmountProps> = observer(
               style={style.flatten([
                 "flex-1",
                 "margin-right-12",
-                "color-gray-10",
-                "text-amount-input-center",
+                "color-label-text-1",
+                "text-amount-input",
                 "self-center",
               ])}
               value={value}
@@ -154,7 +141,7 @@ export const AmountSwap: FunctionComponent<SwapAmountProps> = observer(
             {showSwapAll && (
               <Button
                 text={intl.formatMessage({
-                  id: "swap.amount.swapAll",
+                  id: "Max",
                 })}
                 mode="ghost"
                 size="medium"

@@ -164,14 +164,7 @@ export const CommissionsCard: FunctionComponent<{
                   "margin-top-2",
                 ])}
               >
-                {intl.formatMessage(
-                  {
-                    id: "common.text.apr",
-                  },
-                  {
-                    percent: formatPercent(apr, true),
-                  }
-                )}
+                {formatPercent(apr) + "/" + intl.formatMessage({ id: "Year" })}
               </Text>
             </View>
             <View style={style.flatten(["flex-1"])}>

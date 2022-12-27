@@ -10,7 +10,7 @@ import {
   CosmwasmAccount,
   SecretAccount,
 } from "@keplr-wallet/stores";
-import { CoinPretty, Dec, DecUtils, IntPretty } from "@keplr-wallet/unit";
+import { CoinPretty, Dec, DecUtils } from "@keplr-wallet/unit";
 import { RouteProp, useRoute } from "@react-navigation/native";
 import { observer } from "mobx-react-lite";
 import React, { FunctionComponent, useEffect, useState } from "react";
@@ -19,7 +19,6 @@ import { Keyboard, Text, View } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import {
   FEE_RESERVATION,
-  formatPercent,
   formatUnbondingTime,
   MIN_AMOUNT,
   TX_GAS_DEFAULT,
@@ -62,7 +61,6 @@ export const DelegateScreen: FunctionComponent = observer(() => {
     chainStore,
     accountStore,
     queriesStore,
-    analyticsStore,
     userBalanceStore,
     transactionStore,
   } = useStore();
@@ -110,7 +108,7 @@ export const DelegateScreen: FunctionComponent = observer(() => {
 
   const unbondingTime =
     queries.cosmos.queryStakingParams.unbondingTimeSec ?? 172800;
-  const unbondingTimeText = formatUnbondingTime(unbondingTime, intl);
+  const unbondingTimeText = formatUnbondingTime(unbondingTime, intl, 1);
 
   const [amountIsValid, setAmountIsValid] = useState(false);
   const [amountErrorText, setAmountErrorText] = useState("");
@@ -152,79 +150,28 @@ export const DelegateScreen: FunctionComponent = observer(() => {
     Keyboard.dismiss();
 
     if (account.isReadyToSendTx && amountIsValid) {
-      // const params = {
-      //   token: sendConfigs.amountConfig.sendCurrency?.coinDenom,
-      //   amount: Number(sendConfigs.amountConfig.amount),
-      //   fee: Number(sendConfigs.feeConfig.fee?.toDec() ?? "0"),
-      //   gas: gasLimit,
-      //   gas_price: gasPrice,
-      //   validator_address: validatorAddress,
-      //   validator_name: validator?.description.moniker,
-      //   commission: Number(
-      //     formatPercent(validator?.commission.commission_rates.rate, true)
-      //   ),
-      // };
+      let dec = new Dec(sendConfigs.amountConfig.amount);
+      dec = dec.mulTruncate(
+        DecUtils.getTenExponentN(
+          sendConfigs.amountConfig.sendCurrency.coinDecimals
+        )
+      );
+      const amount = new CoinPretty(sendConfigs.amountConfig.sendCurrency, dec);
 
-      // try {
-        let dec = new Dec(sendConfigs.amountConfig.amount);
-        dec = dec.mulTruncate(
-          DecUtils.getTenExponentN(
-            sendConfigs.amountConfig.sendCurrency.coinDecimals
-          )
-        );
-        const amount = new CoinPretty(
-          sendConfigs.amountConfig.sendCurrency,
-          dec
-        );
+      transactionStore.updateRawData({
+        type: account.cosmos.msgOpts.delegate.type,
+        value: {
+          amount,
+          fee: sendConfigs.feeConfig.fee,
+          validatorAddress,
+          validatorName: validator?.description.moniker,
+          commission: validator?.commission.commission_rates.rate,
+          gasLimit,
+          gasPrice,
+        },
+      });
 
-        transactionStore.updateRawData({
-          type: account.cosmos.msgOpts.delegate.type,
-          value: {
-            amount,
-            fee: sendConfigs.feeConfig.fee,
-            validatorAddress,
-            validatorName: validator?.description.moniker,
-            commission: validator?.commission.commission_rates.rate,
-            gasLimit,
-            gasPrice,
-          },
-        });
-        smartNavigation.navigateSmart("Tx.Confirmation", {});
-
-        // const tx = account.cosmos.makeDelegateTx(
-        //   sendConfigs.amountConfig.amount,
-        //   sendConfigs.recipientConfig.recipient
-        // );
-        // await tx.sendWithGasPrice(
-        //   { gas: gasLimit },
-        //   sendConfigs.memoConfig.memo,
-        //   {
-        //     preferNoSetMemo: true,
-        //     preferNoSetFee: true,
-        //   },
-        //   {
-        //     onBroadcasted: (txHash) => {
-        //       analyticsStore.logEvent("astra_hub_delegate_token", {
-        //         ...params,
-        //         tx_hash: Buffer.from(txHash).toString("hex"),
-        //         success: true,
-        //       });
-        //       transactionStore.updateTxHash(txHash);
-        //     },
-        //   }
-        // );
-      // } catch (e: any) {
-      //   analyticsStore.logEvent("astra_hub_delegate_token", {
-      //     ...params,
-      //     success: false,
-      //     error: e?.message,
-      //   });
-      //   if (e?.message === "Request rejected") {
-      //     return;
-      //   }
-      //   console.log(e);
-      //   transactionStore.updateTxState("failure");
-      // }
+      smartNavigation.navigateSmart("Tx.Confirmation", {});
     }
   };
 
@@ -310,7 +257,6 @@ export const DelegateScreen: FunctionComponent = observer(() => {
           <Button
             text={intl.formatMessage({ id: "Continue" })}
             disabled={amountErrorText.length !== 0}
-            // loading={account.txTypeInProgress === "delegate"}
             onPress={onContinueHandler}
             containerStyle={style.flatten(["margin-x-page", "margin-y-12"])}
           />

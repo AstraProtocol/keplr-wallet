@@ -18,11 +18,7 @@ import React, { FunctionComponent, useEffect, useState } from "react";
 import { useIntl } from "react-intl";
 import { Keyboard, Text, View } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-import {
-  formatCoin,
-  formatPercent,
-  TX_GAS_DEFAULT,
-} from "../../../common/utils";
+import { formatCoin, TX_GAS_DEFAULT } from "../../../common/utils";
 import { AlertInline, IRow, ListRowView } from "../../../components";
 import { AvoidingKeyboardBottomView } from "../../../components/avoiding-keyboard/avoiding-keyboard-bottom";
 import { Button } from "../../../components/button";
@@ -59,7 +55,6 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
     chainStore,
     accountStore,
     queriesStore,
-    analyticsStore,
     transactionStore,
   } = useStore();
 
@@ -126,87 +121,31 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
     Keyboard.dismiss();
 
     if (account.isReadyToSendTx && amountIsValid && dstValidatorAddress) {
-      // const params = {
-      //   token: sendConfigs.amountConfig.sendCurrency?.coinDenom,
-      //   amount: Number(sendConfigs.amountConfig.amount),
-      //   fee: Number(sendConfigs.feeConfig.fee?.toDec() ?? "0"),
-      //   gas: gasLimit,
-      //   gas_price: gasPrice,
-      //   from_validator_address: sendConfigs.srcValidatorAddress,
-      //   from_validator_name: srcValidator?.description.moniker,
-      //   from_commission: Number(
-      //     srcValidator?.commission.commission_rates.rate ?? 0
-      //   ),
-      //   to_validator_address: sendConfigs.dstValidatorAddress,
-      //   to_validator_name: dstValidator?.description.moniker,
-      //   to_commission: Number(
-      //     dstValidator?.commission.commission_rates.rate ?? 0
-      //   ),
-      // };
+      let dec = new Dec(sendConfigs.amountConfig.amount);
+      dec = dec.mulTruncate(
+        DecUtils.getTenExponentN(
+          sendConfigs.amountConfig.sendCurrency.coinDecimals
+        )
+      );
+      const amount = new CoinPretty(sendConfigs.amountConfig.sendCurrency, dec);
 
-      // try {
-        let dec = new Dec(sendConfigs.amountConfig.amount);
-        dec = dec.mulTruncate(
-          DecUtils.getTenExponentN(
-            sendConfigs.amountConfig.sendCurrency.coinDecimals
-          )
-        );
-        const amount = new CoinPretty(
-          sendConfigs.amountConfig.sendCurrency,
-          dec
-        );
+      transactionStore.updateRawData({
+        type: account.cosmos.msgOpts.redelegate.type,
+        value: {
+          amount,
+          fee: sendConfigs.feeConfig.fee,
+          srcValidatorAddress: sendConfigs.srcValidatorAddress,
+          srcValidatorName: srcValidator?.description.moniker || "",
+          srcCommission: srcValidator?.commission.commission_rates.rate,
+          dstValidatorAddress: sendConfigs.dstValidatorAddress,
+          dstValidatorName: dstValidator?.description.moniker || "",
+          dstCommission: dstValidator?.commission.commission_rates.rate,
+          gasLimit,
+          gasPrice,
+        },
+      });
 
-        transactionStore.updateRawData({
-          type: account.cosmos.msgOpts.redelegate.type,
-          value: {
-            amount,
-            fee: sendConfigs.feeConfig.fee,
-            srcValidatorAddress: sendConfigs.srcValidatorAddress,
-            srcValidatorName: srcValidator?.description.moniker || "",
-            srcCommission: srcValidator?.commission.commission_rates.rate,
-            dstValidatorAddress: sendConfigs.dstValidatorAddress,
-            dstValidatorName: dstValidator?.description.moniker || "",
-            dstCommission: dstValidator?.commission.commission_rates.rate,
-            gasLimit,
-            gasPrice,
-          },
-        });
-        smartNavigation.navigateSmart("Tx.Confirmation", {});
-      //   const tx = account.cosmos.makeBeginRedelegateTx(
-      //     sendConfigs.amountConfig.amount,
-      //     sendConfigs.srcValidatorAddress,
-      //     sendConfigs.dstValidatorAddress
-      //   );
-      //   await tx.sendWithGasPrice(
-      //     { gas: gasLimit },
-      //     sendConfigs.memoConfig.memo,
-      //     {
-      //       preferNoSetMemo: true,
-      //       preferNoSetFee: true,
-      //     },
-      //     {
-      //       onBroadcasted: (txHash: Uint8Array) => {
-      //         analyticsStore.logEvent("astra_hub_redelegate_token", {
-      //           ...params,
-      //           tx_hash: Buffer.from(txHash).toString("hex"),
-      //           success: true,
-      //         });
-      //         transactionStore.updateTxHash(txHash);
-      //       },
-      //     }
-      //   );
-      // } catch (e: any) {
-      //   analyticsStore.logEvent("astra_hub_redelegate_token", {
-      //     ...params,
-      //     success: false,
-      //     error: e?.message,
-      //   });
-      //   if (e?.message === "Request rejected") {
-      //     return;
-      //   }
-      //   console.log(e);
-      //   transactionStore.updateTxState("failure");
-      // }
+      smartNavigation.navigateSmart("Tx.Confirmation", {});
     }
   };
 
@@ -218,7 +157,7 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
       >
         <View style={style.flatten(["height-24"])} />
         <Text style={style.flatten(["color-label-text-1", "text-base-bold"])}>
-          {intl.formatMessage({ id: "stake.redelegate.from" })}
+          {intl.formatMessage({ id: "From" })}
         </Text>
         <StakingValidatorItem
           containerStyle={style.flatten(["margin-top-4", "margin-x-0"])}
@@ -261,7 +200,7 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
         />
       </KeyboardAwareScrollView>
       <View style={style.flatten(["flex-1", "justify-end"])}>
-        <View style={style.flatten(["height-1", "background-color-gray-70"])} />
+        <View style={style.flatten(["height-1", "background-color-card-separator"])} />
         <View
           style={{
             ...style.flatten(["background-color-background", "justify-center"]),
@@ -271,7 +210,6 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
           <Button
             text={intl.formatMessage({ id: "Continue" })}
             disabled={amountErrorText.length !== 0}
-            // loading={account.txTypeInProgress === "redelegate"}
             onPress={onContinueHandler}
             containerStyle={style.flatten(["margin-x-page", "margin-y-12"])}
           />

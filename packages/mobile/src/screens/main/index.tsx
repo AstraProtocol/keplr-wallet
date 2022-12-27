@@ -318,12 +318,12 @@ export const MainScreen: FunctionComponent = observer(() => {
                     data={[
                       {
                         title: intl.formatMessage({
-                          id: "main.balance.asset.title",
+                          id: "Assets",
                         }),
                       },
                       {
                         title: intl.formatMessage({
-                          id: "main.balance.collection.title",
+                          id: "Collectible",
                         }),
                       },
                     ]}
@@ -339,7 +339,7 @@ export const MainScreen: FunctionComponent = observer(() => {
                       "margin-left-16",
                     ])}
                   >
-                    {intl.formatMessage({ id: "main.balance.asset.title" })}
+                    {intl.formatMessage({ id: "Assets" })}
                   </Text>
                 )}
               </View>

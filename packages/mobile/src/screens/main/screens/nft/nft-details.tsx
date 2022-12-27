@@ -57,7 +57,7 @@ export const NFTDetailsScreen: FunctionComponent = observer(() => {
         onScroll={onScrollContent}
       >
         <TouchableOpacity
-          activeOpacity={0}
+          activeOpacity={1}
           style={{
             width: windowDimensions.width,
             height: windowDimensions.width + safeAreaInsets.top + 44 + 24,
@@ -132,16 +132,18 @@ export const NFTDetailsScreen: FunctionComponent = observer(() => {
           >
             {route.params.data.metadata?.description}
           </Text>
-          <TextLink
-            textStyle={{ textDecorationLine: "none", textAlign: "left" }}
-            onPress={() => {
-              setIsExpanded(!isExpanded);
-            }}
-          >
-            {isExpanded
-              ? intl.formatMessage({ id: "ViewLess" })
-              : intl.formatMessage({ id: "ViewMore" })}
-          </TextLink>
+          <View style={style.flatten(["items-start"])}>
+            <TextLink
+              textStyle={{ textDecorationLine: "none" }}
+              onPress={() => {
+                setIsExpanded(!isExpanded);
+              }}
+            >
+              {isExpanded
+                ? intl.formatMessage({ id: "ViewLess" })
+                : intl.formatMessage({ id: "ViewMore" })}
+            </TextLink>
+          </View>
           <View style={style.flatten(["flex-row", "margin-top-16"])}>
             <Button
               color="neutral"
@@ -166,7 +168,7 @@ export const NFTDetailsScreen: FunctionComponent = observer(() => {
             <View style={style.flatten(["width-8"])} />
             <Button
               color="neutral"
-              text={intl.formatMessage({ id: "nft.text.send" })}
+              text={intl.formatMessage({ id: "Send" })}
               leftIcon={<SendIcon />}
               containerStyle={style.flatten(["flex-1"])}
               onPress={() => {
@@ -184,7 +186,7 @@ export const NFTDetailsScreen: FunctionComponent = observer(() => {
             ])}
           />
           <Text style={style.flatten(["text-base-bold", "color-label-text-1"])}>
-            {intl.formatMessage({ id: "common.text.details" })}
+            {intl.formatMessage({ id: "Details" })}
           </Text>
           {route.params.data.metadata?.attributes.map((att) => {
             return (

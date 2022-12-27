@@ -114,7 +114,7 @@ export const AmountInput: FunctionComponent<{
               {amountConfig.sendCurrency.coinDenom}
             </Text>
             <Button
-              text={intl.formatMessage({ id: "component.amount.input.max" })}
+              text={intl.formatMessage({ id: "Max" })}
               mode="ghost"
               size="small"
               onPress={() => {

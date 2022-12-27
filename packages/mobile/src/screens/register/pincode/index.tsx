@@ -187,13 +187,13 @@ export const NewPincodeScreen: FunctionComponent = observer(() => {
 
   const actionButtonTitle =
     registerType === RegisterType.recover
-      ? intl.formatMessage({ id: "register.button.restoreAccount" })
+      ? intl.formatMessage({ id: "RecoverWallet" })
       : intl.formatMessage({ id: "CreateNewWallet" });
 
   function updateNavigationTitle() {
     let textId;
     if (registerType === RegisterType.recover) {
-      textId = "register.recoverMnemonic.title";
+      textId = "RecoverWallet";
     } else {
       textId = "CreateNewWallet";
     }

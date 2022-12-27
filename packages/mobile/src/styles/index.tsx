@@ -178,13 +178,7 @@ export const {
       },
       "text-amount-input": {
         fontSize: 24,
-        lineHeight: 32,
-        letterSpacing: 0.3,
-        ...getPlatformFontWeight("400"),
-      },
-      "text-amount-input-center": {
-        fontSize: 24,
-        lineHeight: 0,
+        // lineHeight: 32,
         letterSpacing: 0.3,
         ...getPlatformFontWeight("400"),
       },

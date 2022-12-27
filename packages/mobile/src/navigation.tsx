@@ -165,7 +165,7 @@ export const HistoryNavigation: FunctionComponent = () => {
     >
       <Stack.Screen
         options={{
-          title: intl.formatMessage({ id: "history.headerTitle" }),
+          title: intl.formatMessage({ id: "TransactionHistory" }),
         }}
         name="History"
         component={HistoryScreen}
@@ -235,7 +235,7 @@ export const RegisterNavigation: FunctionComponent = () => {
       />
       <Stack.Screen
         options={{
-          title: intl.formatMessage({ id: "register.recoverMnemonic.title" }),
+          title: intl.formatMessage({ id: "RecoverWallet" }),
         }}
         name="Register.RecoverMnemonic"
         component={RecoverMnemonicScreen}
@@ -429,7 +429,7 @@ export const WalletNavigation: FunctionComponent = () => {
       />
       <Stack.Screen
         options={{
-          title: intl.formatMessage({ id: "wallet.swap.title" }),
+          title: intl.formatMessage({ id: "Swap" }),
         }}
         name="Swap"
         component={SwapScreen}
@@ -451,7 +451,7 @@ export const WalletNavigation: FunctionComponent = () => {
       />
       <Stack.Screen
         options={{
-          title: intl.formatMessage({ id: "changePassword.title" }),
+          title: intl.formatMessage({ id: "ChangePassword" }),
         }}
         name="Settings.NewPasswordInput"
         component={NewPasswordInputScreen}
@@ -630,7 +630,7 @@ export const SwapStackScreen: FunctionComponent = () => {
       <Stack.Navigator screenOptions={screenOptions} headerMode="screen">
         <Stack.Screen
           options={{
-            title: intl.formatMessage({ id: "wallet.swap.title" }),
+            title: intl.formatMessage({ id: "Swap" }),
           }}
           name="Swap.Home"
           component={SwapScreen}

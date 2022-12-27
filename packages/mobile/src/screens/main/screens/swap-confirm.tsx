@@ -215,7 +215,7 @@ export const SwapConfirmScreen: FunctionComponent = observer(() => {
                 "margin-top-12",
               ])}
             >
-              {intl.formatMessage({ id: "swap.confirm.fromText" })}
+              {intl.formatMessage({ id: "From" })}
             </Text>
             <Text
               style={style.flatten([
@@ -260,7 +260,7 @@ export const SwapConfirmScreen: FunctionComponent = observer(() => {
                 "margin-top-12",
               ])}
             >
-              {intl.formatMessage({ id: "swap.confirm.toText" })}
+              {intl.formatMessage({ id: "To" })}
             </Text>
             <Text
               style={style.flatten([
@@ -494,7 +494,7 @@ export const SwapConfirmScreen: FunctionComponent = observer(() => {
         />
         <Button
           text={intl.formatMessage({
-            id: "swap.confirm.button.next",
+            id: "Swap",
           })}
           containerStyle={style.flatten(["flex-1"])}
           onPress={handleSwap}

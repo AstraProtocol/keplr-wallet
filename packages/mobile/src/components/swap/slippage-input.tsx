@@ -199,14 +199,14 @@ export const SlippageInput = ({
         ])}
       >
         <Button
-          text={intl.formatMessage({ id: "swap.slippage.input.button.clear" })}
+          text={intl.formatMessage({ id: "ClearFilter" })}
           containerStyle={style.flatten(["flex-1", "margin-right-8"])}
           color="neutral"
           onPress={handleClear}
         />
         <Button
           text={intl.formatMessage({
-            id: "swap.slippage.input.button.confirm",
+            id: "Apply",
           })}
           containerStyle={style.flatten(["flex-1"])}
           onPress={handleConfirm}

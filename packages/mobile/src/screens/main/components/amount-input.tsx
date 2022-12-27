@@ -193,7 +193,7 @@ export const AmountInput: FunctionComponent<{
                 )}
                 <Button
                   text={intl.formatMessage({
-                    id: "component.amount.input.max",
+                    id: "Max",
                   })}
                   size="medium"
                   mode="ghost"

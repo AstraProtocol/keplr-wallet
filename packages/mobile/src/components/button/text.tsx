@@ -33,7 +33,7 @@ export const TextLink: FunctionComponent<{
   return (
     <RectButton
       onPress={onPress}
-      activeOpacity={0}
+      activeOpacity={1}
       style={style}
       onActiveStateChange={setIsPressed}
     >

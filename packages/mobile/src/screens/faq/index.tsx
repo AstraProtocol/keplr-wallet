@@ -83,6 +83,7 @@ const FAQItem: FunctionComponent<{
             "flex-1",
             "color-label-text-1",
             "text-base-medium",
+            "margin-right-8",
           ])}
         >
           {title}

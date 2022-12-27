@@ -125,7 +125,7 @@ export const NFTSendConfirmScreen: FunctionComponent = observer(() => {
   return (
     <View style={style.flatten(["flex-1", "background-color-background"])}>
       <CustomNavigationBar
-        title={intl.formatMessage({ id: "nft.text.confirm" })}
+        title={intl.formatMessage({ id: "Confirm" })}
         containerStyle={{
           ...style.flatten(["background-color-background"]),
           marginTop: safeAreaInsets.top,
@@ -180,7 +180,7 @@ export const NFTSendConfirmScreen: FunctionComponent = observer(() => {
           }}
         >
           <Button
-            text={intl.formatMessage({ id: "nft.text.confirmSend" })}
+            text={intl.formatMessage({ id: "Continue" })}
             onPress={onSendHandler}
             containerStyle={style.flatten(["margin-x-page", "margin-top-12"])}
           />

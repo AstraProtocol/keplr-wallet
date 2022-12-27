@@ -95,6 +95,7 @@ export const SwapScreen: FunctionComponent = observer(() => {
           onSwapAll={onSwapAll}
           field={SwapField.Input}
           onUserInput={onUserInput}
+          label={intl.formatMessage({ id: "From" }) + " " + currencies[SwapField.Input]?.symbol}
           value={values[SwapField.Input]}
         />
 
@@ -139,6 +140,7 @@ export const SwapScreen: FunctionComponent = observer(() => {
           showSwapAll={false}
           field={SwapField.Output}
           onUserInput={onUserInput}
+          label={intl.formatMessage({ id: "To" }) + " " + currencies[SwapField.Output]?.symbol}
           value={values[SwapField.Output]}
         />
         <View

@@ -130,22 +130,6 @@ export const SendTokenScreen: FunctionComponent = observer(() => {
       const gasPrice = parseInt(price.slice(2), 16);
       let feeDec = new Dec(gasLimit).mul(new Dec(gasPrice));
 
-      // const params = {
-      //   token: sendConfigs.amountConfig.sendCurrency?.coinDenom,
-      //   amount: Number(sendConfigs.amountConfig.amount),
-      //   fee: Number(
-      //     feeDec.mulTruncate(
-      //       DecUtils.getTenExponentN(
-      //         -sendConfigs.amountConfig.sendCurrency.coinDecimals
-      //       )
-      //     ) ?? "0"
-      //   ),
-      //   gas: gasLimit,
-      //   gas_price: gasPrice,
-      //   receiver_address: sendConfigs.recipientConfig.recipient,
-      // };
-
-      // try {
       let dec = new Dec(sendConfigs.amountConfig.amount);
       dec = dec.mulTruncate(
         DecUtils.getTenExponentN(
@@ -166,37 +150,6 @@ export const SendTokenScreen: FunctionComponent = observer(() => {
       });
 
       smartNavigation.navigateSmart("Tx.Confirmation", {});
-
-      //   await transfer(
-      //     sendConfigs.recipientConfig.recipient,
-      //     sendConfigs.amountConfig,
-      //     {
-      //       onBroadcasted: (txHash) => {
-      //         analyticsStore.logEvent("astra_hub_transfer_token", {
-      //           ...params,
-      //           tx_hash: "0x" + Buffer.from(txHash).toString("hex"),
-      //           success: true,
-      //         });
-      //         transactionStore.updateTxHash(txHash);
-
-      //         smartNavigation.navigate("Tx", {
-      //           screen: "Tx.EvmResult",
-      //         });
-      //       },
-      //     }
-      //   );
-      // } catch (e: any) {
-      //   analyticsStore.logEvent("astra_hub_transfer_token", {
-      //     ...params,
-      //     success: false,
-      //     error: e?.message,
-      //   });
-      //   if (e?.message === "Request rejected") {
-      //     return;
-      //   }
-      //   console.log("__DEBUG_ sendErr: ", e);
-      //   transactionStore.updateTxState("failure");
-      // }
     }
   };
 
@@ -244,7 +197,7 @@ export const SendTokenScreen: FunctionComponent = observer(() => {
       <View
         style={style.flatten(["flex-1", "justify-end", "margin-bottom-12"])}
       >
-        <View style={style.flatten(["height-1", "background-color-gray-70"])} />
+        <View style={style.flatten(["height-1", "background-color-card-separator"])} />
         <View
           style={{
             ...style.flatten(["background-color-background"]),
@@ -256,7 +209,6 @@ export const SendTokenScreen: FunctionComponent = observer(() => {
             disabled={
               amountErrorText.length !== 0 || addressErrorText.length !== 0
             }
-            // loading={transactionStore.rawData !== undefined}
             onPress={onSendHandler}
             containerStyle={style.flatten(["margin-x-page", "margin-top-12"])}
           />

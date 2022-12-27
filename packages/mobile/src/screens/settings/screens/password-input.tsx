@@ -211,7 +211,7 @@ export const PasswordInputScreen: FunctionComponent = observer(() => {
     let title = "";
     switch (type) {
       case "updatePassword":
-        title = intl.formatMessage({ id: "changePassword.title" });
+        title = intl.formatMessage({ id: "ChangePassword" });
         break;
       case "viewMnemonic":
         title = intl.formatMessage({ id: "viewPassphase.title" });

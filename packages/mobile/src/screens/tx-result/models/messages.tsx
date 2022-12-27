@@ -238,17 +238,12 @@ export const getTransactionTimeRow = (date: Date | undefined = undefined) => {
 export const getTransactionFeeRow = (feeAmount: CoinPretty) => {
   const intl = useIntl();
 
-  return {
-    ...common,
-    cols: [
-      buildLeftColumn({
-        text: intl.formatMessage({
-          id: "TransactionFee",
-        }),
-      }),
-      buildRightColumn({ text: formatCoin(feeAmount, false, 6) }),
-    ],
-  };
+  return getTransactionRow(
+    intl.formatMessage({
+      id: "TransactionFee",
+    }),
+    formatCoin(feeAmount, false, 6)
+  );
 };
 
 export const getTransactionRow = (leftText: string, rightText: string) => {
@@ -370,19 +365,6 @@ export function renderMsgSwap(data: MsgSwap): IRow[] {
         }),
       ],
     },
-    {
-      ...common,
-      cols: [
-        buildLeftColumn({
-          text: intl.formatMessage({
-            id: "TransactionTime",
-          }),
-        }),
-        buildRightColumn({
-          text: formatDate(new Date()),
-        }),
-      ],
-    },
   ];
 
   return rows;
@@ -392,28 +374,18 @@ export function renderMsgBeginRedelegate(value: MsgBeginRedelegate["value"]) {
   const intl = useIntl();
 
   const rows: IRow[] = [
-    {
-      ...common,
-      cols: [
-        buildLeftColumn({
-          text: intl.formatMessage({
-            id: "tx.result.models.msgBeginRedelegate.from",
-          }),
-        }),
-        buildRightColumn({ text: value.srcValidatorName ?? "" }),
-      ],
-    },
-    {
-      ...common,
-      cols: [
-        buildLeftColumn({
-          text: intl.formatMessage({
-            id: "tx.result.models.msgBeginRedelegate.to",
-          }),
-        }),
-        buildRightColumn({ text: value.dstValidatorName ?? "" }),
-      ],
-    },
+    getTransactionRow(
+      intl.formatMessage({
+        id: "tx.result.models.msgBeginRedelegate.from",
+      }),
+      value.srcValidatorName ?? ""
+    ),
+    getTransactionRow(
+      intl.formatMessage({
+        id: "To",
+      }),
+      value.dstValidatorName ?? ""
+    ),
     getTransactionFeeRow(value.fee),
   ];
 
@@ -424,17 +396,12 @@ export function renderMsgUndelegate(value: MsgUndelegate["value"]): IRow[] {
   const intl = useIntl();
 
   const rows: IRow[] = [
-    {
-      ...common,
-      cols: [
-        buildLeftColumn({
-          text: intl.formatMessage({
-            id: "tx.result.models.msgUndelegate.from",
-          }),
-        }),
-        buildRightColumn({ text: value.validatorName ?? "" }),
-      ],
-    },
+    getTransactionRow(
+      intl.formatMessage({
+        id: "tx.result.models.msgUndelegate.from",
+      }),
+      value.validatorName ?? ""
+    ),
     getTransactionFeeRow(value.fee),
   ];
 
@@ -449,43 +416,24 @@ export function renderMsgDelegate(value: MsgDelegate["value"]) {
   const apr = getValidatorAPR(value.validatorAddress);
 
   const rows: IRow[] = [
-    {
-      ...common,
-      cols: [
-        buildLeftColumn({
-          text: intl.formatMessage({
-            id: "StakingProvider",
-          }),
-        }),
-        buildRightColumn({ text: value.validatorName ?? "" }),
-      ],
-    },
-    {
-      ...common,
-      cols: [
-        buildLeftColumn({
-          text: intl.formatMessage({
-            id: "APR",
-          }),
-        }),
-        buildRightColumn({
-          text: formatPercent(apr),
-        }),
-      ],
-    },
-    {
-      ...common,
-      cols: [
-        buildLeftColumn({
-          text: intl.formatMessage({
-            id: "Commission",
-          }),
-        }),
-        buildRightColumn({
-          text: commissionText,
-        }),
-      ],
-    },
+    getTransactionRow(
+      intl.formatMessage({
+        id: "StakingProvider",
+      }),
+      value.validatorName ?? ""
+    ),
+    getTransactionRow(
+      intl.formatMessage({
+        id: "APR",
+      }),
+      formatPercent(apr)
+    ),
+    getTransactionRow(
+      intl.formatMessage({
+        id: "Commission",
+      }),
+      commissionText
+    ),
     getTransactionFeeRow(value.fee),
   ];
 
@@ -499,17 +447,12 @@ export function renderMsgWithdrawDelegatorReward(
   const style = useStyle();
 
   let rows: IRow[] = [
-    {
-      ...common,
-      cols: [
-        buildLeftColumn({
-          text: intl.formatMessage({
-            id: "tx.result.models.msgWithdrawDelegatorReward.withdraw",
-          }),
-        }),
-        buildRightColumn({ text: "" }),
-      ],
-    },
+    getTransactionRow(
+      intl.formatMessage({
+        id: "tx.result.models.msgWithdrawDelegatorReward.withdraw",
+      }),
+      ""
+    ),
   ];
 
   const validatorRows = value.validatorRewards.map(
