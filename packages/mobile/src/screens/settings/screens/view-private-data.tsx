@@ -97,7 +97,7 @@ export const ViewPrivateDataScreen: FunctionComponent = () => {
       <View style={style.flatten(["items-center", "margin-top-16"])}>
         <Button
           mode="outline"
-          text={intl.formatMessage({ id: "component.text.copy" })}
+          text={intl.formatMessage({ id: "Copy" })}
           onPress={() => {
             Clipboard.setString(words.join(" "));
             toast.makeToast({

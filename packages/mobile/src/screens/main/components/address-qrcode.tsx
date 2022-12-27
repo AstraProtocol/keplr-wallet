@@ -70,7 +70,7 @@ export const AddressQRCodeItem: FunctionComponent<{
         size="medium"
         mode="outline"
         text={intl.formatMessage({
-          id: "component.text.copy",
+          id: "Copy",
         })}
         onPress={() => {
           analyticsStore.logEvent("astra_hub_select_copy_address", {

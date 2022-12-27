@@ -4,7 +4,6 @@ import { Staking } from "@keplr-wallet/stores";
 import { Card, CardBody } from "../../../components/card";
 import { useStore } from "../../../stores";
 import { useStyle } from "../../../styles";
-import { DelegationsEmptyItem } from "../dashboard/delegate";
 import { ValidatorItem } from "../../../components/input";
 import { FormattedMessage, useIntl } from "react-intl";
 import { formatCoin } from "../../../common/utils";
@@ -29,59 +28,41 @@ export const RewardDetails: FunctionComponent<{
 
   return (
     <Card style={containerStyle}>
-      {/* <CardDivider style={style.flatten(["background-color-gray-70"])} /> */}
-      {stakableRewardsList && stakableRewardsList.length > 0 ? (
-        <CardBody
+      <CardBody
+        style={style.flatten(["padding-x-0", "padding-y-0", "padding-top-24"])}
+      >
+        <Text
           style={style.flatten([
-            "padding-x-0",
-            "padding-y-0",
-            "padding-top-24",
+            "subtitle2",
+            "color-gray-30",
+            "margin-x-16",
+            "margin-bottom-8",
           ])}
         >
-          <Text
-            style={style.flatten([
-              "subtitle2",
-              "color-gray-30",
-              "margin-x-16",
-              "margin-bottom-8",
-            ])}
-          >
-            <FormattedMessage id="MyStaking" />
-          </Text>
-          {stakableRewardsList.map((stakableRewards, index) => {
-            const {
-              validatorName,
-              validatorAddress = "",
-              rewards,
-            } = stakableRewards;
+          <FormattedMessage id="MyStaking" />
+        </Text>
+        {stakableRewardsList?.map((stakableRewards, index) => {
+          const {
+            validatorName,
+            validatorAddress = "",
+            rewards,
+          } = stakableRewards;
 
-            const thumbnail = queryValidators.getValidatorThumbnail(
-              validatorAddress
-            );
+          const thumbnail = queryValidators.getValidatorThumbnail(
+            validatorAddress
+          );
 
-            return (
-              <ValidatorItem
-                key={index}
-                thumbnail={thumbnail}
-                name={validatorName}
-                value={formatCoin(rewards, false, 4)}
-                containerStyle={style.flatten([
-                  "margin-x-16",
-                  "margin-bottom-8",
-                ])}
-              />
-            );
-          })}
-        </CardBody>
-      ) : (
-        <DelegationsEmptyItem
-          label={intl.formatMessage({ id: "staking.rewards.details.empty" })}
-          containerStyle={style.flatten([
-            "background-color-background",
-            "margin-y-32",
-          ])}
-        />
-      )}
+          return (
+            <ValidatorItem
+              key={index}
+              thumbnail={thumbnail}
+              name={validatorName}
+              value={formatCoin(rewards, false, 6)}
+              containerStyle={style.flatten(["margin-x-16", "margin-bottom-8"])}
+            />
+          );
+        })}
+      </CardBody>
       <ItemRow
         style={{ paddingVertical: 0, marginTop: 16, marginBottom: 24 }}
         columns={[

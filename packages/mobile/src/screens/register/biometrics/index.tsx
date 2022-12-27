@@ -152,7 +152,7 @@ export const SetupBiometricsScreen: FunctionComponent = () => {
       />
       <Button
         color="neutral"
-        text={intl.formatMessage({ id: "skipBiometrics" })}
+        text={intl.formatMessage({ id: "Skip" })}
         containerStyle={style.flatten(["margin-top-16", "margin-bottom-12"])}
         onPress={navigateToHome}
       />

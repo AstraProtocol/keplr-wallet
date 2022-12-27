@@ -105,7 +105,7 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
 
   const unbondingTime =
     queries.cosmos.queryStakingParams.unbondingTimeSec ?? 172800;
-  const unbondingTimeText = formatUnbondingTime(unbondingTime, intl);
+  const unbondingTimeText = formatUnbondingTime(unbondingTime, intl, 1);
 
   const [amountIsValid, setAmountIsValid] = useState(false);
   const [amountErrorText, setAmountErrorText] = useState("");
@@ -230,7 +230,7 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
             "margin-top-24",
           ])}
         >
-          {intl.formatMessage({ id: "stake.undelegate.validatorLabel" })}
+          {intl.formatMessage({ id: "From" })}
         </Text>
         <StakingValidatorItem
           containerStyle={style.flatten(["margin-top-4", "margin-x-0"])}
@@ -265,7 +265,7 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
           ])}
         >
           <Button
-            text={intl.formatMessage({ id: "stake.undelegate.undelegate" })}
+            text={intl.formatMessage({ id: "Continue" })}
             disabled={amountErrorText.length !== 0}
             // loading={account.txTypeInProgress === "redelegate"}
             onPress={onContinueHandler}

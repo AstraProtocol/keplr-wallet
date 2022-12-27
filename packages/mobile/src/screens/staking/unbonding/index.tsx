@@ -43,7 +43,7 @@ export const UnbondingScreen: FunctionComponent = observer(() => {
   } = useQueryUnbonding();
   const { getValidator, getValidatorThumbnail } = useStaking();
 
-  const unbondingTimeText = formatUnbondingTime(getUnbondingTime(), intl);
+  const unbondingTimeText = formatUnbondingTime(getUnbondingTime(), intl, 1);
 
   let unbondings = getUnbondings();
   if (validatorAddress) {
@@ -154,38 +154,39 @@ export const UnbondingScreen: FunctionComponent = observer(() => {
   };
 
   const getUnbondingItems = () => {
-    return unbondings.map((unbonding, unbondingIndex) => {
+    const items = unbondings.reduce((currentItems, unbonding) => {
       const validator = getValidator(unbonding.validatorAddress);
       const thumbnail = getValidatorThumbnail(unbonding.validatorAddress);
       const entries = unbonding.entries;
 
-      return (
-        <React.Fragment key={unbondingIndex}>
-          {entries.map((entry, i) => {
-            const current = new Date().getTime();
+      const newItems = entries.map((entry) => {
+        const current = new Date().getTime();
 
-            const relativeEndTime =
-              (new Date(entry.completionTime).getTime() - current) / 1000;
+        const relativeEndTime =
+          (new Date(entry.completionTime).getTime() - current) / 1000;
 
-            const remainingText = formatUnbondingTime(relativeEndTime, intl);
+        const remainingText = formatUnbondingTime(relativeEndTime, intl);
 
-            if (validatorAddress) {
-              return getSimpleItem(i, {
-                amount: formatCoin(entry.balance, false, 2),
-                time: remainingText,
-              });
-            }
+        return {
+          icon: thumbnail,
+          name: validator?.description.moniker ?? "...",
+          amount: formatCoin(entry.balance, false, 2),
+          time: remainingText,
+          second: relativeEndTime,
+        };
+      });
 
-            return getItem(i, {
-              icon: thumbnail,
-              name: validator?.description.moniker ?? "...",
-              amount: formatCoin(entry.balance, false, 2),
-              time: remainingText,
-            });
-          })}
-        </React.Fragment>
-      );
-    });
+      return [...currentItems, ...newItems];
+    }, [] as { icon?: string; name?: string; amount: string; time: string; second: number }[]);
+
+    return items
+      .sort((a, b) => (a.second > b.second ? 1 : -1))
+      .map((item, index) => {
+        if (validatorAddress) {
+          return getSimpleItem(index, item);
+        }
+        return getItem(index, item);
+      });
   };
 
   const safeAreaInsets = useSafeAreaInsets();
@@ -270,12 +271,12 @@ export const UnbondingScreen: FunctionComponent = observer(() => {
             >
               {validatorAddress
                 ? intl.formatMessage({ id: "staking.unbonding.amount" })
-                : intl.formatMessage({ id: "staking.unbonding.nameAndAmount" })}
+                : intl.formatMessage({ id: "MyUnstaking" })}
             </Text>
             <Text
               style={style.flatten(["color-label-text-2", "text-small-medium"])}
             >
-              {intl.formatMessage({ id: "staking.unbonding.receiveAfter" })}
+              {intl.formatMessage({ id: "ReceiveIn" })}
             </Text>
           </View>
         </View>

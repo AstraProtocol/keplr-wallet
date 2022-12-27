@@ -38,7 +38,7 @@ export const SelectValidatorItem: FunctionComponent<{
   return (
     <React.Fragment>
       <ValidatorsBottomSheet
-        label={intl.formatMessage({ id: "stake.redelegate.listValidators" })}
+        label={intl.formatMessage({ id: "StakingProviders" })}
         isOpen={isOpenModal}
         close={() => setIsOpenModal(false)}
         maxItemsToShow={8}

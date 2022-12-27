@@ -271,7 +271,7 @@ export const RegisterNavigation: FunctionComponent = () => {
       />
       <Stack.Screen
         options={{
-          title: intl.formatMessage({ id: "register.createEntry.nav.title" }),
+          title: intl.formatMessage({ id: "CreateNewWallet" }),
         }}
         name="Register.CreateEntry"
         component={RegisterCreateEntryScreen}
@@ -465,7 +465,6 @@ export const WalletNavigation: FunctionComponent = () => {
       />
       <Stack.Screen
         options={{
-          // title: intl.formatMessage({ id: "validator.list.new.title" }),
           headerShown: false,
         }}
         name="Validator.List"
@@ -482,7 +481,7 @@ export const WalletNavigation: FunctionComponent = () => {
       <Stack.Screen name="Undelegate" component={UndelegateScreen} />
       <Stack.Screen
         options={{
-          title: intl.formatMessage({ id: "redelegate.title" }),
+          title: intl.formatMessage({ id: "RedelegateStakingProvider" }),
         }}
         name="Redelegate"
         component={RedelegateScreen}

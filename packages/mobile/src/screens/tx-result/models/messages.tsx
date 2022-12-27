@@ -285,7 +285,7 @@ export function renderMsgSend(value: MsgSend["value"]): IRow[] {
       cols: [
         buildLeftColumn({
           text: intl.formatMessage({
-            id: "tx.result.models.msgSend.reveiver",
+            id: "ReceiverAddress",
           }),
           flex: 4,
         }),
@@ -695,7 +695,7 @@ export function renderMsgTransferNFT(value: MsgTransferNFT["value"]): IRow[] {
       cols: [
         buildLeftColumn({
           text: intl.formatMessage({
-            id: "tx.result.models.msgSend.reveiver",
+            id: "ReceiverAddress",
           }),
           flex: 4,
         }),

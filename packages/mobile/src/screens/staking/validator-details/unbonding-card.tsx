@@ -1,13 +1,12 @@
-import React, { FunctionComponent } from "react";
 import { observer } from "mobx-react-lite";
-import { Text, ViewStyle, View } from "react-native";
+import React, { FunctionComponent } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
+import { Text, View, ViewStyle } from "react-native";
+import { formatCoin, formatUnbondingTime } from "../../../common/utils";
 import { Card, CardBody, CardDivider } from "../../../components/card";
+import { useSmartNavigation } from "../../../navigation-util";
 import { useStore } from "../../../stores";
 import { useStyle } from "../../../styles";
-import { DelegationsEmptyItem } from "../dashboard/delegate";
-import { useSmartNavigation } from "../../../navigation-util";
-import { formatCoin, formatUnbondingTime } from "../../../common/utils";
 
 export const UnbondingCard: FunctionComponent<{
   containerStyle?: ViewStyle;
@@ -32,7 +31,7 @@ export const UnbondingCard: FunctionComponent<{
     queries.cosmos.queryStakingParams.unbondingTimeSec ?? 172800;
   const unbondingTimeText = formatUnbondingTime(unbondingTime, intl);
 
-  return unbonding ? (
+  return (
     <Card style={containerStyle}>
       <CardBody style={style.flatten(["margin-top-0", "padding-y-0"])}>
         <View style={style.flatten(["background-color-background"])}>
@@ -57,7 +56,7 @@ export const UnbondingCard: FunctionComponent<{
                 smartNavigation.navigateSmart("Wallet.History", {});
               }}
             >
-              <FormattedMessage id="validator.details.unbonding.history" />
+              {intl.formatMessage({ id: "History" }).toLowerCase()}
             </Text>
           </Text>
           <View
@@ -73,14 +72,14 @@ export const UnbondingCard: FunctionComponent<{
               <FormattedMessage id="validator.details.unbonding.nameAndAmount" />
             </Text>
             <Text style={style.flatten(["color-gray-30", "body3"])}>
-              <FormattedMessage id="validator.details.unbonding.receiveAfter" />
+              {intl.formatMessage({ id: "ReceiveIn" })}
             </Text>
           </View>
           <CardDivider
             style={style.flatten(["background-color-gray-70", "margin-x-0"])}
           />
         </View>
-        {unbonding.entries.map((entry, i) => {
+        {unbonding?.entries.map((entry, i) => {
           const current = new Date().getTime();
 
           const relativeEndTime =
@@ -119,13 +118,5 @@ export const UnbondingCard: FunctionComponent<{
         })}
       </CardBody>
     </Card>
-  ) : (
-    <DelegationsEmptyItem
-      label={intl.formatMessage({ id: "validator.details.unbonding.empty" })}
-      containerStyle={style.flatten([
-        "background-color-background",
-        "margin-y-32",
-      ])}
-    />
   );
 });

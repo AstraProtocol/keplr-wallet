@@ -22,7 +22,7 @@ export const ValidatorListScreen: FunctionComponent = observer(() => {
     <View style={style.flatten(["flex-1", "background-color-background"])}>
       <CustomNavigationBar
         hideBottomSeparator
-        title={intl.formatMessage({ id: "validator.list.new.title" })}
+        title={intl.formatMessage({ id: "SelectStakingProvider" })}
         containerStyle={{
           ...style.flatten(["background-color-background"]),
           marginTop: safeAreaInsets.top,

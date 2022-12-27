@@ -309,15 +309,7 @@ export const CommissionsCard: FunctionComponent<{
             <Text
               style={style.flatten(["color-label-text-1", "text-base-regular"])}
             >
-              {intl.formatMessage(
-                { id: "validator.details.percentValue" },
-                {
-                  percent: formatPercent(
-                    validator.commission.commission_rates.max_rate,
-                    true
-                  ),
-                }
-              )}
+              {formatPercent(validator.commission.commission_rates.max_rate)}
             </Text>
           </View>
           <View
@@ -345,14 +337,8 @@ export const CommissionsCard: FunctionComponent<{
             <Text
               style={style.flatten(["color-label-text-1", "text-base-regular"])}
             >
-              {intl.formatMessage(
-                { id: "validator.details.percentValue" },
-                {
-                  percent: formatPercent(
-                    validator.commission.commission_rates.max_change_rate,
-                    true
-                  ),
-                }
+              {formatPercent(
+                validator.commission.commission_rates.max_change_rate
               )}
             </Text>
           </View>
@@ -365,7 +351,7 @@ export const CommissionsCard: FunctionComponent<{
             ])}
           >
             <TooltipLabel
-              text={intl.formatMessage({ id: "validator.details.updateTime" })}
+              text={intl.formatMessage({ id: "LastChange" })}
               textStyle={style.flatten(["text-base-regular"])}
             />
             <Text

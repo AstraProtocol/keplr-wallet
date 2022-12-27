@@ -51,7 +51,7 @@ export const AutoUpdateProgressScreen: FunctionComponent = observer(() => {
             style={{ width: 132, height: 132 }}
           />
           <Text style={style.flatten(["color-white", "title3", "text-center"])}>
-            {intl.formatMessage({ id: "register.intro.appName" })}
+            {intl.formatMessage({ id: "AstraWallet" })}
           </Text>
 
           <View

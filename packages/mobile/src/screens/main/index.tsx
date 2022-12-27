@@ -275,7 +275,7 @@ export const MainScreen: FunctionComponent = observer(() => {
                 "text-center",
               ])}
             >
-              {intl.formatMessage({ id: "register.intro.appName" })}
+              {intl.formatMessage({ id: "AstraWallet" })}
             </Text>
             <TouchableOpacity
               style={style.flatten(["width-44", "height-44", "justify-center"])}

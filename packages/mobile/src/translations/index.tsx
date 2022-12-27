@@ -1,12 +1,11 @@
 import { NativeModules, Platform } from "react-native";
 
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import React, { FunctionComponent, useEffect, useState } from "react";
 import { CustomFormats, IntlProvider } from "react-intl";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 
-import { EnMsgs, ViMsgs } from "./splits";
-import MessagesVi from "./vi.json";
 import MessagesEn from "./en.json";
+import MessagesVi from "./vi.json";
 
 export type IntlMessage = Record<string, string>;
 export type IntlMessages = { [lang: string]: Record<string, string> };
@@ -33,12 +32,9 @@ function getDeviceLang() {
 }
 
 const allLangeMessages: IntlMessages = {
-  vi: Object.assign({}, ...ViMsgs, MessagesVi),
-  en: Object.assign(
-    {},
-    ...EnMsgs.map(removeEmptyValueJson),
-    removeEmptyValueJson(MessagesEn)
-  ),
+  vi: MessagesVi,
+  en: MessagesEn,
+  // en: removeEmptyValueJson(MessagesEn),
 };
 
 function removeEmptyValueJson(item: any) {

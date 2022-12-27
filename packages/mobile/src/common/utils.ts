@@ -3,7 +3,7 @@ import { IntlShape } from "react-intl";
 
 export const MIN_PASSWORD_LENGTH = 8;
 export const MIN_AMOUNT = 0.01;
-export const MIN_REWARDS_AMOUNT = 0.01;
+export const MIN_REWARDS_AMOUNT = 0.0001;
 export const FEE_RESERVATION = 0.1;
 export const LOCALE_FORMAT = {
   locale: "en-US",
@@ -96,7 +96,13 @@ export const formatPercent = (
   );
 };
 
-export const formatUnbondingTime = (sec: number, intl: IntlShape) => {
+export const formatUnbondingTime = (
+  sec: number,
+  intl: IntlShape,
+  maxUnits: number = 2
+) => {
+  maxUnits = Math.max(maxUnits, 1);
+
   const minuteSeconds = 60;
   const hourSeconds = 60 * minuteSeconds;
   const daySeconds = 24 * hourSeconds;
@@ -111,26 +117,33 @@ export const formatUnbondingTime = (sec: number, intl: IntlShape) => {
 
   let dateTexts = [] as string[];
   if (days > 0) {
-    dateTexts = [...dateTexts, days + " " + intl.formatMessage({ id: "Day" })];
+    dateTexts = [
+      ...dateTexts,
+      days + " " + intl.formatMessage({ id: days > 1 ? "Days" : "Day" }),
+    ];
   }
   if (hours > 0) {
     dateTexts = [
       ...dateTexts,
-      hours + " " + intl.formatMessage({ id: "Hour" }),
+      hours + " " + intl.formatMessage({ id: hours > 1 ? "Hours" : "Hour" }),
     ];
   }
   if (minutes > 0) {
     dateTexts = [
       ...dateTexts,
-      minutes + " " + intl.formatMessage({ id: "Minute" }),
+      minutes +
+        " " +
+        intl.formatMessage({ id: minutes > 1 ? "Minutes" : "Minute" }),
     ];
   }
   dateTexts = [
     ...dateTexts,
-    seconds + " " + intl.formatMessage({ id: "Second" }),
+    seconds +
+      " " +
+      intl.formatMessage({ id: seconds > 1 ? "Seconds" : "Second" }),
   ];
 
-  return dateTexts[0] + (dateTexts.length > 1 ? ` ${dateTexts[1]}` : "");
+  return dateTexts.slice(0, Math.min(dateTexts.length, maxUnits)).join(" ");
 };
 
 export const removeZeroFractionDigits = (text: string) => {

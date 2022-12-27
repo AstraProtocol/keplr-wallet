@@ -51,7 +51,7 @@ const NetworkConnectionModal: FunctionComponent = () => {
             "text-center",
           ])}
         >
-          {intl.formatMessage({ id: "register.intro.appName" })}
+          {intl.formatMessage({ id: "AstraWallet" })}
         </Text>
       </View>
       <View

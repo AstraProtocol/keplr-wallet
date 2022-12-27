@@ -83,7 +83,7 @@ export const RegisterIntroScreen: FunctionComponent = observer(() => {
                 "padding-top-24",
               ])}
             >
-              {intl.formatMessage({ id: "register.intro.appName" })}
+              {intl.formatMessage({ id: "AstraWallet" })}
             </Text>
             <Text
               style={style.flatten([
@@ -97,7 +97,7 @@ export const RegisterIntroScreen: FunctionComponent = observer(() => {
             </Text>
           </View>
           <Button
-            text={intl.formatMessage({ id: "register.intro.button.create" })}
+            text={intl.formatMessage({ id: "CreateNewWallet" })}
             onPress={() => {
               const socialLoginEnabled = remoteConfigStore.getBool(
                 "feature_socialLogin_enabled"
