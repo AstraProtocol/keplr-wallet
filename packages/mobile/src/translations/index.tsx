@@ -34,18 +34,7 @@ function getDeviceLang() {
 const allLangeMessages: IntlMessages = {
   vi: MessagesVi,
   en: MessagesEn,
-  // en: removeEmptyValueJson(MessagesEn),
 };
-
-function removeEmptyValueJson(item: any) {
-  const json: Record<string, string> = item;
-  Object.keys(json).forEach((key) => {
-    if (json[key].length == 0) {
-      delete json[key];
-    }
-  });
-  return json;
-}
 
 function getMessages(
   additionalMessages: IntlMessages,

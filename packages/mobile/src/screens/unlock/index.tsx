@@ -370,7 +370,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
 
         <Text
           style={style.flatten([
-            "color-gray-10",
+            "color-label-text-1",
             "text-medium-regular",
             "text-center",
             "margin-bottom-16",
@@ -381,29 +381,28 @@ export const UnlockScreen: FunctionComponent = observer(() => {
 
         <NormalInput
           value={password}
-          error={
-            isFailed
-              ? intl.formatMessage({ id: "WrongPassword" })
-              : ""
-          }
+          error={isFailed ? intl.formatMessage({ id: "WrongPassword" }) : ""}
           secureTextEntry={true}
           showPassword={showPassword}
           onShowPasswordChanged={setShowPassword}
           onChangeText={setPassword}
           onSubmitEditting={tryUnlock}
+          onFocus={() => {
+            setIsFailed(false);
+          }}
           style={{ marginBottom: isFailed ? 24 : 0 }}
           editable={!isLoading}
         />
 
-        <TextLink
-          size="medium"
-          onPress={forgotPasswordHandler}
-          style={style.flatten(["margin-y-16"])}
-        >
-          {intl.formatMessage({ id: "unlock.button.forgotPassword.text" })}
-        </TextLink>
+        <View style={style.flatten(["items-center", "margin-y-16"])}>
+          <TextLink size="medium" onPress={forgotPasswordHandler}>
+            {intl.formatMessage({ id: "unlock.button.forgotPassword.text" })}
+          </TextLink>
+        </View>
 
-        <View style={{ flex: 1, justifyContent: "flex-end", marginBottom: 12 }}>
+        <View
+          style={style.flatten(["flex-1", "justify-end", "margin-bottom-12"])}
+        >
           {keychainStore.isBiometryOn ? (
             <TouchableOpacity
               onPress={tryBiometric}
@@ -428,7 +427,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
               <Text
                 style={style.flatten([
                   "text-base-medium",
-                  "color-gray-10",
+                  "color-label-text-1",
                   "margin-left-8",
                 ])}
               >
@@ -449,7 +448,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
             text={intl.formatMessage({ id: "unlock.button.login.text" })}
             loading={isLoading}
             onPress={tryUnlock}
-            disabled={password.length < MIN_PASSWORD_LENGTH}
+            disabled={password.length < MIN_PASSWORD_LENGTH || isFailed}
           />
           <AvoidingKeyboardBottomView />
         </View>

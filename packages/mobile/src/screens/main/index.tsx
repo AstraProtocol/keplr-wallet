@@ -432,7 +432,6 @@ export const MainScreen: FunctionComponent = observer(() => {
                   "margin-x-page",
                 ])}
                 key={token.denom}
-                chainInfo={chainStore.current}
                 balance={token}
               />
             );

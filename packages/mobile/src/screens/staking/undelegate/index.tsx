@@ -174,7 +174,7 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
         <Text
           style={style.flatten([
             "color-label-text-1",
-            "text-base-semi-bold",
+            "text-base-bold",
             "margin-top-24",
           ])}
         >
