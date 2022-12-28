@@ -12,7 +12,6 @@ import {
   CardDivider,
   IRow,
   ListRowView,
-  RectButton,
   RightArrowIcon,
   ValidatorThumbnail,
 } from "../../../components";
@@ -240,7 +239,7 @@ export const DashboardMyValidatorItem: FunctionComponent<{
   ];
 
   return (
-    <RectButton
+    <View
       key={validatorAddress}
       style={{
         ...style.flatten([
@@ -251,13 +250,6 @@ export const DashboardMyValidatorItem: FunctionComponent<{
         ]),
         ...containerStyle,
       }}
-      onPress={() => {
-        smartNavigation.navigateSmart("Validator.Details", {
-          validatorAddress: validatorAddress,
-        });
-      }}
-      underlayColor={style.get("color-transparent").color}
-      activeOpacity={0}
     >
       <ValidatorInfo
         hideStatus={!validator.jailed}
@@ -266,6 +258,11 @@ export const DashboardMyValidatorItem: FunctionComponent<{
         thumbnail={thumbnail}
         data={[{ key: aprText + ` ${dotText} ` + commissionText }]}
         active={!validator.jailed}
+        onArrowPress={() => {
+          smartNavigation.navigateSmart("Validator.Details", {
+            validatorAddress: validatorAddress,
+          });
+        }}
       />
       <CardDivider style={style.flatten(["background-color-card-separator"])} />
       <ListRowView
@@ -276,7 +273,7 @@ export const DashboardMyValidatorItem: FunctionComponent<{
         hideBorder
         clearBackground
       />
-    </RectButton>
+    </View>
   );
 });
 
@@ -312,7 +309,7 @@ export const DashboardValidatorItem: FunctionComponent<{
   ];
 
   return (
-    <RectButton
+    <View
       key={validatorAddress}
       style={{
         ...style.flatten([
@@ -323,13 +320,6 @@ export const DashboardValidatorItem: FunctionComponent<{
         ]),
         ...containerStyle,
       }}
-      onPress={() => {
-        smartNavigation.navigateSmart("Validator.Details", {
-          validatorAddress: validatorAddress,
-        });
-      }}
-      underlayColor={style.get("color-transparent").color}
-      activeOpacity={0}
     >
       <ValidatorInfo
         hideStatus
@@ -342,8 +332,13 @@ export const DashboardValidatorItem: FunctionComponent<{
             validatorAddress: validatorAddress,
           });
         }}
+        onArrowPress={() => {
+          smartNavigation.navigateSmart("Validator.Details", {
+            validatorAddress: validatorAddress,
+          });
+        }}
       />
-    </RectButton>
+    </View>
   );
 };
 
@@ -357,6 +352,7 @@ const ValidatorInfo: FunctionComponent<{
   active?: boolean;
   buttonText?: string;
   onButtonPress?: () => void;
+  onArrowPress?: () => void;
 }> = ({
   containerStyle,
   name,
@@ -367,6 +363,7 @@ const ValidatorInfo: FunctionComponent<{
   active,
   buttonText,
   onButtonPress,
+  onArrowPress,
 }) => {
   const style = useStyle();
   const intl = useIntl();
@@ -434,7 +431,7 @@ const ValidatorInfo: FunctionComponent<{
         })}
         {hideStatus != true && (
           <View
-            style={style.flatten(["flex-row", "items-start", "margin-top-8"])}
+            style={style.flatten(["flex-row", "items-center", "margin-top-8"])}
           >
             <Chip
               size="small"
@@ -451,7 +448,7 @@ const ValidatorInfo: FunctionComponent<{
                 }}
                 style={style.flatten(["margin-left-4"])}
               >
-                <TooltipIcon />
+                <TooltipIcon size={20} />
               </TouchableOpacity>
             )}
           </View>
@@ -465,7 +462,8 @@ const ValidatorInfo: FunctionComponent<{
           />
         )}
       </View>
-      <View
+      <TouchableOpacity
+        activeOpacity={1}
         style={style.flatten([
           "width-24",
           "height-24",
@@ -473,15 +471,16 @@ const ValidatorInfo: FunctionComponent<{
           "justify-center",
           "margin-left-8",
         ])}
+        onPress={onArrowPress}
       >
         <RightArrowIcon height={14} />
-      </View>
+      </TouchableOpacity>
       <TooltipBottomSheet
         isOpen={isOpen}
         close={() => {
           setIsOpen(!isOpen);
         }}
-        title={intl.formatMessage({ id: "Inactive" })}
+        title={intl.formatMessage({ id: "Tooltip.Inactive.Title" })}
         contentView={
           <View
             style={{
@@ -492,7 +491,7 @@ const ValidatorInfo: FunctionComponent<{
             <Text
               style={style.flatten(["color-label-text-1", "text-base-regular"])}
             >
-              {intl.formatMessage({ id: "Inactive" })}
+              {intl.formatMessage({ id: "Tooltip.Inactive.Desc" })}
             </Text>
           </View>
         }

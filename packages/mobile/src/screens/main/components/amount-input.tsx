@@ -85,16 +85,16 @@ export const AmountInput: FunctionComponent<{
     function onChangeTextHandler(amountText: string) {
       const text = amountText.split(",").join("");
       const amount = Number(text);
-      if (!amount || amount < 0) {
+      if (text.length === 0 || Number.isNaN(amount) || amount < 0) {
         let errorText = "";
         if (text.length !== 0) {
           errorText = intl.formatMessage({
-            id: "component.amount.input.error.invalid",
+            id: "InvalidAmount",
           });
         }
 
         setErrorText(errorText);
-        onAmountChanged(text, errorText, isFocus);
+        onAmountChanged("0", errorText, isFocus);
         return;
       }
 

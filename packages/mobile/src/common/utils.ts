@@ -79,6 +79,10 @@ export const formatTextNumber = (value: string) => {
         .join("");
   }
 
+  if (replacedValue.startsWith(LOCALE_FORMAT.fractionDelimitter)) {
+    replacedValue = "0" + replacedValue;
+  }
+
   return replacedValue;
 };
 

@@ -297,7 +297,7 @@
   "component.amount.input.available": "(Balance: {amount})",
   "component.amount.input.error.insufficientAmount": "Insufficient amount",
   "component.amount.input.error.insufficientFeeReservation": "{amount} {denom} is reserved for transaction fee",
-  "component.amount.input.error.invalid": "Invalid amount",
+  "InvalidAmount": "Invalid amount",
   "component.amount.input.error.minimum": "Minimum {amount} {denom}",
   "component.amount.input.feeReservation": "{denom} is reserved for transaction fee",
   "component.amount.input.sendAll": "Max",

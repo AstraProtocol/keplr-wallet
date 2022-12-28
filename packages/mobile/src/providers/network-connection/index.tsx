@@ -9,6 +9,7 @@ import NetInfo, { useNetInfo } from "@react-native-community/netinfo";
 import { useStyle } from "../../styles";
 import { AstraLogo, Button } from "../../components";
 import { useIntl } from "react-intl";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 interface NetworkConnectionModal {
   onRetryHandler(): void;
@@ -21,6 +22,8 @@ const NetworkConnectionModalContext = React.createContext<NetworkConnectionModal
 const NetworkConnectionModal: FunctionComponent = () => {
   const style = useStyle();
   const intl = useIntl();
+  const safeAreaInsets = useSafeAreaInsets();
+
   const context = useContext(NetworkConnectionModalContext);
 
   return (
@@ -34,14 +37,16 @@ const NetworkConnectionModal: FunctionComponent = () => {
         ...style.flatten(["background-color-background"]),
       }}
     >
-      <SafeAreaView />
       <View
-        style={style.flatten([
-          "height-44",
-          "flex-row",
-          "items-center",
-          "justify-center",
-        ])}
+        style={{
+          ...style.flatten([
+            "height-44",
+            "flex-row",
+            "items-center",
+            "justify-center",
+          ]),
+          marginTop: safeAreaInsets.top,
+        }}
       >
         <AstraLogo />
         <Text
@@ -49,6 +54,7 @@ const NetworkConnectionModal: FunctionComponent = () => {
             "text-large-bold",
             "color-white",
             "text-center",
+            "margin-left-8",
           ])}
         >
           {intl.formatMessage({ id: "AstraWallet" })}

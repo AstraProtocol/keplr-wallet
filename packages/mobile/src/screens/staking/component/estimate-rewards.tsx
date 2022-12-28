@@ -1,11 +1,12 @@
 import { CoinPretty, Dec } from "@keplr-wallet/unit";
-import React, { FunctionComponent } from "react";
+import React, { Fragment, FunctionComponent } from "react";
 import { useIntl } from "react-intl";
 import { Text, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { formatCoin } from "../../../common";
-import { AlertInfoIcon } from "../../../components";
 import { useStyle } from "../../../styles";
 import { useStaking } from "../hook/use-staking";
+import { TooltipLabel } from "./tooltip-label";
 
 export const EstimateRewardsView: FunctionComponent<{
   validatorAddress: string;
@@ -15,59 +16,56 @@ export const EstimateRewardsView: FunctionComponent<{
 
   const style = useStyle();
   const intl = useIntl();
+  const safeAreaInsets = useSafeAreaInsets();
 
   const apr = getValidatorAPR(validatorAddress);
-  const numOfYear = 1;
-  const rewardsAmount = stakingAmount.mul(new Dec(apr));
+  const daysPerYear = 365;
+  const rewardsAmount = stakingAmount.mul(new Dec(apr / daysPerYear));
 
-  const estimatedRewardsText = `+${formatCoin(rewardsAmount, false, 4)}`;
+  const estimatedRewardsText =
+    "+" +
+    formatCoin(rewardsAmount, false, 4) +
+    "/" +
+    intl.formatMessage({ id: "Day" });
 
   return (
-    <View
-      style={style.flatten([
-        "flex-row",
-        "items-center",
-        "height-48",
-        "padding-x-16",
-        "background-color-alert-inline-success-background",
-      ])}
-    >
-      <AlertInfoIcon
-        style={{ marginRight: 8 }}
-        size={20}
-        color={style.get("color-white").color}
-      />
-      <Text
-        style={style.flatten([
-          "flex-1",
-          "text-base-regular",
-          "color-label-text-1",
-        ])}
-        numberOfLines={1}
-        ellipsizeMode="tail"
-      >
-        {intl.formatMessage({
-          id: "common.inline.staking.estimatedRewards",
-        }) + " "}
+    <Fragment>
+      <View style={style.flatten(["flex-row", "items-center", "margin-top-8"])}>
+        <TooltipLabel
+          containerStyle={style.flatten(["flex-1"])}
+          textStyle={style.flatten(["text-base-regular"])}
+          text={intl.formatMessage({
+            id: "APR",
+          })}
+          bottomSheetTitle={intl.formatMessage({
+            id: "Tooltip.APR.Title",
+          })}
+          bottomSheetContentView={
+            <View
+              style={{
+                ...style.flatten(["margin-x-16", "margin-top-8"]),
+                marginBottom: safeAreaInsets.bottom + 24,
+              }}
+            >
+              <Text
+                style={style.flatten([
+                  "color-label-text-1",
+                  "text-base-regular",
+                ])}
+              >
+                {intl.formatMessage({ id: "Tooltip.APR.Desc" })}
+              </Text>
+            </View>
+          }
+        />
         <Text
-          style={style.flatten(["text-underline"])}
+          style={style.flatten(["text-base-medium", "color-rewards-text"])}
           numberOfLines={1}
           ellipsizeMode="tail"
         >
-          {numOfYear +
-            " " +
-            intl.formatMessage({
-              id: "Year",
-            })}
+          {estimatedRewardsText}
         </Text>
-      </Text>
-      <Text
-        style={style.flatten(["text-base-medium", "color-rewards-text"])}
-        numberOfLines={1}
-        ellipsizeMode="tail"
-      >
-        {estimatedRewardsText}
-      </Text>
-    </View>
+      </View>
+    </Fragment>
   );
 };

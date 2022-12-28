@@ -147,15 +147,6 @@ export const NFTDetailsScreen: FunctionComponent = observer(() => {
           <View style={style.flatten(["flex-row", "margin-top-16"])}>
             <Button
               color="neutral"
-              text={intl.formatMessage({ id: "nft.text.sell" })}
-              leftIcon={<SellIcon />}
-              containerStyle={style.flatten(["flex-1"])}
-              onPress={() => {}}
-              disabled
-            />
-            <View style={style.flatten(["width-8"])} />
-            <Button
-              color="neutral"
               text={intl.formatMessage({ id: "nft.text.code" })}
               leftIcon={<QRCodeIcon />}
               containerStyle={style.flatten(["flex-1"])}
@@ -176,6 +167,15 @@ export const NFTDetailsScreen: FunctionComponent = observer(() => {
                   data: route.params.data,
                 });
               }}
+            />
+            <View style={style.flatten(["width-8"])} />
+            <Button
+              color="neutral"
+              text={intl.formatMessage({ id: "nft.text.sell" })}
+              leftIcon={<SellIcon />}
+              containerStyle={style.flatten(["flex-1"])}
+              onPress={() => {}}
+              disabled
             />
           </View>
           <View

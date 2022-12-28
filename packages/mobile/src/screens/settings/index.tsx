@@ -196,9 +196,10 @@ export const SettingsScreen: FunctionComponent = observer(() => {
             left={<FaqIcon />}
             onPress={() => {
               if (documentsUrl) {
-                smartNavigation.navigateSmart("WebView", {
-                  url: `${documentsUrl}/docs/guide/introduction`,
-                });
+                smartNavigation.navigateSmart("FAQ", {});
+                // smartNavigation.navigateSmart("WebView", {
+                //   url: `${documentsUrl}/docs/guide/introduction`,
+                // });
               }
             }}
           />

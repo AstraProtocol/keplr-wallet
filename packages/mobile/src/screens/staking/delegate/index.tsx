@@ -240,18 +240,18 @@ export const DelegateScreen: FunctionComponent = observer(() => {
           hideBorder
           clearBackground
         />
+        <EstimateRewardsView
+          validatorAddress={validatorAddress}
+          stakingAmount={stakingAmount}
+        />
       </KeyboardAwareScrollView>
       <View style={style.flatten(["flex-1", "justify-end"])}>
         <View
           style={{
             ...style.flatten(["background-color-background", "justify-center"]),
-            height: /*48 +*/ 44 + 2 * 12,
+            height: 44 + 2 * 12,
           }}
         >
-          {/* <EstimateRewardsView
-            validatorAddress={validatorAddress}
-            stakingAmount={stakingAmount}
-          /> */}
           <Button
             text={intl.formatMessage({ id: "Continue" })}
             disabled={amountErrorText.length !== 0}

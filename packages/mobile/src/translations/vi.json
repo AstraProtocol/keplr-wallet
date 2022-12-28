@@ -297,7 +297,7 @@
   "component.amount.input.available": "(Khả dụng: {amount})",
   "component.amount.input.error.insufficientAmount": "Không đủ số dư",
   "component.amount.input.error.insufficientFeeReservation": "{amount} {denom} cần được dự trữ lại cho phí giao dịch",
-  "component.amount.input.error.invalid": "Số lượng không hợp lệ",
+  "InvalidAmount": "Số lượng không hợp lệ",
   "component.amount.input.error.minimum": "Tối thiểu {amount} {denom}",
   "component.amount.input.feeReservation": "{denom} được dự trữ cho phí giao dịch",
   "component.amount.input.sendAll": "Gửi hết",
