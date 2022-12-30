@@ -1,5 +1,4 @@
 import { CoreTypes } from "@walletconnect/types";
-import { type } from "os";
 import React, { FunctionComponent } from "react";
 import { useIntl } from "react-intl";
 import { View, Image, Text, ViewStyle } from "react-native";
@@ -12,7 +11,8 @@ export const RequestHeaderView: FunctionComponent<{
   source: string | undefined;
   chain: string;
   containerStyle?: ViewStyle;
-}> = ({ metadata, source, sourceUrl, chain, containerStyle }) => {
+  type: string;
+}> = ({ metadata, source, sourceUrl, chain, containerStyle, type }) => {
   const style = useStyle();
   const intl = useIntl();
   console.log("__DEBUG__", source, sourceUrl);
@@ -57,10 +57,12 @@ export const RequestHeaderView: FunctionComponent<{
         </View>
       </View>
       <Text style={style.flatten(["color-gray-10", "text-center", "h4"])}>
-        {intl.formatMessage(
-          { id: "walletconnect.text.verify" },
-          { name: source, type: type }
-        )}
+        {intl
+          .formatMessage(
+            { id: "walletconnect.text.verify" },
+            { name: source, type: type }
+          )
+          .replace("  ", " ")}
       </Text>
       <View
         style={style.flatten([

@@ -23,6 +23,7 @@ import {
 } from "../../../components";
 import { CardBody, CardDivider } from "../../../components/card";
 import { typeOf } from "../helper";
+import { IntlShape, useIntl } from "react-intl";
 
 const h = new Hypher(english);
 
@@ -138,7 +139,8 @@ export const RawMsgView: FunctionComponent<{
 export function renderDelegateMsg(
   currencies: AppCurrency[],
   amount: CoinPrimitive,
-  validator: string
+  validator: string,
+  intl: IntlShape
 ) {
   const parsed = CoinUtils.parseDecAndDenomFromCoin(
     currencies,
@@ -151,8 +153,11 @@ export function renderDelegateMsg(
   };
 
   // Delegate <b>{amount}</b> to <b>{validator}</b>
-  const amoutContent = hyphen(`${amount.amount} ${amount.denom}`);
-  const content = `Cho quyền tích lũy ${amoutContent} vào gói ${validator}`;
+  const amountContent = hyphen(`${amount.amount} ${amount.denom}`);
+  const content = intl.formatMessage(
+    { id: "signRequest.Delegate" },
+    { amount: amountContent, validator: validator }
+  );
 
   return {
     title: "Stake",
@@ -163,7 +168,8 @@ export function renderDelegateMsg(
 export function renderUnDelegateMsg(
   currencies: AppCurrency[],
   amount: CoinPrimitive,
-  validator: string
+  validator: string,
+  intl: IntlShape
 ) {
   const parsed = CoinUtils.parseDecAndDenomFromCoin(
     currencies,
@@ -176,9 +182,11 @@ export function renderUnDelegateMsg(
   };
 
   // Delegate <b>{amount}</b> to <b>{validator}</b>
-  const amoutContent = hyphen(`${amount.amount} ${amount.denom}`);
-  const content = `Cho quyền rút ${amoutContent} từ gói ${validator}`;
-
+  const amountContent = hyphen(`${amount.amount} ${amount.denom}`);
+  const content = intl.formatMessage(
+    { id: "signRequest.UnDelegate" },
+    { amount: amountContent, validator: validator }
+  );
   return {
     title: "Stake",
     content: <DelegateMsgView msg={content} />,
@@ -189,7 +197,8 @@ export function renderBeginRedelegateMsg(
   currencies: AppCurrency[],
   amount: CoinPrimitive,
   srcValidator: string,
-  dstValidator: string
+  dstValidator: string,
+  intl: IntlShape
 ) {
   const parsed = CoinUtils.parseDecAndDenomFromCoin(
     currencies,
@@ -201,8 +210,11 @@ export function renderBeginRedelegateMsg(
     denom: parsed.denom,
   };
 
-  const amoutContent = hyphen(`${amount.amount} ${amount.denom}`);
-  const content = `Cho quyền chuyển đổi gói tích lũy ${amoutContent}`;
+  const amountContent = hyphen(`${amount.amount} ${amount.denom}`);
+  const content = intl.formatMessage(
+    { id: "signRequest.Redelegate" },
+    { amount: amountContent }
+  );
 
   return {
     title: "Stake",
@@ -218,11 +230,15 @@ export function renderBeginRedelegateMsg(
 
 export function renderWithdrawDelegatorRewardMsg(
   amount: CoinPretty,
-  validator: string
+  validator: string,
+  intl: IntlShape
 ) {
   // Delegate <b>{amount}</b> to <b>{validator}</b>
-  const amoutContent = hyphen(`${amount.toString()}`);
-  const content = `Cho quyền nhận phần thường ${amoutContent} từ gói tích lũy ${validator}`;
+  const amountContent = hyphen(`${amount.toString()}`);
+  const content = intl.formatMessage(
+    { id: "signRequest.WithdrawDelegatorReward" },
+    { amount: amountContent, validator: validator }
+  );
 
   return {
     title: "Stake",
@@ -230,14 +246,17 @@ export function renderWithdrawDelegatorRewardMsg(
   };
 }
 
-export function renderGrantMsg(msgs: any[]) {
+export function renderGrantMsg(msgs: any[], intl: IntlShape) {
   const renderedMsgs = (() => {
     return msgs.map((msg, i) => {
       if ("grant" in msg) {
         const grantMsg = msg as MsgGrant;
         switch (grantMsg.grant?.authorization?.msg) {
           case "/cosmos.staking.v1beta1.MsgDelegate": {
-            const message = `Cho quyền tich luỹ vào gói ${msg.grantee}`;
+            const message = intl.formatMessage(
+              { id: "signRequest.Grant" },
+              { grantee: msg.grantee }
+            );
             return (
               <GrantMsgView
                 key={i.toString()}
@@ -247,7 +266,10 @@ export function renderGrantMsg(msgs: any[]) {
             );
           }
           case "/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward": {
-            const message = `Cho quyền tự động nhận phần thường từ ${msg.grantee} và sử dụng phần thưởng đó để tái tích luỹ`;
+            const message = intl.formatMessage(
+              { id: "signRequest.AutoCompound" },
+              { grantee: msg.grantee }
+            );
             return (
               <GrantMsgView
                 key={i.toString()}
@@ -261,7 +283,10 @@ export function renderGrantMsg(msgs: any[]) {
         const revokeMsg = msg as MsgRevoke;
         switch (revokeMsg.msg_type_url) {
           case "/cosmos.staking.v1beta1.MsgDelegate": {
-            const message = `Thu hồi quyền tich luỹ vào gói ${msg.grantee}`;
+            const message = intl.formatMessage(
+              { id: "signRequest.RevokeDelegate" },
+              { grantee: msg.grantee }
+            );
             return (
               <GrantMsgView
                 key={i.toString()}
@@ -271,7 +296,10 @@ export function renderGrantMsg(msgs: any[]) {
             );
           }
           case "/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward": {
-            const message = `Thu hồi quyền tự động nhận phần thường từ ${msg.grantee} và sử dụng phần thưởng đó để tái tích luỹ`;
+            const message = intl.formatMessage(
+              { id: "signRequest.RevokeWithdraw" },
+              { grantee: msg.grantee }
+            );
             return (
               <RevokeMsgView
                 key={i.toString()}
@@ -304,6 +332,7 @@ export const DelegateMsgView: FunctionComponent<{
   msg: string;
 }> = ({ msg }) => {
   const style = useStyle();
+  const intl = useIntl();
   return (
     <View
       style={style.flatten([
@@ -334,6 +363,7 @@ export const RevokeMsgView: FunctionComponent<{
   grantee: string;
 }> = ({ msg, grantee }) => {
   const style = useStyle();
+  const intl = useIntl();
   const [isOpen, setIsOpen] = useState(false);
   return (
     <View
@@ -387,7 +417,7 @@ export const RevokeMsgView: FunctionComponent<{
             }}
             columns={[
               {
-                text: "Địa chỉ của người bị thu hồi quyền",
+                text: intl.formatMessage({ id: "Revoke.Address" }),
                 textColor: style.get("color-label-text-2").color,
               },
               {
@@ -408,6 +438,7 @@ export const GrantMsgView: FunctionComponent<{
   grantee: string;
 }> = ({ msg, grantee }) => {
   const style = useStyle();
+  const intl = useIntl();
   const [isOpen, setIsOpen] = useState(false);
   return (
     <View
@@ -461,7 +492,7 @@ export const GrantMsgView: FunctionComponent<{
             }}
             columns={[
               {
-                text: "Địa chỉ của nhà được cấp quyền",
+                text: intl.formatMessage({ id: "Grant.Address" }),
                 textColor: style.get("color-label-text-2").color,
               },
               {
@@ -484,6 +515,7 @@ export const ReDelegateMsgView: FunctionComponent<{
 }> = ({ msg, srcValidator, dstValidator }) => {
   const style = useStyle();
   const [isOpen, setIsOpen] = useState(false);
+  const intl = useIntl();
   return (
     <View
       style={style.flatten([
@@ -535,7 +567,9 @@ export const ReDelegateMsgView: FunctionComponent<{
             }}
             columns={[
               {
-                text: "Chuyển từ",
+                text: intl.formatMessage({
+                  id: "tx.result.models.msgBeginRedelegate.from",
+                }),
                 textColor: style.get("color-label-text-2").color,
               },
               {
@@ -559,7 +593,9 @@ export const ReDelegateMsgView: FunctionComponent<{
             }}
             columns={[
               {
-                text: "Sang",
+                text: intl.formatMessage({
+                  id: "To",
+                }),
                 textColor: style.get("color-label-text-2").color,
               },
               {

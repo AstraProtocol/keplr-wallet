@@ -211,7 +211,6 @@ export class SignClientStore extends SignClientManager {
       const messages = requestParams.messages;
       const fee = requestParams.fee;
       const signerData = requestParams.signerData;
-      console.log("__WC V2__ signerData: ", signerData);
       await this.waitInitStores();
       const keplr = this.createKeplrAPI();
       const key = await keplr.getKey(this.chainStore.current.chainId);
@@ -224,7 +223,6 @@ export class SignClientStore extends SignClientManager {
           signerData.accountNumber,
           signerData.sequence
         );
-        console.log("__WC V2__ onSessionRequest with signDoc: ", signDoc);
         const result = await keplr.signAmino(
           signerData.chainId,
           key.bech32Address,
@@ -253,6 +251,12 @@ export class SignClientStore extends SignClientManager {
       const hexResult = `0x${buffer.toString("hex")}`;
       console.log("__DEBUG__ hexResult: ", hexResult);
       await this.approveRequest(request, hexResult);
+    } else if (params.request.method === "cancel_request") {
+      const requestParams = JSON.stringify({
+        ...params.request.params,
+      });
+      console.log("__DEBUG__ cancel_request params: ", requestParams);
+      await this.approveRequest(request, requestParams);
     }
   }
 

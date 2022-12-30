@@ -1,14 +1,13 @@
-import { type } from "os";
 import { GrantMsgObj, MsgObj } from "../models";
 
 export enum SignMsgType {
-  Delegate = "Delegate",
-  Redelegate = "Redelegate",
-  Undelegate = "Undelegate",
-  WithdrawReward = "WithdrawReward",
-  Grant = "Grant",
-  Revoke = "Revoke",
-  Unknown = "Unknown",
+  Delegate = "SignMsgType.Delegate",
+  Redelegate = "SignMsgType.Redelegate",
+  Undelegate = "SignMsgType.Undelegate",
+  WithdrawReward = "SignMsgType.WithdrawReward",
+  Grant = "SignMsgType.Grant",
+  Revoke = "SignMsgType.Revoke",
+  Unknown = "SignMsgType.Unknown",
 }
 
 export function typeOf(msg: any): SignMsgType {

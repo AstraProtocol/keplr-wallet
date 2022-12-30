@@ -71,7 +71,8 @@ export const TransactionSignRequestView: FunctionComponent<{
       queriesStore,
       chainId,
       account.bech32Address,
-      index
+      index,
+      intl
     );
 
     return content;
@@ -80,11 +81,11 @@ export const TransactionSignRequestView: FunctionComponent<{
   const routes = [
     {
       key: "first",
-      title: "Tóm tắt",
+      title: intl.formatMessage({ id: "Summary" }),
     },
     {
       key: "second",
-      title: "Dữ liệu",
+      title: intl.formatMessage({ id: "Data" }),
     },
   ];
 
@@ -106,6 +107,7 @@ export const TransactionSignRequestView: FunctionComponent<{
             source={source}
             sourceUrl={sourceUrl}
             chain={chainStore.current.chainName}
+            type={intl.formatMessage({ id: type })}
           />
           <RawDataCard
             containerStyle={style.flatten([
@@ -132,6 +134,7 @@ export const TransactionSignRequestView: FunctionComponent<{
               source={source}
               sourceUrl={sourceUrl}
               chain={chainStore.current.chainName}
+              type={intl.formatMessage({ id: type })}
             />
           }
         />

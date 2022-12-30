@@ -194,6 +194,8 @@
   "common.text.connect": "Connect",
   "common.text.currentPassword": "Current password",
   "Details": "Details",
+  "Summary": "Summary",
+  "Data": "Data",
   "common.text.disconnect": "Disconnect",
   "common.text.enableBiometrics.face": "Enable Face ID authentication",
   "common.text.enableBiometrics.fingerprint": "Enable Fingerprint authentication",
@@ -373,5 +375,23 @@
   "swap.success.text.from": "From <b>text</b>",
   "swap.success.text.to": "To <b>text</b>",
   "swap.reserved.text": "{text} needs to be reserved for transaction fees",
-  "swap.reserved.text2": "{symbol} is reserved for transaction fees"
+  "swap.reserved.text2": "{symbol} is reserved for transaction fees",
+
+  "signRequest.Delegate": "For a request to stake {amount} into {validator}",
+  "signRequest.UnDelegate": "For a request to undelegate {amount} from {validator}",
+  "signRequest.Redelegate": "For a request to redelegate {amount}",
+  "signRequest.WithdrawDelegatorReward": "For a request to withdraw reward {amount} from {validator}",
+  "signRequest.Grant": "For a request to stake into {grantee}",
+  "signRequest.AutoCompound": "Cho quyền tự động nhận phần thường từ {grantee} và sử dụng phần thưởng đó để tái tích luỹ",
+  "signRequest.RevokeDelegate": "Thu hồi quyền tich luỹ vào gói {grantee}",
+  "signRequest.RevokeWithdraw": "Thu hồi quyền tự động nhận phần thường từ {grantee} và sử dụng phần thưởng đó để tái tích luỹ",
+  "SignMsgType.Delegate": "stake",
+  "SignMsgType.Redelegate": "redelegate",
+  "SignMsgType.Undelegate": "undelegate",
+  "SignMsgType.WithdrawReward": "withdraw reward",
+  "SignMsgType.Grant": "grant",
+  "SignMsgType.Revoke": "revoke",
+  "SignMsgType.Unknown": "",
+  "Grant.Address": "Address of the grantee",
+  "Revoke.Address": "Address of the validator being revoked"
 }

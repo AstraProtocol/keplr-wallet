@@ -29,6 +29,7 @@ import {
   renderWithdrawDelegatorRewardMsg,
 } from "./messages";
 import { KeplrETCQueries } from "@keplr-wallet/stores-etc";
+import { IntlShape } from "react-intl";
 
 export function renderMessage(
   msgOpts: {
@@ -49,7 +50,8 @@ export function renderMessage(
   >,
   chainId: string,
   bech32Address: string,
-  index: number
+  index: number,
+  intl: IntlShape
 ): {
   title: string;
   content: React.ReactElement;
@@ -73,7 +75,8 @@ export function renderMessage(
         currencies,
         value.amount,
         srcValidator?.description.moniker ?? value.validator_src_address,
-        dstValidator?.description.moniker ?? value.validator_dst_address
+        dstValidator?.description.moniker ?? value.validator_dst_address,
+        intl
       );
     }
 
@@ -87,7 +90,8 @@ export function renderMessage(
       return renderUnDelegateMsg(
         currencies,
         value.amount,
-        validator?.description.moniker ?? value.validator_address
+        validator?.description.moniker ?? value.validator_address,
+        intl
       );
     }
 
@@ -102,7 +106,8 @@ export function renderMessage(
       return renderDelegateMsg(
         currencies,
         value.amount,
-        validator?.description.moniker ?? value.validator_address
+        validator?.description.moniker ?? value.validator_address,
+        intl
       );
     }
 
@@ -120,14 +125,15 @@ export function renderMessage(
 
       return renderWithdrawDelegatorRewardMsg(
         rewards,
-        validator?.description.moniker ?? value.validator_address
+        validator?.description.moniker ?? value.validator_address,
+        intl
       );
     }
   } else if ("grantee" in unknownMsg) {
     const grantMsg = unknownMsg as GrantMsgObj;
     if (grantMsg.grantee) {
       console.log("__DEBUG__", grantMsg.grantee, grantMsg.msgs);
-      return renderGrantMsg(grantMsg.msgs);
+      return renderGrantMsg(grantMsg.msgs, intl);
     }
   }
 
