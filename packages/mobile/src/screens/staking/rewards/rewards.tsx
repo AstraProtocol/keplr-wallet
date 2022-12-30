@@ -45,7 +45,7 @@ export const RewardDetails: FunctionComponent<{
           const {
             validatorName,
             validatorAddress = "",
-            rewards,
+            rewardsAmount,
           } = stakableRewards;
 
           const thumbnail = queryValidators.getValidatorThumbnail(
@@ -57,7 +57,7 @@ export const RewardDetails: FunctionComponent<{
               key={index}
               thumbnail={thumbnail}
               name={validatorName}
-              value={formatCoin(rewards, false, 6)}
+              value={formatCoin(rewardsAmount, false, 4)}
               containerStyle={style.flatten(["margin-x-16", "margin-bottom-8"])}
             />
           );

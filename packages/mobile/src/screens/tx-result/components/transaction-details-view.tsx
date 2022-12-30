@@ -1,24 +1,29 @@
 import React, { FunctionComponent } from "react";
 import { useIntl } from "react-intl";
 import { View, ViewStyle } from "react-native";
+import { formatDate } from "../../../common";
 import { ListRowView } from "../../../components";
 import { TextLink } from "../../../components/button";
 import { useSmartNavigation } from "../../../navigation-util";
 import { useStore } from "../../../stores";
 import { useStyle } from "../../../styles";
+import { useStaking } from "../../staking/hook/use-staking";
 import { useTransaction } from "../hook/use-transaction";
 import {
   getSeparatorRow,
+  getTransactionRow,
   getTransactionTimeRow,
   insert,
   join,
   MsgSwap,
+  MsgUndelegate,
 } from "../models/messages";
 
 export const TransactionDetailsView: FunctionComponent<{
   containerStyle?: ViewStyle;
 }> = ({ containerStyle }) => {
   const { getTxDetailsRows } = useTransaction();
+  const { getUnbondingOf } = useStaking();
   const { chainStore, transactionStore, accountStore } = useStore();
 
   const style = useStyle();
@@ -37,6 +42,33 @@ export const TransactionDetailsView: FunctionComponent<{
       accountStore.getAccount(chainId).cosmos.msgOpts.withdrawRewards.type
     ) {
       rows = insert(rows, getTransactionTimeRow(), rows.length - 1);
+
+      if (
+        rawData?.type ===
+        accountStore.getAccount(chainId).cosmos.msgOpts.undelegate.type
+      ) {
+        const validatorAddress =
+          (rawData?.value as MsgUndelegate["value"]).validatorAddress ?? "";
+        const unbonding = getUnbondingOf(validatorAddress);
+        const unbondingTime = unbonding?.entries
+          .map((entry) => new Date(entry.completionTime))
+          .sort((a, b) => {
+            return b.getTime() - a.getTime();
+          })
+          .shift();
+
+        if (unbondingTime) {
+          rows = insert(
+            rows,
+            getTransactionRow(
+              intl.formatMessage({ id: "UnbondingTime" }),
+              formatDate(unbondingTime)
+            ),
+            rows.length - 1
+          );
+        }
+      }
+
       rows = join(rows, getSeparatorRow());
     }
     return rows;

@@ -1,15 +1,15 @@
+import NetInfo, { useNetInfo } from "@react-native-community/netinfo";
 import React, {
   FunctionComponent,
   useContext,
   useEffect,
   useState,
 } from "react";
-import { SafeAreaView, Text, View } from "react-native";
-import NetInfo, { useNetInfo } from "@react-native-community/netinfo";
-import { useStyle } from "../../styles";
-import { AstraLogo, Button } from "../../components";
 import { useIntl } from "react-intl";
+import { SafeAreaView, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { AstraLogo, Button } from "../../components";
+import { useStyle } from "../../styles";
 
 interface NetworkConnectionModal {
   onRetryHandler(): void;

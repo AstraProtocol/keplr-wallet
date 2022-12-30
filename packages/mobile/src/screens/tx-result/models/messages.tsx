@@ -89,7 +89,7 @@ export interface MsgWithdrawDelegatorReward {
       {
         validatorAddress: string;
         validatorName: string;
-        rewards: CoinPretty;
+        rewardsAmount: CoinPretty;
       }
     ];
     gasLimit: number | string | undefined;
@@ -426,7 +426,7 @@ export function renderMsgDelegate(value: MsgDelegate["value"]) {
       intl.formatMessage({
         id: "APR",
       }),
-      formatPercent(apr)
+      formatPercent(apr) + "/" + intl.formatMessage({ id: "Year" })
     ),
     getTransactionRow(
       intl.formatMessage({
@@ -456,7 +456,7 @@ export function renderMsgWithdrawDelegatorReward(
   ];
 
   const validatorRows = value.validatorRewards.map(
-    ({ validatorName, rewards }) => {
+    ({ validatorName, rewardsAmount }) => {
       return {
         ...common,
         cols: [
@@ -464,7 +464,7 @@ export function renderMsgWithdrawDelegatorReward(
             text: validatorName,
             textColor: style.get("color-label-text-1").color,
           }),
-          buildRightColumn({ text: formatCoin(rewards, false, 4) }),
+          buildRightColumn({ text: formatCoin(rewardsAmount, false, 4) }),
         ],
       };
     }

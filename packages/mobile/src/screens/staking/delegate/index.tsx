@@ -199,6 +199,7 @@ export const DelegateScreen: FunctionComponent = observer(() => {
         <StakingValidatorItem
           containerStyle={style.flatten(["margin-top-20", "margin-x-0"])}
           validator={validator}
+          hideTotalShares={true}
         />
         {hasStake && (
           <AlertInline
@@ -217,7 +218,7 @@ export const DelegateScreen: FunctionComponent = observer(() => {
           amountConfig={sendConfigs.amountConfig}
           availableAmount={userBalanceStore.getBalance()}
           feeConfig={sendConfigs.feeConfig}
-          onAmountChanged={(amount, errorText, isFocus) => {
+          onAmountChanged={(amount, { msg }, isFocus) => {
             setStakingAmount(
               new CoinPretty(
                 chainStore.current.stakeCurrency,
@@ -228,8 +229,8 @@ export const DelegateScreen: FunctionComponent = observer(() => {
                 )
               )
             );
-            setAmountIsValid(Number(amount) > 0 && errorText.length === 0);
-            setAmountErrorText(isFocus ? "" : errorText);
+            setAmountIsValid(Number(amount) > 0 && msg.length === 0);
+            setAmountErrorText(isFocus ? "" : msg);
           }}
           config={{ minAmount: MIN_AMOUNT, feeReservation: FEE_RESERVATION }}
           containerStyle={style.flatten(["margin-top-20"])}

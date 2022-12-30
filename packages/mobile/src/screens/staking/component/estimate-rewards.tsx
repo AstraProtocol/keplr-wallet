@@ -32,7 +32,6 @@ export const EstimateRewardsView: FunctionComponent<{
     <Fragment>
       <View style={style.flatten(["flex-row", "items-center", "margin-top-8"])}>
         <TooltipLabel
-          containerStyle={style.flatten(["flex-1"])}
           textStyle={style.flatten(["text-base-regular"])}
           text={intl.formatMessage({
             id: "APR",
@@ -59,9 +58,15 @@ export const EstimateRewardsView: FunctionComponent<{
           }
         />
         <Text
-          style={style.flatten(["text-base-medium", "color-rewards-text"])}
+          style={style.flatten([
+            "flex-1",
+            "text-base-medium",
+            "text-right",
+            "color-rewards-text",
+            "margin-left-8",
+          ])}
           numberOfLines={1}
-          ellipsizeMode="tail"
+          ellipsizeMode="middle"
         >
           {estimatedRewardsText}
         </Text>

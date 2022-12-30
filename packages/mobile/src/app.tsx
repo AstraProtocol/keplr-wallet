@@ -142,7 +142,7 @@ const AppBody: FunctionComponent = () => {
             <ModalsProvider>
               <LoadingScreenProvider>
                 <ConfirmModalProvider>
-                  <NetworkConnectionProvider>
+                  {/* <NetworkConnectionProvider> */}
                     <AlertModalProvider>
                       <ToastModalProvider>
                         <InteractionModalsProvider>
@@ -150,7 +150,7 @@ const AppBody: FunctionComponent = () => {
                         </InteractionModalsProvider>
                       </ToastModalProvider>
                     </AlertModalProvider>
-                  </NetworkConnectionProvider>
+                  {/* </NetworkConnectionProvider> */}
                 </ConfirmModalProvider>
               </LoadingScreenProvider>
             </ModalsProvider>

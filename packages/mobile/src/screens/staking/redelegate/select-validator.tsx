@@ -45,6 +45,7 @@ export const SelectValidatorItem: FunctionComponent<{
         onPress={() => {
           setIsOpenModal(true);
         }}
+        style={style.flatten(["border-radius-12"])}
       >
         <View
           style={style.flatten([
@@ -61,8 +62,10 @@ export const SelectValidatorItem: FunctionComponent<{
                 "margin-x-0",
                 "background-color-transparent",
               ])}
+              labelStyle={style.flatten(["margin-right-32"])}
               validator={validator}
               hasStake={false}
+              hideTotalShares={true}
             />
           ) : (
             <View style={style.flatten(["flex-1", "margin-16"])}>
@@ -79,7 +82,13 @@ export const SelectValidatorItem: FunctionComponent<{
               </Text>
             </View>
           )}
-          <BottomArrowIcon containerStyle={style.flatten(["margin-16"])} />
+          <BottomArrowIcon
+            containerStyle={{
+              position: "absolute",
+              right: 16,
+              top: 16,
+            }}
+          />
         </View>
       </RectButton>
     </React.Fragment>

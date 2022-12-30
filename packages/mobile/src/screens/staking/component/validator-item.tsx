@@ -2,7 +2,13 @@ import { Staking } from "@keplr-wallet/stores";
 import { observer } from "mobx-react-lite";
 import React, { FunctionComponent, useState } from "react";
 import { useIntl } from "react-intl";
-import { Text, TouchableOpacity, View, ViewStyle } from "react-native";
+import {
+  Text,
+  TextStyle,
+  TouchableOpacity,
+  View,
+  ViewStyle,
+} from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { formatCoin, formatPercent } from "../../../common";
 import {
@@ -24,9 +30,17 @@ import { TooltipBottomSheet } from "./tooltip-label";
 
 export const StakingValidatorItem: FunctionComponent<{
   containerStyle?: ViewStyle;
+  labelStyle?: TextStyle;
   validator?: Staking.Validator;
   hasStake?: boolean;
-}> = ({ containerStyle, validator, hasStake = undefined }) => {
+  hideTotalShares?: boolean;
+}> = ({
+  containerStyle,
+  labelStyle,
+  validator,
+  hasStake = undefined,
+  hideTotalShares = false,
+}) => {
   if (!validator) {
     return null;
   }
@@ -89,11 +103,19 @@ export const StakingValidatorItem: FunctionComponent<{
           {
             key: aprText + ` ${dotText} ` + commissionText,
           },
-          {
-            key: totalSharesText,
-          },
+          ...(hideTotalShares != true
+            ? [
+                {
+                  key: totalSharesText,
+                },
+              ]
+            : []),
         ]),
-  ];
+  ] as {
+    key: string;
+    value?: string;
+    valueColor?: string;
+  }[];
 
   return (
     <View
@@ -113,7 +135,10 @@ export const StakingValidatorItem: FunctionComponent<{
       <ValidatorThumbnail size={40} url={thumbnail} />
       <View style={style.flatten(["flex-1", "items-stretch", "margin-left-8"])}>
         <Text
-          style={style.flatten(["text-medium-medium", "color-label-text-1"])}
+          style={{
+            ...style.flatten(["text-medium-medium", "color-label-text-1"]),
+            ...labelStyle,
+          }}
           numberOfLines={1}
           ellipsizeMode="tail"
         >
@@ -388,7 +413,11 @@ const ValidatorInfo: FunctionComponent<{
       <ValidatorThumbnail size={40} url={thumbnail} />
       <View style={style.flatten(["flex-1", "items-stretch", "margin-left-8"])}>
         <Text
-          style={style.flatten(["text-medium-medium", "color-label-text-1"])}
+          style={style.flatten([
+            "text-medium-medium",
+            "color-label-text-1",
+            "margin-right-32",
+          ])}
           numberOfLines={1}
           ellipsizeMode="tail"
         >
@@ -464,13 +493,17 @@ const ValidatorInfo: FunctionComponent<{
       </View>
       <TouchableOpacity
         activeOpacity={1}
-        style={style.flatten([
-          "width-24",
-          "height-24",
-          "items-center",
-          "justify-center",
-          "margin-left-8",
-        ])}
+        style={{
+          ...style.flatten([
+            "absolute",
+            "width-24",
+            "height-24",
+            "items-center",
+            "justify-center",
+          ]),
+          top: 16,
+          right: 16,
+        }}
         onPress={onArrowPress}
       >
         <RightArrowIcon height={14} />

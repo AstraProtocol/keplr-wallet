@@ -3,8 +3,8 @@ import { IntlShape } from "react-intl";
 
 export const MIN_PASSWORD_LENGTH = 8;
 export const MIN_AMOUNT = 0.01;
-export const MIN_REWARDS_AMOUNT = 0.0001;
 export const FEE_RESERVATION = 0.1;
+export const FRACTION_DIGITS = 2;
 export const LOCALE_FORMAT = {
   locale: "en-US",
   fractionDelimitter: ".",
@@ -89,7 +89,7 @@ export const formatTextNumber = (value: string) => {
 export const formatPercent = (
   value: any,
   hideSymbol: boolean = false,
-  maxDecimals: number = 0
+  maxDecimals: number = 2
 ) => {
   return (
     new IntPretty(new Dec(value ?? 0))

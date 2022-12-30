@@ -14,7 +14,7 @@ export class RemoteConfigStore {
         feature_debug_enabled: false,
         feature_wallet_connect: true,
         feature_remote_notification: true,
-        feature_nft_support_enabled: true,
+        feature_nft_support_enabled: false,
       })
       .then(() => {
         remoteConfig()

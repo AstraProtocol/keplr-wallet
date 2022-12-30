@@ -180,9 +180,9 @@ export const SendTokenScreen: FunctionComponent = observer(() => {
           amountConfig={sendConfigs.amountConfig}
           availableAmount={userBalanceStore.getBalance()}
           feeConfig={sendConfigs.feeConfig}
-          onAmountChanged={(amount, errorText, isFocus) => {
-            setAmountIsValid(Number(amount) > 0 && errorText.length === 0);
-            setAmountErrorText(isFocus ? "" : errorText);
+          onAmountChanged={(amount, { msg }, isFocus) => {
+            setAmountIsValid(Number(amount) > 0 && msg.length === 0);
+            setAmountErrorText(isFocus ? "" : msg);
           }}
           config={{ minAmount: MIN_AMOUNT, feeReservation: FEE_RESERVATION }}
           inputRef={amountInputRef}
@@ -197,7 +197,9 @@ export const SendTokenScreen: FunctionComponent = observer(() => {
       <View
         style={style.flatten(["flex-1", "justify-end", "margin-bottom-12"])}
       >
-        <View style={style.flatten(["height-1", "background-color-card-separator"])} />
+        <View
+          style={style.flatten(["height-1", "background-color-card-separator"])}
+        />
         <View
           style={{
             ...style.flatten(["background-color-background"]),

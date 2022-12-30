@@ -86,6 +86,8 @@
   "From": "From",
   "To": "To",
   "RedelegateStakingProvider": "Redelegate staking provider",
+  "InsufficientStakeAmount": "Insufficient stake amount",
+  "UnbondingTime": "Receive time",
 
   "Dashboard.Banner.1": "Staking",
   "Dashboard.Banner.2": "17%/year",

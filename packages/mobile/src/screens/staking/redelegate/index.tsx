@@ -195,9 +195,27 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
           labelText={intl.formatMessage({ id: "Amount" })}
           amountConfig={sendConfigs.amountConfig}
           feeConfig={sendConfigs.feeConfig}
-          onAmountChanged={(amount, errorText, isFocus) => {
-            setAmountIsValid(Number(amount) > 0 && errorText.length === 0);
-            setAmountErrorText(isFocus ? "" : errorText);
+          onAmountChanged={(amount, { msg }, isFocus) => {
+            setAmountIsValid(Number(amount) > 0 && msg.length === 0);
+            setAmountErrorText(isFocus ? "" : msg);
+          }}
+          overrideError={(error) => {
+            const { code } = error;
+            let msg = error.msg;
+
+            switch (code) {
+              case "INSUFFICIENT_AMOUNT":
+                msg = intl.formatMessage({
+                  id: "InsufficientStakeAmount",
+                });
+                break;
+              default:
+                break;
+            }
+            return {
+              code,
+              msg,
+            };
           }}
           availableAmount={staked}
           containerStyle={style.flatten(["margin-top-24"])}

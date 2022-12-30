@@ -13,20 +13,17 @@ import {
 import { CoinPretty, Dec } from "@keplr-wallet/unit";
 import { useIntl } from "react-intl";
 import { SafeAreaView, ScrollView, Text, View } from "react-native";
-import {
-  formatCoin,
-  MIN_REWARDS_AMOUNT,
-  TX_GAS_DEFAULT,
-} from "../../../common/utils";
+import { formatCoin, MIN_AMOUNT, TX_GAS_DEFAULT } from "../../../common/utils";
 import { Button } from "../../../components/button";
 import { EthereumEndpoint } from "../../../config";
+import { useStaking } from "../hook/use-staking";
 import { RewardDetails } from "./rewards";
 
 export type StakableRewards = {
   delegatorAddress?: string;
   validatorAddress?: string;
   validatorName?: string;
-  rewards?: CoinPretty;
+  rewardsAmount?: CoinPretty;
 };
 
 export const StakingRewardScreen: FunctionComponent = () => {
@@ -37,16 +34,13 @@ export const StakingRewardScreen: FunctionComponent = () => {
     analyticsStore,
     transactionStore,
   } = useStore();
+  const { getValidator, getRewardsAmountOf, getDelegations } = useStaking();
 
   const account = accountStore.getAccount(chainStore.current.chainId);
-  const queries = queriesStore.get(chainStore.current.chainId);
 
   const style = useStyle();
   const intl = useIntl();
 
-  const queryReward = queries.cosmos.queryRewards.getQueryBech32Address(
-    account.bech32Address
-  );
   const sendConfigs = useSendTxConfig(
     chainStore,
     queriesStore,
@@ -56,17 +50,10 @@ export const StakingRewardScreen: FunctionComponent = () => {
     EthereumEndpoint
   );
 
-  const stakableRewardsList = transactionStore
-    .getDelegations({
-      chainId: chainStore.current.chainId,
-      delegatorAddress: account.bech32Address,
-    })
-    ?.map((delegation) => {
-      const validator = transactionStore.getValidator({
-        chainId: chainStore.current.chainId,
-        validatorAddress: delegation.delegation.validator_address,
-      });
-      const rewards = queryReward.getStakableRewardOf(
+  const stakableRewardsList = getDelegations()
+    .map((delegation) => {
+      const validator = getValidator(delegation.delegation.validator_address);
+      const rewardsAmount = getRewardsAmountOf(
         delegation.delegation.validator_address
       );
 
@@ -74,27 +61,27 @@ export const StakingRewardScreen: FunctionComponent = () => {
         delegatorAddress: account.bech32Address,
         validatorAddress: validator?.operator_address,
         validatorName: validator?.description.moniker,
-        rewards,
+        rewardsAmount,
       };
     })
     .filter((stakableRewards) => {
-      const { rewards } = stakableRewards;
-      return rewards.toDec().gte(new Dec(MIN_REWARDS_AMOUNT));
+      const { rewardsAmount } = stakableRewards;
+      return rewardsAmount.toDec().gte(new Dec(MIN_AMOUNT));
     })
     .sort((a, b) => {
       // Sort DESC
-      return Number(b.rewards.toDec()) - Number(a.rewards.toDec());
+      return Number(b.rewardsAmount.toDec()) - Number(a.rewardsAmount.toDec());
     });
 
   const stakingReward = stakableRewardsList
     ? stakableRewardsList
-        ?.map(({ rewards }) => rewards)
+        ?.map(({ rewardsAmount }) => rewardsAmount)
         .reduce((oldRewards, newRewards) => {
           return oldRewards.add(newRewards);
         })
     : undefined;
 
-  const validatorAddresses = stakableRewardsList?.map(
+  const validatorAddresses = stakableRewardsList.map(
     (info) => info.validatorAddress
   ) as string[];
 
@@ -123,16 +110,15 @@ export const StakingRewardScreen: FunctionComponent = () => {
         value: {
           totalRewards: stakingReward,
           fee: sendConfigs.feeConfig.fee,
-          validatorRewards:
-            stakableRewardsList?.map(
-              ({ validatorAddress, validatorName, rewards }) => {
+          validatorRewards: stakableRewardsList /*.map(
+              ({ validatorAddress, validatorName, rewardsAmount }) => {
                 return {
                   validatorAddress,
                   validatorName,
-                  rewards,
+                  rewardsAmount,
                 };
               }
-            ) ?? [],
+            ) ?? []*/,
           gasLimit,
           gasPrice,
         },

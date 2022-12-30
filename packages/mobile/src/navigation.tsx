@@ -74,7 +74,11 @@ import {
   ValidatorListScreen,
 } from "./screens/staking";
 import { TokensScreen } from "./screens/tokens";
-import { TxEvmResultScreen, TxResultScreen } from "./screens/tx-result";
+import {
+  TxConfirmationScreen,
+  TxEvmResultScreen,
+  TxResultScreen,
+} from "./screens/tx-result";
 import { UnlockScreen } from "./screens/unlock";
 
 import { MainScreen } from "./screens/main";
@@ -118,7 +122,6 @@ import { SetupBiometricsScreen } from "./screens/register/biometrics";
 import { RegisterCreateEntryScreen } from "./screens/register/create-entry";
 import { SessionProposalScreen } from "./screens/wallet-connect";
 import { WebViewScreen } from "./screens/web/default";
-import { TxConfirmationScreen } from "./screens/tx-result/confirmation";
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();

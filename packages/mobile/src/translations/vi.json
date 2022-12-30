@@ -86,10 +86,12 @@
   "From": "Từ",
   "To": "Sang",
   "RedelegateStakingProvider": "Chuyển đổi nhà cung cấp staking",
+  "InsufficientStakeAmount": "Phải thấp hơn số ASA đang stake",
+  "UnbondingTime": "Thời gian ASA về ví",
 
   "Dashboard.Banner.1": "Staking lợi nhuận tới",
   "Dashboard.Banner.2": "17%/năm",
-  "Dashboard.Banner.3": "Khóa một lượng ASA để nhận thưởng hàng ngày.\nRút bất kỳ lúc nào, không mất lãi.\nKhông kỳ hạn.",
+  "Dashboard.Banner.3": "Khóa một lượng ASA để nhận thưởng hàng ngày. Rút bất kỳ lúc nào, không mất lãi. Không kỳ hạn.",
 
   "Tooltip.APR.Title": "Lợi nhuận dự tính",
   "Tooltip.APR.Desc": "Phần trăm lợi nhuận theo năm. Lợi nhuận biến động liên tục, nên phần thưởng dự tính có thể khác với phần thưởng thực tế nhận được.",
@@ -165,8 +167,8 @@
   "History.Stake.Auto": "Stake tự động",
   "History.Grant.Stake": "Cấp quyền stake tự động",
   "History.Revoke.Stake": "Hủy quyền stake tự động",
-  "History.Swap.ASA/USDT": "Gửi để chuyển đổi ASA/USDT",
-  "History.Swap.USDT/ASA": "Nhận từ chuyển đổi USDT/ASA",
+  "History.Swap.ASA/USDT": "Chuyển đổi ASA/USDT",
+  "History.Swap.USDT/ASA": "Chuyển đổi USDT/ASA",
   "History.SendNFT": "Gửi NFT",
   "History.ReceiveNFT": "Nhận NFT",
 

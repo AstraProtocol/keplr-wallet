@@ -16,9 +16,21 @@ import {
 } from "react-native";
 import {
   formatTextNumber,
+  FRACTION_DIGITS,
   MIN_AMOUNT,
   removeZeroFractionDigits,
 } from "../../../common/utils";
+
+export type AmountErrorCode =
+  | "INVALID_AMOUNT"
+  | "MINIMUM_AMOUNT"
+  | "INSUFFICIENT_AMOUNT"
+  | "INSUFFICIENT_FEE_RESERVATION"
+  | "";
+export interface IError<T> {
+  msg: string;
+  code: T;
+}
 
 export const AmountInput: FunctionComponent<{
   labelText?: string;
@@ -29,7 +41,7 @@ export const AmountInput: FunctionComponent<{
   containerStyle?: ViewStyle;
   onAmountChanged?: (
     amount: string,
-    errorText: string,
+    error: IError<AmountErrorCode>,
     isFocus: boolean
   ) => void;
   config?: {
@@ -40,6 +52,7 @@ export const AmountInput: FunctionComponent<{
   onSubmitEditting?: (
     e: NativeSyntheticEvent<TextInputSubmitEditingEventData>
   ) => void;
+  overrideError?: (error: IError<AmountErrorCode>) => IError<AmountErrorCode>;
   returnKeyType?: ReturnKeyTypeOptions;
   rightLabelView?: React.ReactNode;
 }> = observer(
@@ -50,8 +63,12 @@ export const AmountInput: FunctionComponent<{
     availableAmount,
     feeConfig,
     containerStyle,
-    onAmountChanged = (amount: string, errorText: string, isFocus: boolean) => {
-      console.log(amount, errorText, isFocus);
+    onAmountChanged = (
+      amount: string,
+      error: IError<AmountErrorCode>,
+      isFocus: boolean
+    ) => {
+      console.log(amount, error, isFocus);
     },
     config = {
       feeReservation: 0,
@@ -59,6 +76,7 @@ export const AmountInput: FunctionComponent<{
     },
     inputRef,
     onSubmitEditting,
+    overrideError,
     returnKeyType,
     rightLabelView,
   }) => {
@@ -85,26 +103,40 @@ export const AmountInput: FunctionComponent<{
     function onChangeTextHandler(amountText: string) {
       const text = amountText.split(",").join("");
       const amount = Number(text);
+      let error: IError<AmountErrorCode> = {
+        code: "",
+        msg: "",
+      };
+
       if (text.length === 0 || Number.isNaN(amount) || amount < 0) {
-        let errorText = "";
         if (text.length !== 0) {
-          errorText = intl.formatMessage({
+          error.code = "INVALID_AMOUNT";
+          error.msg = intl.formatMessage({
             id: "InvalidAmount",
           });
         }
 
-        setErrorText(errorText);
-        onAmountChanged("0", errorText, isFocus);
+        if (overrideError) {
+          error = overrideError(error);
+        }
+
+        setErrorText(error.msg);
+        onAmountChanged("0", error, isFocus);
         return;
       }
 
       amountConfig.setAmount(text);
 
       const amountDec = new Dec(text);
+      const minAmountDec = new Dec(config.minAmount);
+      const availableAmountDec = availableAmount
+        ? availableAmount.toDec()
+        : new Dec(0);
+      const feeReservationDec = new Dec(Math.max(0, config.feeReservation));
 
-      let errorText = "";
-      if (amountDec.lt(new Dec(config.minAmount))) {
-        errorText = intl.formatMessage(
+      if (amountDec.lt(minAmountDec)) {
+        error.code = "MINIMUM_AMOUNT";
+        error.msg = intl.formatMessage(
           { id: "component.amount.input.error.minimum" },
           {
             amount: config.minAmount,
@@ -112,15 +144,15 @@ export const AmountInput: FunctionComponent<{
           }
         );
       } else if (
-        (availableAmount &&
-          availableAmount
-            .toDec()
-            .sub(new Dec(config.feeReservation))
-            .lt(new Dec(text))) ||
+        amountDec.gt(availableAmountDec.sub(feeReservationDec)) ||
         (feeConfig && feeConfig.error)
       ) {
-        if (config.feeReservation > 0) {
-          errorText = intl.formatMessage(
+        if (
+          feeReservationDec.isPositive() &&
+          amountDec.lte(availableAmountDec)
+        ) {
+          error.code = "INSUFFICIENT_FEE_RESERVATION";
+          error.msg = intl.formatMessage(
             {
               id: "component.amount.input.error.insufficientFeeReservation",
             },
@@ -130,14 +162,19 @@ export const AmountInput: FunctionComponent<{
             }
           );
         } else {
-          errorText = intl.formatMessage({
+          error.code = "INSUFFICIENT_AMOUNT";
+          error.msg = intl.formatMessage({
             id: "component.amount.input.error.insufficientAmount",
           });
         }
       }
 
-      setErrorText(errorText);
-      onAmountChanged(text, errorText, isFocus);
+      if (overrideError) {
+        error = overrideError(error);
+      }
+
+      setErrorText(error.msg);
+      onAmountChanged(text, error, isFocus);
     }
 
     const onMaxHandler = () => {
@@ -150,7 +187,9 @@ export const AmountInput: FunctionComponent<{
         .gt(new Dec(config.feeReservation))
         ? availableAmount.toDec().sub(new Dec(config.feeReservation))
         : new Dec(0);
-      setAmountText(removeZeroFractionDigits(maxAmount.toString()));
+      setAmountText(
+        removeZeroFractionDigits(maxAmount.toString(FRACTION_DIGITS))
+      );
     };
 
     return (

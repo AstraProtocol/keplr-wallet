@@ -1,4 +1,3 @@
-import { observer } from "mobx-react-lite";
 import React, { FunctionComponent } from "react";
 import { useIntl } from "react-intl";
 import {
@@ -15,7 +14,7 @@ import { GradientBackground } from "./gradient-background";
 
 export const DashboardHeader: FunctionComponent<{
   containerStyle?: ViewStyle;
-}> = observer(({ containerStyle }) => {
+}> = ({ containerStyle }) => {
   const style = useStyle();
   const intl = useIntl();
   const smartNavigation = useSmartNavigation();
@@ -46,13 +45,12 @@ export const DashboardHeader: FunctionComponent<{
             "border-radius-16",
             "items-center",
             "justify-center",
-            "background-color-alert-inline-error-background",
             "overflow-hidden",
           ])}
         >
           <View
             style={{
-              ...style.flatten(["items-center"]),
+              ...style.flatten(["items-center", "justify-center"]),
               position: "absolute",
               top: 0,
               left: 0,
@@ -60,7 +58,7 @@ export const DashboardHeader: FunctionComponent<{
               right: 0,
             }}
           >
-            <GradientBackground width={120} height={40} />
+            <GradientBackground width={180} height={60} />
           </View>
 
           <Text
@@ -116,4 +114,4 @@ export const DashboardHeader: FunctionComponent<{
       </View>
     </View>
   );
-});
+};

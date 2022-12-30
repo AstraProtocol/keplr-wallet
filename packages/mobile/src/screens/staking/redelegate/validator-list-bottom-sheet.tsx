@@ -160,6 +160,7 @@ export const ValidatorsBottomSheet: FunctionComponent<{
                         "margin-x-0",
                         "background-color-transparent",
                       ])}
+                      labelStyle={style.flatten(["margin-right-32"])}
                       validator={validator}
                       hasStake={false}
                     />
@@ -168,7 +169,11 @@ export const ValidatorsBottomSheet: FunctionComponent<{
                         validator.operator_address ===
                         toValidator?.operator_address
                       }
-                      containerStyle={style.flatten(["margin-16"])}
+                      containerStyle={{
+                        position: "absolute",
+                        right: 16,
+                        top: 16,
+                      }}
                     />
                   </RectButton>
                   <CardDivider

@@ -1,8 +1,9 @@
+import { Dec } from "@keplr-wallet/unit";
 import { observer } from "mobx-react-lite";
 import React, { FunctionComponent } from "react";
 import { useIntl } from "react-intl";
 import { View, ViewStyle } from "react-native";
-import { formatCoin } from "../../../common/utils";
+import { formatCoin, MIN_AMOUNT } from "../../../common/utils";
 import { Button } from "../../../components/button";
 import { CardDivider } from "../../../components/card";
 import { useSmartNavigation } from "../../../navigation-util";
@@ -18,7 +19,8 @@ export const RewardsItem: FunctionComponent<{
     getTotalStakingAmount,
     getTotalRewardsAmount,
     getTotalUnbondingAmount,
-    hasRewards,
+    getRewardsAmountOf,
+    getDelegations,
     hasUnbonding,
   } = useStaking();
 
@@ -31,7 +33,15 @@ export const RewardsItem: FunctionComponent<{
   const totalUnbondingAmount = getTotalUnbondingAmount();
 
   const isPending = hasUnbonding();
-  const isRewardExist = hasRewards();
+  const isRewardExist = (() => {
+    return (
+      getDelegations().find((delegation) => {
+        return getRewardsAmountOf(delegation.delegation.validator_address)
+          .toDec()
+          .gte(new Dec(MIN_AMOUNT));
+      }) != undefined
+    );
+  })();
 
   if (totalStakingAmount.toDec().isZero() && !isPending && !isRewardExist) {
     return null;

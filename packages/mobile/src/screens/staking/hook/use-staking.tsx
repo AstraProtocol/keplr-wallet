@@ -1,6 +1,5 @@
 import { Staking } from "@keplr-wallet/stores";
 import { CoinPretty, Dec } from "@keplr-wallet/unit";
-import { MIN_REWARDS_AMOUNT } from "../../../common";
 import { useStore } from "../../../stores";
 
 export const useStaking = () => {
@@ -149,10 +148,6 @@ export const useStaking = () => {
     return getStakingAmountOf(validatorAddress).toDec().gt(new Dec(0));
   };
 
-  const hasRewards = () => {
-    return getTotalRewardsAmount().toDec().gte(new Dec(MIN_REWARDS_AMOUNT));
-  };
-
   const hasUnbonding = () => {
     return getTotalUnbondingAmount().toDec().gt(new Dec(0));
   };
@@ -182,7 +177,6 @@ export const useStaking = () => {
     getTotalUnbondings,
 
     isStakingTo,
-    hasRewards,
     hasUnbonding,
 
     queryValidators,
