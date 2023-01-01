@@ -171,7 +171,7 @@ export const UnbondingScreen: FunctionComponent = observer(() => {
         return {
           icon: thumbnail,
           name: validator?.description.moniker ?? "...",
-          amount: formatCoin(entry.balance, false, 2),
+          amount: formatCoin(entry.balance),
           time: remainingText,
           second: relativeEndTime,
         };
@@ -219,7 +219,7 @@ export const UnbondingScreen: FunctionComponent = observer(() => {
               "text-3x-large-medium",
             ])}
           >
-            {formatCoin(unbondingAmount, false, 2)}
+            {formatCoin(unbondingAmount)}
           </Text>
         </View>
         <View style={style.flatten(["background-color-background"])}>

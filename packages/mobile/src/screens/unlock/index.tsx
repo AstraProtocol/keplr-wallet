@@ -376,7 +376,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
             "margin-bottom-16",
           ])}
         >
-          {intl.formatMessage({ id: "unlock.title" })}
+          {intl.formatMessage({ id: "Password" })}
         </Text>
 
         <NormalInput
@@ -396,7 +396,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
 
         <View style={style.flatten(["items-center", "margin-y-16"])}>
           <TextLink size="medium" onPress={forgotPasswordHandler}>
-            {intl.formatMessage({ id: "unlock.button.forgotPassword.text" })}
+            {intl.formatMessage({ id: "RecoverWallet" })}
           </TextLink>
         </View>
 
@@ -445,7 +445,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
           ) : null}
 
           <Button
-            text={intl.formatMessage({ id: "unlock.button.login.text" })}
+            text={intl.formatMessage({ id: "UnlockWallet" })}
             loading={isLoading}
             onPress={tryUnlock}
             disabled={password.length < MIN_PASSWORD_LENGTH || isFailed}

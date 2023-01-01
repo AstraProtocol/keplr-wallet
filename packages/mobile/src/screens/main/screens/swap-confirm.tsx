@@ -211,7 +211,7 @@ export const SwapConfirmScreen: FunctionComponent = observer(() => {
             <Text
               style={style.flatten([
                 "subtitle4",
-                "color-gray-30",
+                "color-label-text-2",
                 "margin-top-12",
               ])}
             >
@@ -220,7 +220,7 @@ export const SwapConfirmScreen: FunctionComponent = observer(() => {
             <Text
               style={style.flatten([
                 "subtitle2",
-                "color-gray-10",
+                "color-label-text-1",
                 "text-center",
               ])}
               numberOfLines={2}
@@ -256,7 +256,7 @@ export const SwapConfirmScreen: FunctionComponent = observer(() => {
             <Text
               style={style.flatten([
                 "subtitle4",
-                "color-gray-30",
+                "color-label-text-2",
                 "margin-top-12",
               ])}
             >
@@ -265,7 +265,7 @@ export const SwapConfirmScreen: FunctionComponent = observer(() => {
             <Text
               style={style.flatten([
                 "subtitle2",
-                "color-gray-10",
+                "color-label-text-1",
                 "text-center",
               ])}
               numberOfLines={2}
@@ -298,8 +298,8 @@ export const SwapConfirmScreen: FunctionComponent = observer(() => {
           </Animated.View>
           <Text
             style={style.flatten([
-              "color-gray-10",
-              "text-caption",
+              "color-label-text-1",
+              "text-base-regular",
               "margin-left-8",
             ])}
           >
@@ -341,8 +341,8 @@ export const SwapConfirmScreen: FunctionComponent = observer(() => {
           >
             <Text
               style={style.flatten([
-                "text-caption",
-                "color-gray-30",
+                "text-base-regular",
+                "color-label-text-2",
                 "margin-right-8",
               ])}
             >
@@ -350,8 +350,8 @@ export const SwapConfirmScreen: FunctionComponent = observer(() => {
             </Text>
             <Text
               style={style.flatten([
-                "text-caption",
-                "color-gray-10",
+                "text-base-regular",
+                "color-label-text-1",
                 "flex-1",
                 "text-right",
               ])}
@@ -374,8 +374,8 @@ export const SwapConfirmScreen: FunctionComponent = observer(() => {
           >
             <Text
               style={style.flatten([
-                "text-caption",
-                "color-gray-30",
+                "text-base-regular",
+                "color-label-text-2",
                 "margin-right-8",
               ])}
             >
@@ -383,8 +383,8 @@ export const SwapConfirmScreen: FunctionComponent = observer(() => {
             </Text>
             <Text
               style={style.flatten([
-                "text-caption",
-                "color-gray-10",
+                "text-base-regular",
+                "color-label-text-1",
                 "flex-1",
                 "text-right",
               ])}
@@ -406,8 +406,8 @@ export const SwapConfirmScreen: FunctionComponent = observer(() => {
           >
             <Text
               style={style.flatten([
-                "text-caption",
-                "color-gray-30",
+                "text-base-regular",
+                "color-label-text-2",
                 "margin-right-8",
               ])}
             >
@@ -415,8 +415,8 @@ export const SwapConfirmScreen: FunctionComponent = observer(() => {
             </Text>
             <Text
               style={style.flatten([
-                "text-caption",
-                "color-gray-10",
+                "text-base-regular",
+                "color-label-text-1",
                 "flex-1",
                 "text-right",
               ])}
@@ -438,8 +438,8 @@ export const SwapConfirmScreen: FunctionComponent = observer(() => {
           >
             <Text
               style={style.flatten([
-                "text-caption",
-                "color-gray-30",
+                "text-base-regular",
+                "color-label-text-2",
                 "margin-right-8",
               ])}
             >
@@ -447,8 +447,8 @@ export const SwapConfirmScreen: FunctionComponent = observer(() => {
             </Text>
             <Text
               style={style.flatten([
-                "text-caption",
-                "color-gray-10",
+                "text-base-regular",
+                "color-label-text-1",
                 "flex-1",
                 "text-right",
               ])}
@@ -466,10 +466,14 @@ export const SwapConfirmScreen: FunctionComponent = observer(() => {
               ]),
             ])}
           >
-            <Text style={style.flatten(["text-caption", "color-gray-30"])}>
+            <Text
+              style={style.flatten(["text-base-regular", "color-label-text-2"])}
+            >
               {intl.formatMessage({ id: "swap.priceSlippage" })}
             </Text>
-            <Text style={style.flatten(["text-caption", "color-gray-10"])}>
+            <Text
+              style={style.flatten(["text-base-regular", "color-label-text-1"])}
+            >
               {viewData.slippageTolerance}
             </Text>
           </View>

@@ -83,7 +83,7 @@ export const PasswordInputScreen: FunctionComponent = observer(() => {
         title = "View";
         break;
       case "deleteWallet":
-        title = "deleteAccount.button.delete";
+        title = "DeleteWallet";
         break;
     }
 
@@ -105,7 +105,7 @@ export const PasswordInputScreen: FunctionComponent = observer(() => {
             "margin-bottom-12",
           ])}
         >
-          {intl.formatMessage({ id: "deleteAccount.title" })}
+          {intl.formatMessage({ id: "DeleteWallet" })}
         </Text>
         <AlertInline
           type="warning"

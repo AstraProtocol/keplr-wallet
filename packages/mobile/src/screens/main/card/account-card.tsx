@@ -28,7 +28,7 @@ export const AccountCardNew: FunctionComponent<{
         style={style.flatten(["padding-y-0", "justify-center", "items-center"])}
       >
         <Text style={style.flatten(["color-white", "text-4x-large-semi-bold"])}>
-          {formatCoin(stakable, false, 2)}
+          {formatCoin(stakable)}
         </Text>
       </CardBody>
       <View style={{ alignItems: "center" }}>

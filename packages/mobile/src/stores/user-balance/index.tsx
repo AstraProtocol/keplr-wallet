@@ -45,7 +45,7 @@ export class UserBalanceStore {
 
   getBalanceString(chainId?: string): string {
     const balance = this.getBalance(chainId);
-    return formatCoin(balance, false, 2);
+    return formatCoin(balance);
   }
 
   // NFTs

@@ -71,7 +71,7 @@ export const RewardsItem: FunctionComponent<{
           label={intl.formatMessage({
             id: "TotalStakingAmount",
           })}
-          value={formatCoin(totalStakingAmount, false, 2)}
+          value={formatCoin(totalStakingAmount)}
           labelStyle={style.flatten(["color-staking-staked-text"])}
           containerStyle={style.flatten(["flex-6"])}
         />
@@ -133,7 +133,7 @@ export const RewardsItem: FunctionComponent<{
           label={intl.formatMessage({
             id: "TotalUnstakingAmount",
           })}
-          value={formatCoin(totalUnbondingAmount, false, 2)}
+          value={formatCoin(totalUnbondingAmount)}
           labelStyle={style.flatten(["color-staking-unbonding-text"])}
           containerStyle={style.flatten(["flex-6"])}
         />

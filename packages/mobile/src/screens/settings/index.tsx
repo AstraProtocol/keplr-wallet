@@ -242,7 +242,7 @@ export const SettingsScreen: FunctionComponent = observer(() => {
           <View style={style.get("height-8")} />
           <AccountItem
             {...accountItemProps}
-            label={intl.formatMessage({ id: "settings.deleteAccount" })}
+            label={intl.formatMessage({ id: "DeleteWallet" })}
             onPress={() => {
               smartNavigation.navigateSmart("Settings.PasswordInput", {
                 type: "deleteWallet",

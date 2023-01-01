@@ -69,7 +69,12 @@ export const StakingValidatorItem: FunctionComponent<{
   const totalSharesAmount = getTotalSharesAmountOf(validatorAddress);
   const apr = getValidatorAPR(validatorAddress);
 
-  const aprText = intl.formatMessage({ id: "APR" }) + " " + formatPercent(apr);
+  const aprText =
+    intl.formatMessage({ id: "APR" }) +
+    " " +
+    formatPercent(apr) +
+    "/" +
+    intl.formatMessage({ id: "Year" });
   const commissionText =
     intl.formatMessage({ id: "Commission" }) +
     " " +
@@ -80,7 +85,6 @@ export const StakingValidatorItem: FunctionComponent<{
     }) +
     " " +
     formatCoin(totalSharesAmount, false, 0);
-  const dotText = intl.formatMessage({ id: "_dot_" });
 
   const rows = [
     ...(hasStake
@@ -89,7 +93,7 @@ export const StakingValidatorItem: FunctionComponent<{
             key: intl.formatMessage({
               id: "StakingAmount",
             }),
-            value: formatCoin(stakingAmount, false, 2),
+            value: formatCoin(stakingAmount),
           },
           {
             key: intl.formatMessage({
@@ -101,7 +105,10 @@ export const StakingValidatorItem: FunctionComponent<{
         ]
       : [
           {
-            key: aprText + ` ${dotText} ` + commissionText,
+            key: aprText,
+          },
+          {
+            key: commissionText,
           },
           ...(hideTotalShares != true
             ? [
@@ -211,12 +218,16 @@ export const DashboardMyValidatorItem: FunctionComponent<{
   const unbondingAmount = getUnbondingAmountOf(validatorAddress);
   const apr = getValidatorAPR(validatorAddress);
 
-  const aprText = intl.formatMessage({ id: "APR" }) + " " + formatPercent(apr);
+  const aprText =
+    intl.formatMessage({ id: "APR" }) +
+    " " +
+    formatPercent(apr) +
+    "/" +
+    intl.formatMessage({ id: "Year" });
   const commissionText =
     intl.formatMessage({ id: "Commission" }) +
     " " +
     formatPercent(validator.commission.commission_rates.rate);
-  const dotText = intl.formatMessage({ id: "_dot_" });
 
   if (stakingAmount.toDec().isZero() && rewardsAmount.toDec().isZero()) {
     return null;
@@ -231,7 +242,7 @@ export const DashboardMyValidatorItem: FunctionComponent<{
             id: "StakingAmount",
           }),
         }),
-        buildRightColumn({ text: formatCoin(stakingAmount, false, 2) }),
+        buildRightColumn({ text: formatCoin(stakingAmount) }),
       ],
     },
     {
@@ -257,7 +268,7 @@ export const DashboardMyValidatorItem: FunctionComponent<{
           }),
         }),
         buildRightColumn({
-          text: formatCoin(unbondingAmount, false, 2),
+          text: formatCoin(unbondingAmount),
         }),
       ],
     },
@@ -281,7 +292,7 @@ export const DashboardMyValidatorItem: FunctionComponent<{
         hideButton
         name={validator.description.moniker}
         thumbnail={thumbnail}
-        data={[{ key: aprText + ` ${dotText} ` + commissionText }]}
+        data={[{ key: aprText }, { key: commissionText }]}
         active={!validator.jailed}
         onArrowPress={() => {
           smartNavigation.navigateSmart("Validator.Details", {
@@ -350,6 +361,7 @@ export const DashboardValidatorItem: FunctionComponent<{
         hideStatus
         hideButton={hideStakeButton}
         name={validator.description.moniker}
+        thumbnailSize={56}
         data={rows}
         buttonText={intl.formatMessage({ id: "Stake" })}
         onButtonPress={() => {
@@ -371,6 +383,7 @@ const ValidatorInfo: FunctionComponent<{
   containerStyle?: ViewStyle;
   name?: string;
   thumbnail?: string;
+  thumbnailSize?: number;
   data: { key?: string; value?: string; valueColor?: string }[];
   hideStatus?: boolean;
   hideButton?: boolean;
@@ -382,6 +395,7 @@ const ValidatorInfo: FunctionComponent<{
   containerStyle,
   name,
   thumbnail,
+  thumbnailSize = 40,
   data,
   hideStatus,
   hideButton,
@@ -410,7 +424,7 @@ const ValidatorInfo: FunctionComponent<{
         ...containerStyle,
       }}
     >
-      <ValidatorThumbnail size={40} url={thumbnail} />
+      <ValidatorThumbnail size={thumbnailSize} url={thumbnail} />
       <View style={style.flatten(["flex-1", "items-stretch", "margin-left-8"])}>
         <Text
           style={style.flatten([

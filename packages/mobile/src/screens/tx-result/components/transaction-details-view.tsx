@@ -50,14 +50,12 @@ export const TransactionDetailsView: FunctionComponent<{
         const validatorAddress =
           (rawData?.value as MsgUndelegate["value"]).validatorAddress ?? "";
         const unbonding = getUnbondingOf(validatorAddress);
-        const unbondingTime = unbonding?.entries
-          .map((entry) => new Date(entry.completionTime))
-          .sort((a, b) => {
-            return b.getTime() - a.getTime();
-          })
-          .shift();
 
-        if (unbondingTime) {
+         const completionTime = unbonding?.entries[0].completionTime;
+
+        if (completionTime) {
+          const unbondingTime = new Date(completionTime);
+
           rows = insert(
             rows,
             getTransactionRow(

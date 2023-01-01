@@ -111,7 +111,7 @@ export const RegisterIntroScreen: FunctionComponent = observer(() => {
           />
           <Button
             containerStyle={style.flatten(["margin-y-16"])}
-            text={intl.formatMessage({ id: "register.intro.button.recover" })}
+            text={intl.formatMessage({ id: "RecoverWallet" })}
             color="neutral"
             onPress={() => {
               smartNavigation.navigateSmart("Register.RecoverMnemonic", {

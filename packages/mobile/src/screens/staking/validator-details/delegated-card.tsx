@@ -73,7 +73,7 @@ export const DelegatedCard: FunctionComponent<{
           label={intl.formatMessage({
             id: "StakingAmount",
           })}
-          value={formatCoin(stakingAmount, false, 2)}
+          value={formatCoin(stakingAmount)}
           labelStyle={style.flatten(["color-staking-staked-text"])}
         />
         <Button
@@ -148,7 +148,7 @@ export const DelegatedCard: FunctionComponent<{
                 { id: "TotalUnstakingAmount" },
                 { denom: unbondingAmount.denom }
               )}
-              value={formatCoin(unbondingAmount, false, 2)}
+              value={formatCoin(unbondingAmount)}
               labelStyle={style.flatten(["color-staking-unbonding-text"])}
             />
             {unbondingAmount.toDec().isPositive() && (

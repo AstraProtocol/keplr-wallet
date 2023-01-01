@@ -22,7 +22,7 @@ export const TX_GAS_DEFAULT = {
 export const formatCoin = (
   coin?: CoinPretty,
   hideDenom: boolean = false,
-  maximumFractionDigits: number | undefined = undefined
+  maximumFractionDigits: number | undefined = FRACTION_DIGITS
 ) => {
   if (!coin) {
     return "";
@@ -116,8 +116,9 @@ export const formatUnbondingTime = (
   const minutes = Math.floor(
     (sec - (days * daySeconds + hours * hourSeconds)) / minuteSeconds
   );
-  const seconds =
-    sec - (days * daySeconds + hours * hourSeconds + minutes * minuteSeconds);
+  const seconds = Math.floor(
+    sec - (days * daySeconds + hours * hourSeconds + minutes * minuteSeconds)
+  );
 
   let dateTexts = [] as string[];
   if (days > 0) {

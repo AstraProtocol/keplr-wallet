@@ -43,7 +43,7 @@ export const TransactionStateView: FunctionComponent<{
     const txStateString = state?.toLowerCase() ?? "";
     return mainText ? mainText[txStateString] : "";
   }
-  
+
   let typeMsg = transactionStore.rawData?.type || "";
   if (msgs && msgs.length != 0 && msgs[0].type !== "sign/MsgSignData") {
     typeMsg = msgs[0].type;
@@ -118,7 +118,9 @@ export const TransactionStateView: FunctionComponent<{
         style={{ alignItems: "center", paddingHorizontal: 16, width: "100%" }}
       >
         <Text style={mainTextStyle}>{mainText}</Text>
-        <Text style={subTextStyle}>{subText}</Text>
+        {subText.length != 0 ? (
+          <Text style={subTextStyle}>{subText}</Text>
+        ) : null}
 
         {isShowStep && (
           <View
