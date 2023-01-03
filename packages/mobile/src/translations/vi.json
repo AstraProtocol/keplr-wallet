@@ -386,7 +386,7 @@
   "SignMsgType.WithdrawReward": "nhận thưởng",
   "SignMsgType.Grant": "cấp quyền",
   "SignMsgType.Revoke": "thu hồi quyền",
-  "SignMsgType.Unknown": "",
+  "SignMsgType.Unknown": "unknown",
   "Grant.Address": "Địa chỉ của nhà được cấp quyền",
   "Revoke.Address": "Địa chỉ của người bị thu hồi quyền"
 }

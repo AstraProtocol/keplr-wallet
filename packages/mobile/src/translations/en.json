@@ -386,7 +386,7 @@
   "SignMsgType.WithdrawReward": "withdraw reward",
   "SignMsgType.Grant": "grant",
   "SignMsgType.Revoke": "revoke",
-  "SignMsgType.Unknown": "",
+  "SignMsgType.Unknown": "unknown",
   "Grant.Address": "Address of the grantee",
   "Revoke.Address": "Address of the validator being revoked"
 }

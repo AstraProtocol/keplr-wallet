@@ -62,7 +62,7 @@ export const RequestHeaderView: FunctionComponent<{
             { id: "walletconnect.text.verify" },
             { name: source, type: type }
           )
-          .replace("  ", " ")}
+          .replace(" unknown ", " ")}
       </Text>
       <View
         style={style.flatten([
