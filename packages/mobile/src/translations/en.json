@@ -121,7 +121,7 @@
   "Tooltip.CommissionMaxChangeRate.Title": "Commission max change rate",
   "Tooltip.CommissionMaxChangeRate.Desc": "Đây là phần trăm phí vận hành mà nhà cung cấp có thể thay đổi tối đa hàng ngày",
   "Tooltip.Inactive.Title": "Inactive staking provider",
-  "Tooltip.Inactive.Desc": "Nếu nhà cung cấp không hoạt động, bạn sẽ không nhận được phần thưởng. ",
+  "Tooltip.Inactive.Desc": "Nếu nhà cung cấp không hoạt động, bạn sẽ không nhận được phần thưởng.\n\nKhi rút staking, ASA sẽ về ví ngay lập tức. Bạn không cần phải chờ {days}.",
 
   "FAQ": "Frequently asked questions",
   "FAQ.Title.1": "What is staking?",

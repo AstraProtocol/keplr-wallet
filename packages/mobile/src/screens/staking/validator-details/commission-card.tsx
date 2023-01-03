@@ -75,7 +75,13 @@ export const CommissionsCard: FunctionComponent<{
     return (
       <View>
         <View
-          style={style.flatten(["flex-row", "items-center", "padding-x-16"])}
+          style={style.flatten([
+            "flex-row",
+            "items-center",
+            "padding-x-16",
+            "margin-x-16",
+            "margin-top-24",
+          ])}
         >
           <CommissionInfo0 />
           <View style={style.flatten(["flex-1", "margin-left-8"])}>
@@ -83,9 +89,10 @@ export const CommissionsCard: FunctionComponent<{
               <CommissionInfo1 />
               <Text
                 style={style.flatten([
+                  "flex-1",
                   "color-label-text-2",
                   "text-small-regular",
-                  "margin-x-16",
+                  "margin-left-8",
                 ])}
               >
                 {intl.formatMessage({
@@ -97,9 +104,10 @@ export const CommissionsCard: FunctionComponent<{
               <CommissionInfo2 />
               <Text
                 style={style.flatten([
+                  "flex-1",
                   "color-label-text-2",
                   "text-small-regular",
-                  "margin-x-16",
+                  "margin-left-8",
                 ])}
               >
                 {intl.formatMessage({

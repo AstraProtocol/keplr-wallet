@@ -183,7 +183,6 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
         <StakingValidatorItem
           containerStyle={style.flatten(["margin-top-4", "margin-x-0"])}
           validator={validator}
-          hideTotalShares={true}
         />
         <AmountInput
           labelText={intl.formatMessage({ id: "Amount" })}

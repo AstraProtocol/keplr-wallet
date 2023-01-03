@@ -1,4 +1,5 @@
-import React, { FunctionComponent } from "react";
+import { observer } from "mobx-react-lite";
+import React, { FunctionComponent, useMemo } from "react";
 import { useIntl } from "react-intl";
 import { View, ViewStyle } from "react-native";
 import { formatDate } from "../../../common";
@@ -21,7 +22,7 @@ import {
 
 export const TransactionDetailsView: FunctionComponent<{
   containerStyle?: ViewStyle;
-}> = ({ containerStyle }) => {
+}> = observer(({ containerStyle }) => {
   const { getTxDetailsRows } = useTransaction();
   const { getUnbondingOf } = useStaking();
   const { chainStore, transactionStore, accountStore } = useStore();
@@ -34,7 +35,7 @@ export const TransactionDetailsView: FunctionComponent<{
   const chainInfo = chainStore.getChain(chainId);
   const rawData = transactionStore.rawData;
 
-  let rows = (() => {
+  const rows = useMemo(() => {
     let rows = getTxDetailsRows();
 
     if (
@@ -44,14 +45,16 @@ export const TransactionDetailsView: FunctionComponent<{
       rows = insert(rows, getTransactionTimeRow(), rows.length - 1);
 
       if (
+        transactionStore.txState === "success" &&
         rawData?.type ===
-        accountStore.getAccount(chainId).cosmos.msgOpts.undelegate.type
+          accountStore.getAccount(chainId).cosmos.msgOpts.undelegate.type
       ) {
         const validatorAddress =
           (rawData?.value as MsgUndelegate["value"]).validatorAddress ?? "";
         const unbonding = getUnbondingOf(validatorAddress);
 
-         const completionTime = unbonding?.entries[0].completionTime;
+        const completionTime =
+          unbonding?.entries[unbonding?.entries.length - 1].completionTime;
 
         if (completionTime) {
           const unbondingTime = new Date(completionTime);
@@ -70,7 +73,7 @@ export const TransactionDetailsView: FunctionComponent<{
       rows = join(rows, getSeparatorRow());
     }
     return rows;
-  })();
+  }, [transactionStore.txState]);
 
   const viewDetailsHandler = () => {
     let txHash = "";
@@ -108,4 +111,4 @@ export const TransactionDetailsView: FunctionComponent<{
       )}
     </View>
   );
-};
+});

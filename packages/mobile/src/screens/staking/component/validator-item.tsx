@@ -10,7 +10,11 @@ import {
   ViewStyle,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { formatCoin, formatPercent } from "../../../common";
+import {
+  formatCoin,
+  formatPercent,
+  formatUnbondingTime,
+} from "../../../common";
 import {
   buildLeftColumn,
   buildRightColumn,
@@ -34,12 +38,14 @@ export const StakingValidatorItem: FunctionComponent<{
   validator?: Staking.Validator;
   hasStake?: boolean;
   hideTotalShares?: boolean;
+  simpleValueColor?: boolean;
 }> = ({
   containerStyle,
   labelStyle,
   validator,
   hasStake = undefined,
   hideTotalShares = false,
+  simpleValueColor = false,
 }) => {
   if (!validator) {
     return null;
@@ -69,22 +75,11 @@ export const StakingValidatorItem: FunctionComponent<{
   const totalSharesAmount = getTotalSharesAmountOf(validatorAddress);
   const apr = getValidatorAPR(validatorAddress);
 
-  const aprText =
-    intl.formatMessage({ id: "APR" }) +
-    " " +
-    formatPercent(apr) +
-    "/" +
-    intl.formatMessage({ id: "Year" });
-  const commissionText =
-    intl.formatMessage({ id: "Commission" }) +
-    " " +
-    formatPercent(validator.commission.commission_rates.rate);
-  const totalSharesText =
-    intl.formatMessage({
-      id: "TotalShares",
-    }) +
-    " " +
-    formatCoin(totalSharesAmount, false, 0);
+  const aprText = formatPercent(apr) + "/" + intl.formatMessage({ id: "Year" });
+  const commissionText = formatPercent(
+    validator.commission.commission_rates.rate
+  );
+  const totalSharesText = formatCoin(totalSharesAmount, false, 0);
 
   const rows = [
     ...(hasStake
@@ -105,15 +100,29 @@ export const StakingValidatorItem: FunctionComponent<{
         ]
       : [
           {
-            key: aprText,
+            key: intl.formatMessage({ id: "APR" }),
+            value: aprText,
+            valueColor: simpleValueColor
+              ? style.get("color-label-text-2").color
+              : undefined,
           },
           {
-            key: commissionText,
+            key: intl.formatMessage({ id: "Commission" }),
+            value: commissionText,
+            valueColor: simpleValueColor
+              ? style.get("color-label-text-2").color
+              : undefined,
           },
           ...(hideTotalShares != true
             ? [
                 {
-                  key: totalSharesText,
+                  key: intl.formatMessage({
+                    id: "TotalShares",
+                  }),
+                  value: totalSharesText,
+                  valueColor: simpleValueColor
+                    ? style.get("color-label-text-2").color
+                    : undefined,
                 },
               ]
             : []),
@@ -404,11 +413,16 @@ const ValidatorInfo: FunctionComponent<{
   onButtonPress,
   onArrowPress,
 }) => {
+  const { getUnbondingTime } = useStaking();
+
   const style = useStyle();
   const intl = useIntl();
   const safeAreaInsets = useSafeAreaInsets();
 
   const [isOpen, setIsOpen] = useState(false);
+
+  const unbondingTime = getUnbondingTime();
+  const unbondingTimeText = formatUnbondingTime(unbondingTime, intl, 1);
 
   return (
     <View
@@ -538,7 +552,10 @@ const ValidatorInfo: FunctionComponent<{
             <Text
               style={style.flatten(["color-label-text-1", "text-base-regular"])}
             >
-              {intl.formatMessage({ id: "Tooltip.Inactive.Desc" })}
+              {intl.formatMessage(
+                { id: "Tooltip.Inactive.Desc" },
+                { days: unbondingTimeText }
+              )}
             </Text>
           </View>
         }

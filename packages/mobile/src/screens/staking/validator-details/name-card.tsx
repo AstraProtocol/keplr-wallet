@@ -20,11 +20,14 @@ import { useStore } from "../../../stores";
 import { useStyle } from "../../../styles";
 import { TooltipBottomSheet } from "../component";
 import { TooltipIcon } from "../component/tooltip-icon";
+import { useStaking } from "../hook/use-staking";
+import { formatUnbondingTime } from "../../../common";
 
 export const ValidatorNameCard: FunctionComponent<{
   containerStyle?: ViewStyle;
   validatorAddress: string;
 }> = observer(({ containerStyle, validatorAddress }) => {
+  const { getUnbondingTime } = useStaking();
   const { chainStore, queriesStore } = useStore();
 
   const queries = queriesStore.get(chainStore.current.chainId);
@@ -46,6 +49,9 @@ export const ValidatorNameCard: FunctionComponent<{
   const safeAreaInsets = useSafeAreaInsets();
 
   const [isOpen, setIsOpen] = useState(false);
+
+  const unbondingTime = getUnbondingTime();
+  const unbondingTimeText = formatUnbondingTime(unbondingTime, intl, 1);
 
   return (
     <Card
@@ -118,7 +124,10 @@ export const ValidatorNameCard: FunctionComponent<{
                     "text-base-regular",
                   ])}
                 >
-                  {intl.formatMessage({ id: "Tooltip.Inactive.Desc" })}
+                  {intl.formatMessage(
+                    { id: "Tooltip.Inactive.Desc" },
+                    { days: unbondingTimeText }
+                  )}
                 </Text>
               </View>
             }

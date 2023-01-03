@@ -199,7 +199,6 @@ export const DelegateScreen: FunctionComponent = observer(() => {
         <StakingValidatorItem
           containerStyle={style.flatten(["margin-top-20", "margin-x-0"])}
           validator={validator}
-          hideTotalShares={true}
         />
         {hasStake && (
           <AlertInline

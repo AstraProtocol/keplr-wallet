@@ -66,6 +66,7 @@ export const SelectValidatorItem: FunctionComponent<{
               validator={validator}
               hasStake={false}
               hideTotalShares={true}
+              simpleValueColor={true}
             />
           ) : (
             <View style={style.flatten(["flex-1", "margin-16"])}>

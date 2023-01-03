@@ -42,6 +42,8 @@ export const TransactionActionView: FunctionComponent<{
             text={intl.formatMessage({ id: "Back" })}
             containerStyle={styleBuilder.flatten(["margin-left-8", "flex-1"])}
             onPress={async () => {
+              // Go back twice
+              smartNavigation.goBack();
               smartNavigation.goBack();
             }}
           />
