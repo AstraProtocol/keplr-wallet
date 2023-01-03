@@ -25,10 +25,6 @@ export class ObservableQueryInflationParams extends ObservableChainQuery<Inflati
       return;
     }
 
-    if (this.error) {
-      throw Error(this.error.message);
-    }
-
     return this.response.data.params;
   }
 }
@@ -49,10 +45,6 @@ export class ObservableQueryInflationEpochMintProvision extends ObservableChainQ
   get epochMintProvision(): Coin | undefined {
     if (!this.response) {
       return;
-    }
-
-    if (this.error) {
-      throw Error(this.error.message);
     }
 
     return this.response.data.epoch_mint_provision;
@@ -77,10 +69,6 @@ export class ObservableQueryInflationInflationPeriod extends ObservableChainQuer
       return;
     }
 
-    if (this.error) {
-      throw Error(this.error.message);
-    }
-
     return this.response.data;
   }
 }
@@ -96,10 +84,6 @@ export class ObservableQueryInflationInflationRate extends ObservableChainQuery<
   get rate(): Dec | undefined {
     if (!this.response) {
       return;
-    }
-
-    if (this.error) {
-      throw Error(this.error.message);
     }
 
     return new Dec(this.response.data.inflation_rate);
