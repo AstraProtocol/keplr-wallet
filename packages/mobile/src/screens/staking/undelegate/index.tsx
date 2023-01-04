@@ -18,7 +18,7 @@ import { useIntl } from "react-intl";
 import { Keyboard, Text, View } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import {
-  formatCoin,
+  formatCoinFee,
   formatUnbondingTime,
   TX_GAS_DEFAULT,
 } from "../../../common/utils";
@@ -99,7 +99,7 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
   );
   sendConfigs.gasConfig.setGas(gasLimit);
   sendConfigs.feeConfig.setFeeType(feeType);
-  const feeText = formatCoin(sendConfigs.feeConfig.fee, false, 4);
+  const feeText = formatCoinFee(sendConfigs.feeConfig.fee);
 
   const unbondingTime = getUnbondingTime();
   const unbondingTimeText = formatUnbondingTime(unbondingTime, intl, 1);

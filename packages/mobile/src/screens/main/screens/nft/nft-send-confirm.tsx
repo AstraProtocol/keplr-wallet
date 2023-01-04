@@ -7,7 +7,7 @@ import { useIntl } from "react-intl";
 import { ScrollView, Text, View } from "react-native";
 import FastImage from "react-native-fast-image";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { formatCoin } from "../../../../common/utils";
+import { formatCoinFee } from "../../../../common/utils";
 import {
   buildLeftColumn,
   buildRightColumn,
@@ -64,7 +64,9 @@ export const NFTSendConfirmScreen: FunctionComponent = observer(() => {
         buildLeftColumn({
           text: intl.formatMessage({ id: "TransactionFee" }),
         }),
-        buildRightColumn({ text: formatCoin(route.params.fee, false, 6) }),
+        buildRightColumn({
+          text: formatCoinFee(route.params.fee),
+        }),
       ],
     },
   ];
@@ -73,7 +75,7 @@ export const NFTSendConfirmScreen: FunctionComponent = observer(() => {
     const baseTrackingParams = {
       // token: sendConfigs.amountConfig.sendCurrency?.coinDenom,
       // amount: Number(sendConfigs.amountConfig.amount),
-      fee: formatCoin(route.params.fee, true, 6),
+      fee: formatCoinFee(route.params.fee, true),
       // gas: gasLimit.toString(),
       // gas_price: gasPrice,
       receiver_address: route.params.receiver,

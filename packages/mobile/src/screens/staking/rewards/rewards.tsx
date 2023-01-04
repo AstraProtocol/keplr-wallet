@@ -1,14 +1,14 @@
-import React, { FunctionComponent } from "react";
-import { Text, ViewStyle } from "react-native";
 import { Staking } from "@keplr-wallet/stores";
+import React, { FunctionComponent } from "react";
+import { FormattedMessage, useIntl } from "react-intl";
+import { Text, ViewStyle } from "react-native";
+import { StakableRewards } from ".";
+import { formatCoinRewards } from "../../../common/utils";
+import { ItemRow, TextAlign } from "../../../components";
 import { Card, CardBody } from "../../../components/card";
+import { ValidatorItem } from "../../../components/input";
 import { useStore } from "../../../stores";
 import { useStyle } from "../../../styles";
-import { ValidatorItem } from "../../../components/input";
-import { FormattedMessage, useIntl } from "react-intl";
-import { formatCoin } from "../../../common/utils";
-import { ItemRow, TextAlign } from "../../../components";
-import { StakableRewards } from ".";
 
 export const RewardDetails: FunctionComponent<{
   stakableRewardsList?: StakableRewards[];
@@ -57,7 +57,7 @@ export const RewardDetails: FunctionComponent<{
               key={index}
               thumbnail={thumbnail}
               name={validatorName}
-              value={formatCoin(rewardsAmount, false, 4)}
+              value={formatCoinRewards(rewardsAmount)}
               containerStyle={style.flatten(["margin-x-16", "margin-bottom-8"])}
             />
           );

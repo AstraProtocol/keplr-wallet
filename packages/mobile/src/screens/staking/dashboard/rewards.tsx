@@ -3,7 +3,7 @@ import { observer } from "mobx-react-lite";
 import React, { FunctionComponent } from "react";
 import { useIntl } from "react-intl";
 import { View, ViewStyle } from "react-native";
-import { formatCoin, MIN_AMOUNT } from "../../../common/utils";
+import { formatCoinAmount, MIN_AMOUNT } from "../../../common/utils";
 import { Button } from "../../../components/button";
 import { CardDivider } from "../../../components/card";
 import { useSmartNavigation } from "../../../navigation-util";
@@ -71,7 +71,7 @@ export const RewardsItem: FunctionComponent<{
           label={intl.formatMessage({
             id: "TotalStakingAmount",
           })}
-          value={formatCoin(totalStakingAmount)}
+          value={formatCoinAmount(totalStakingAmount)}
           labelStyle={style.flatten(["color-staking-staked-text"])}
           containerStyle={style.flatten(["flex-6"])}
         />
@@ -100,7 +100,7 @@ export const RewardsItem: FunctionComponent<{
           label={intl.formatMessage({
             id: "TotalRewardsAmount",
           })}
-          value={"+" + formatCoin(totalRewardsAmount, false, 4)}
+          value={"+" + formatCoinAmount(totalRewardsAmount)}
           labelStyle={style.flatten(["color-staking-rewards-text"])}
           containerStyle={style.flatten(["flex-6"])}
         />
@@ -133,7 +133,7 @@ export const RewardsItem: FunctionComponent<{
           label={intl.formatMessage({
             id: "TotalUnstakingAmount",
           })}
-          value={formatCoin(totalUnbondingAmount)}
+          value={formatCoinAmount(totalUnbondingAmount)}
           labelStyle={style.flatten(["color-staking-unbonding-text"])}
           containerStyle={style.flatten(["flex-6"])}
         />

@@ -18,7 +18,11 @@ import React, { FunctionComponent, useEffect, useState } from "react";
 import { useIntl } from "react-intl";
 import { Keyboard, Text, View } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-import { formatCoin, TX_GAS_DEFAULT } from "../../../common/utils";
+import {
+  formatCoinAmount,
+  formatCoinFee,
+  TX_GAS_DEFAULT,
+} from "../../../common/utils";
 import { AlertInline, IRow, ListRowView } from "../../../components";
 import { AvoidingKeyboardBottomView } from "../../../components/avoiding-keyboard/avoiding-keyboard-bottom";
 import { Button } from "../../../components/button";
@@ -100,7 +104,7 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
   );
   sendConfigs.gasConfig.setGas(gasLimit);
   sendConfigs.feeConfig.setFeeType(feeType);
-  const feeText = formatCoin(sendConfigs.feeConfig.fee, false, 4);
+  const feeText = formatCoinFee(sendConfigs.feeConfig.fee);
 
   const [amountIsValid, setAmountIsValid] = useState(false);
   const [amountErrorText, setAmountErrorText] = useState("");
@@ -171,7 +175,7 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
             {
               id: "common.inline.staking.redelegatingInfo",
             },
-            { rewards: formatCoin(rewardsAmount, false, 4) }
+            { rewards: formatCoinAmount(rewardsAmount) }
           )}
           style={style.flatten(["margin-top-4"])}
         />

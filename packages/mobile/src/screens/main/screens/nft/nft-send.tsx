@@ -10,7 +10,7 @@ import { Keyboard, Text, View } from "react-native";
 import FastImage from "react-native-fast-image";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { formatCoin } from "../../../../common/utils";
+import { formatCoinFee } from "../../../../common/utils";
 import {
   buildLeftColumn,
   buildRightColumn,
@@ -80,7 +80,7 @@ export const NFTSendScreen: FunctionComponent = observer(() => {
           sendConfigs.amountConfig.sendCurrency,
           feeDec
         );
-        setFeeText(formatCoin(fee, false, 6));
+        setFeeText(formatCoinFee(fee));
       })
       .catch((e) => {
         console.log(e);

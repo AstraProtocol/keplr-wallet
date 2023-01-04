@@ -5,7 +5,7 @@ import { useIntl } from "react-intl";
 import { Animated, Text, View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { formatCoin, formatUnbondingTime } from "../../../common/utils";
+import { formatCoinAmount, formatUnbondingTime } from "../../../common/utils";
 import { AlertInline } from "../../../components";
 import { CardDivider } from "../../../components/card";
 import { ValidatorThumbnail } from "../../../components/thumbnail";
@@ -171,7 +171,7 @@ export const UnbondingScreen: FunctionComponent = observer(() => {
         return {
           icon: thumbnail,
           name: validator?.description.moniker ?? "...",
-          amount: formatCoin(entry.balance),
+          amount: formatCoinAmount(entry.balance),
           time: remainingText,
           second: relativeEndTime,
         };
@@ -219,7 +219,7 @@ export const UnbondingScreen: FunctionComponent = observer(() => {
               "text-3x-large-medium",
             ])}
           >
-            {formatCoin(unbondingAmount)}
+            {formatCoinAmount(unbondingAmount)}
           </Text>
         </View>
         <View style={style.flatten(["background-color-background"])}>

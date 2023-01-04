@@ -1,11 +1,11 @@
 import { observer } from "mobx-react-lite";
 import React, { FunctionComponent } from "react";
-import { ViewStyle, Text, View } from "react-native";
+import { Text, View, ViewStyle } from "react-native";
+import { formatCoinAmount } from "../../../common/utils";
+import { AddressCopyableItem } from "../../../components/address-copyable";
+import { Card, CardBody } from "../../../components/card";
 import { useStore } from "../../../stores";
 import { useStyle } from "../../../styles";
-import { Card, CardBody } from "../../../components/card";
-import { AddressCopyableItem } from "../../../components/address-copyable";
-import { formatCoin } from "../../../common/utils";
 
 export const AccountCardNew: FunctionComponent<{
   containerStyle?: ViewStyle;
@@ -28,7 +28,7 @@ export const AccountCardNew: FunctionComponent<{
         style={style.flatten(["padding-y-0", "justify-center", "items-center"])}
       >
         <Text style={style.flatten(["color-white", "text-4x-large-semi-bold"])}>
-          {formatCoin(stakable)}
+          {formatCoinAmount(stakable)}
         </Text>
       </CardBody>
       <View style={{ alignItems: "center" }}>

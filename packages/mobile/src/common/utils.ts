@@ -19,10 +19,42 @@ export const TX_GAS_DEFAULT = {
   withdraw: 250000,
 };
 
+export const formatCoinAmount = (
+  coin?: CoinPretty,
+  hideDenom: boolean = false
+) => {
+  return formatCoin(coin, hideDenom, FRACTION_DIGITS);
+};
+
+export const formatCoinFee = (
+  coin?: CoinPretty,
+  hideDenom: boolean = false
+) => {
+  return formatCoin(coin, hideDenom, (value: number): number => {
+    return value >= 1 ? FRACTION_DIGITS : 6;
+  });
+};
+
+export const formatCoinRewards = (
+  coin?: CoinPretty,
+  hideDenom: boolean = false
+) => {
+  return formatCoin(coin, hideDenom, (value: number): number => {
+    return value >= 1 ? FRACTION_DIGITS : 6;
+  });
+};
+
+export const formatCoinTotalShares = (
+  coin?: CoinPretty,
+  hideDenom: boolean = false
+) => {
+  return formatCoin(coin, hideDenom, 0);
+};
+
 export const formatCoin = (
   coin?: CoinPretty,
   hideDenom: boolean = false,
-  maximumFractionDigits: number | undefined = FRACTION_DIGITS
+  maximumFractionDigits: ((value: number) => number) | number = 0
 ) => {
   if (!coin) {
     return "";
@@ -34,8 +66,12 @@ export const formatCoin = (
   });
 
   // Prevent rounded value
-  const fractionDigits =
-    maximumFractionDigits ?? LOCALE_FORMAT.maximumFractionDigits(value);
+  let fractionDigits = 0;
+  if (typeof maximumFractionDigits === "function") {
+    fractionDigits = maximumFractionDigits(value);
+  } else {
+    fractionDigits = maximumFractionDigits;
+  }
   const parts = formattedText.split(LOCALE_FORMAT.fractionDelimitter);
 
   if (fractionDigits != 0) {

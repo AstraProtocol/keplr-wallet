@@ -16,7 +16,7 @@ import {
 import { KeplrETCQueries } from "@keplr-wallet/stores-etc";
 import { CoinPretty } from "@keplr-wallet/unit";
 import { action, computed, makeObservable, observable } from "mobx";
-import { formatCoin } from "../../common/utils";
+import { formatCoinAmount } from "../../common/utils";
 import { ChainStore } from "../chain";
 
 export type TxState = "pending" | "success" | "failure" | undefined;
@@ -101,13 +101,9 @@ export class TransactionStore {
     if (value["content"] && typeof value["content"] === "string") {
       this._txContent = value["content"] as string;
     } else if (value["amount"]) {
-      this._txContent = formatCoin(value["amount"] as CoinPretty);
+      this._txContent = formatCoinAmount(value["amount"] as CoinPretty);
     } else if (value["totalRewards"]) {
-      this._txContent = formatCoin(
-        value["totalRewards"] as CoinPretty,
-        false,
-        2
-      );
+      this._txContent = formatCoinAmount(value["totalRewards"] as CoinPretty);
     }
   }
 

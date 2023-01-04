@@ -1,7 +1,7 @@
 import { useAmountConfig } from "@keplr-wallet/hooks";
 import { CoinPretty } from "@keplr-wallet/unit";
 import { useIntl } from "react-intl";
-import { formatCoin, FRACTION_DIGITS } from "../../../common";
+import { formatCoinAmount } from "../../../common";
 import { IRow } from "../../../components";
 import { useWeb3Transfer } from "../../../hooks/use-web3-transfer";
 import { useSmartNavigation } from "../../../navigation-util";
@@ -48,7 +48,7 @@ export const useTransaction = () => {
   const sendSendTransaction = async (value?: any) => {
     const data = value as MsgSend["value"];
 
-    amountConfig.setAmount(formatCoin(data.amount, true, FRACTION_DIGITS));
+    amountConfig.setAmount(formatCoinAmount(data.amount, true));
 
     await transfer(data.recipient, amountConfig, {
       onBroadcasted: (txHash) => {
@@ -70,7 +70,7 @@ export const useTransaction = () => {
     const data = value as MsgDelegate["value"];
 
     const tx = account.cosmos.makeDelegateTx(
-      formatCoin(data.amount, true, FRACTION_DIGITS),
+      formatCoinAmount(data.amount, true),
       data.validatorAddress
     );
 
@@ -98,7 +98,7 @@ export const useTransaction = () => {
     const data = value as MsgUndelegate["value"];
 
     const tx = account.cosmos.makeUndelegateTx(
-      formatCoin(data.amount, true, FRACTION_DIGITS),
+      formatCoinAmount(data.amount, true),
       data.validatorAddress
     );
     await tx.sendWithGasPrice(
@@ -125,7 +125,7 @@ export const useTransaction = () => {
     const data = value as MsgBeginRedelegate["value"];
 
     const tx = account.cosmos.makeBeginRedelegateTx(
-      formatCoin(data.amount, true, FRACTION_DIGITS),
+      formatCoinAmount(data.amount, true),
       data.srcValidatorAddress,
       data.dstValidatorAddress
     );

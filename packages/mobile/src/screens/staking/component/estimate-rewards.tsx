@@ -3,7 +3,7 @@ import React, { Fragment, FunctionComponent } from "react";
 import { useIntl } from "react-intl";
 import { Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { formatCoin } from "../../../common";
+import { formatCoinRewards } from "../../../common";
 import { useStyle } from "../../../styles";
 import { useStaking } from "../hook/use-staking";
 import { TooltipLabel } from "./tooltip-label";
@@ -24,7 +24,7 @@ export const EstimateRewardsView: FunctionComponent<{
 
   const estimatedRewardsText =
     "+" +
-    formatCoin(rewardsAmount, false, 4) +
+    formatCoinRewards(rewardsAmount) +
     "/" +
     intl.formatMessage({ id: "Day" });
 

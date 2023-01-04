@@ -12,7 +12,7 @@ import {
 import { CoinPretty, Dec } from "@keplr-wallet/unit";
 import moment from "moment";
 import { useIntl } from "react-intl";
-import { formatCoin } from "../../../common/utils";
+import { formatCoinAmount } from "../../../common/utils";
 import { useStore } from "../../../stores";
 
 enum SupportedMsgs {
@@ -60,22 +60,14 @@ export const useTransactionHistory = () => {
     };
   };
 
-  const formatAmount = (
-    amount: { amount: string; denom: string },
-    hideDenom: boolean = false,
-    maximumFractionDigits: number = 2
-  ) => {
+  const formatAmount = (amount: { amount: string; denom: string }) => {
     let amountText = "";
 
     let currency = chainStore.current.currencies.find(
       (cur) => cur.coinMinimalDenom === amount.denom
     );
     if (currency) {
-      amountText = formatCoin(
-        new CoinPretty(currency, amount.amount),
-        hideDenom,
-        maximumFractionDigits
-      );
+      amountText = formatCoinAmount(new CoinPretty(currency, amount.amount));
     }
 
     return amountText;
@@ -248,7 +240,7 @@ export const useTransactionHistory = () => {
 
     return {
       action,
-      rightText: formatAmount(content.amount[0], false, 4),
+      rightText: formatAmount(content.amount[0]),
     };
   };
 

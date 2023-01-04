@@ -13,7 +13,12 @@ import converter from "bech32-converting";
 import { Buffer } from "buffer/";
 import { observer } from "mobx-react-lite";
 import { useIntl } from "react-intl";
-import { formatCoin, formatDate, formatPercent } from "../../../common/utils";
+import {
+  formatCoinAmount,
+  formatCoinFee,
+  formatDate,
+  formatPercent,
+} from "../../../common/utils";
 import {
   AlignItems,
   buildLeftColumn,
@@ -242,7 +247,7 @@ export const getTransactionFeeRow = (feeAmount: CoinPretty) => {
     intl.formatMessage({
       id: "TransactionFee",
     }),
-    formatCoin(feeAmount, false, 6)
+    formatCoinFee(feeAmount)
   );
 };
 
@@ -464,7 +469,9 @@ export function renderMsgWithdrawDelegatorReward(
             text: validatorName,
             textColor: style.get("color-label-text-1").color,
           }),
-          buildRightColumn({ text: formatCoin(rewardsAmount, false, 4) }),
+          buildRightColumn({
+            text: formatCoinAmount(rewardsAmount),
+          }),
         ],
       };
     }

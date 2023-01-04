@@ -13,7 +13,7 @@ import { KeplrETCQueries } from "@keplr-wallet/stores-etc";
 import { NFTData, Pagination } from "@keplr-wallet/stores/build/query/nft";
 import { CoinPretty } from "@keplr-wallet/unit";
 import { action, computed, makeObservable, observable } from "mobx";
-import { formatCoin } from "../../common/utils";
+import { formatCoinAmount } from "../../common/utils";
 import { ChainStore } from "../chain";
 
 export class UserBalanceStore {
@@ -45,7 +45,7 @@ export class UserBalanceStore {
 
   getBalanceString(chainId?: string): string {
     const balance = this.getBalance(chainId);
-    return formatCoin(balance);
+    return formatCoinAmount(balance);
   }
 
   // NFTs

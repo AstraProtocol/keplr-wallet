@@ -2,7 +2,7 @@ import { observer } from "mobx-react-lite";
 import React, { FunctionComponent, useMemo, useState } from "react";
 import { useIntl } from "react-intl";
 import { Text, View, ViewStyle } from "react-native";
-import { formatCoin, formatUnbondingTime } from "../../../common/utils";
+import { formatCoinAmount, formatUnbondingTime } from "../../../common/utils";
 import { Button } from "../../../components";
 import { Card } from "../../../components/card";
 import { registerModal } from "../../../modals/base";
@@ -73,7 +73,7 @@ export const DelegatedCard: FunctionComponent<{
           label={intl.formatMessage({
             id: "StakingAmount",
           })}
-          value={formatCoin(stakingAmount)}
+          value={formatCoinAmount(stakingAmount)}
           labelStyle={style.flatten(["color-staking-staked-text"])}
         />
         <Button
@@ -137,7 +137,7 @@ export const DelegatedCard: FunctionComponent<{
             label={intl.formatMessage({
               id: "RewardsAmount",
             })}
-            value={"+" + formatCoin(rewardsAmount, false, 4)}
+            value={"+" + formatCoinAmount(rewardsAmount)}
             labelStyle={style.flatten(["color-staking-rewards-text"])}
           />
           <View style={style.flatten(["width-8"])} />
@@ -148,7 +148,7 @@ export const DelegatedCard: FunctionComponent<{
                 { id: "TotalUnstakingAmount" },
                 { denom: unbondingAmount.denom }
               )}
-              value={formatCoin(unbondingAmount)}
+              value={formatCoinAmount(unbondingAmount)}
               labelStyle={style.flatten(["color-staking-unbonding-text"])}
             />
             {unbondingAmount.toDec().isPositive() && (

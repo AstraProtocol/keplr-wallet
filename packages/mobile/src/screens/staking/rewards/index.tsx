@@ -13,7 +13,12 @@ import {
 import { CoinPretty, Dec } from "@keplr-wallet/unit";
 import { useIntl } from "react-intl";
 import { SafeAreaView, ScrollView, Text, View } from "react-native";
-import { formatCoin, MIN_AMOUNT, TX_GAS_DEFAULT } from "../../../common/utils";
+import {
+  formatCoinFee,
+  formatCoinRewards,
+  MIN_AMOUNT,
+  TX_GAS_DEFAULT,
+} from "../../../common/utils";
 import { Button } from "../../../components/button";
 import { EthereumEndpoint } from "../../../config";
 import { useStaking } from "../hook/use-staking";
@@ -92,7 +97,7 @@ export const StakingRewardScreen: FunctionComponent = () => {
   );
   sendConfigs.gasConfig.setGas(gasLimit);
   sendConfigs.feeConfig.setFeeType(feeType);
-  const feeText = formatCoin(sendConfigs.feeConfig.fee, false, 4);
+  const feeText = formatCoinFee(sendConfigs.feeConfig.fee);
 
   const withdrawAllRewards = async () => {
     const params = {
@@ -110,15 +115,7 @@ export const StakingRewardScreen: FunctionComponent = () => {
         value: {
           totalRewards: stakingReward,
           fee: sendConfigs.feeConfig.fee,
-          validatorRewards: stakableRewardsList /*.map(
-              ({ validatorAddress, validatorName, rewardsAmount }) => {
-                return {
-                  validatorAddress,
-                  validatorName,
-                  rewardsAmount,
-                };
-              }
-            ) ?? []*/,
+          validatorRewards: stakableRewardsList,
           gasLimit,
           gasPrice,
         },
@@ -180,7 +177,7 @@ export const StakingRewardScreen: FunctionComponent = () => {
           "margin-bottom-24",
         ])}
       >
-        {formatCoin(stakingReward, false, 4)}
+        {formatCoinRewards(stakingReward)}
       </Text>
       <View
         style={style.flatten([

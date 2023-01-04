@@ -12,6 +12,8 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import {
   formatCoin,
+  formatCoinAmount,
+  formatCoinTotalShares,
   formatPercent,
   formatUnbondingTime,
 } from "../../../common";
@@ -79,7 +81,7 @@ export const StakingValidatorItem: FunctionComponent<{
   const commissionText = formatPercent(
     validator.commission.commission_rates.rate
   );
-  const totalSharesText = formatCoin(totalSharesAmount, false, 0);
+  const totalSharesText = formatCoinTotalShares(totalSharesAmount);
 
   const rows = [
     ...(hasStake
@@ -88,13 +90,13 @@ export const StakingValidatorItem: FunctionComponent<{
             key: intl.formatMessage({
               id: "StakingAmount",
             }),
-            value: formatCoin(stakingAmount),
+            value: formatCoinAmount(stakingAmount),
           },
           {
             key: intl.formatMessage({
               id: "RewardsAmount",
             }),
-            value: "+" + formatCoin(rewardsAmount, false, 4),
+            value: "+" + formatCoinAmount(rewardsAmount),
             valueColor: style.get("color-rewards-text").color,
           },
         ]
@@ -251,7 +253,9 @@ export const DashboardMyValidatorItem: FunctionComponent<{
             id: "StakingAmount",
           }),
         }),
-        buildRightColumn({ text: formatCoin(stakingAmount) }),
+        buildRightColumn({
+          text: formatCoinAmount(stakingAmount),
+        }),
       ],
     },
     {
@@ -263,7 +267,7 @@ export const DashboardMyValidatorItem: FunctionComponent<{
           }),
         }),
         buildRightColumn({
-          text: "+" + formatCoin(rewardsAmount, false, 4),
+          text: "+" + formatCoinAmount(rewardsAmount),
           textColor: style.get("color-rewards-text").color,
         }),
       ],
@@ -277,7 +281,7 @@ export const DashboardMyValidatorItem: FunctionComponent<{
           }),
         }),
         buildRightColumn({
-          text: formatCoin(unbondingAmount),
+          text: formatCoinAmount(unbondingAmount),
         }),
       ],
     },
@@ -349,7 +353,7 @@ export const DashboardValidatorItem: FunctionComponent<{
     },
     {
       key: intl.formatMessage({ id: "TotalShares" }),
-      value: formatCoin(totalSharesAmount, false, 0),
+      value: formatCoinTotalShares(totalSharesAmount),
     },
   ];
 

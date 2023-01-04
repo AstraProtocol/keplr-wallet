@@ -2,7 +2,7 @@ import React, { FunctionComponent, useState } from "react";
 import { useIntl } from "react-intl";
 import { SafeAreaView, ScrollView, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { formatCoin, FRACTION_DIGITS } from "../../common";
+import { formatCoinAmount } from "../../common";
 import { Button, ListRowView } from "../../components";
 import { CustomNavigationBar } from "../../components/navigation-bar/custom-navigation-bar";
 import { useStore } from "../../stores";
@@ -23,7 +23,7 @@ export const TxConfirmationScreen: FunctionComponent = () => {
   const safeAreaInsets = useSafeAreaInsets();
 
   const txText = getTxText()?.confirmation;
-  const txAmountText = formatCoin(getTxAmount());
+  const txAmountText = formatCoinAmount(getTxAmount());
   const rows = join(getTxDetailsRows(), getSeparatorRow());
 
   const [isLoading, setIsLoading] = useState(false);

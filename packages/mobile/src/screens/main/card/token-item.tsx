@@ -3,7 +3,7 @@ import { CoinPretty } from "@keplr-wallet/unit";
 import React, { FunctionComponent } from "react";
 import { StyleSheet, Text, View, ViewStyle } from "react-native";
 import FastImage from "react-native-fast-image";
-import { formatCoin } from "../../../common/utils";
+import { formatCoin, FRACTION_DIGITS } from "../../../common/utils";
 import { VectorCharacter } from "../../../components/vector-character";
 import { useStore } from "../../../stores";
 import { useStyle } from "../../../styles";
@@ -62,7 +62,7 @@ export const TokenItemNew: FunctionComponent<{
               true,
               balance.currency.coinMinimalDenom ===
                 firstCurrency.coinMinimalDenom
-                ? 2
+                ? FRACTION_DIGITS
                 : 5
             )}
           </Text>

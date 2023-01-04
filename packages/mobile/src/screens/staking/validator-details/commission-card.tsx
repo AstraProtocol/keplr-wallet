@@ -6,7 +6,12 @@ import { Button } from "../../../components/button";
 import { Card, CardBody } from "../../../components/card";
 
 import { useIntl } from "react-intl";
-import { formatCoin, formatDate, formatPercent } from "../../../common/utils";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import {
+  formatCoinTotalShares,
+  formatDate,
+  formatPercent,
+} from "../../../common/utils";
 import { useSmartNavigation } from "../../../navigation-util";
 import { useStyle } from "../../../styles";
 import { TooltipLabel } from "../component";
@@ -16,7 +21,6 @@ import {
   CommissionInfo1,
   CommissionInfo2,
 } from "./commission-icon";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export const CommissionsCard: FunctionComponent<{
   containerStyle?: ViewStyle;
@@ -220,7 +224,7 @@ export const CommissionsCard: FunctionComponent<{
                   "margin-top-2",
                 ])}
               >
-                {formatCoin(totalStakesAmount, false, 0)}
+                {formatCoinTotalShares(totalStakesAmount)}
               </Text>
             </View>
             <View style={style.flatten(["flex-1"])}>
