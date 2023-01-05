@@ -122,6 +122,41 @@ import { SetupBiometricsScreen } from "./screens/register/biometrics";
 import { RegisterCreateEntryScreen } from "./screens/register/create-entry";
 import { SessionProposalScreen } from "./screens/wallet-connect";
 import { WebViewScreen } from "./screens/web/default";
+import {
+  StackCardInterpolationProps,
+  StackCardStyleInterpolator,
+} from "@react-navigation/stack";
+
+export const modalStyleInterpolator: StackCardStyleInterpolator = (
+  props: StackCardInterpolationProps
+) => {
+  const { current, layouts } = props;
+
+  return {
+    cardStyle: {
+      opacity: current.progress.interpolate({
+        inputRange: [0, 1],
+        outputRange: [0.75, 1],
+      }),
+      transform: [
+        {
+          translateY: current.progress.interpolate({
+            inputRange: [0, 1],
+            outputRange: [layouts.screen.height, 0],
+          }),
+        },
+      ],
+    },
+
+    overlayStyle: {
+      opacity: current.progress.interpolate({
+        inputRange: [0, 1],
+        outputRange: [0, 0.5],
+        extrapolate: "clamp",
+      }),
+    },
+  };
+};
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -283,6 +318,39 @@ export const RegisterNavigation: FunctionComponent = () => {
   );
 };
 
+export const TxNavigation: FunctionComponent = () => {
+  const style = useStyle();
+  const screenOptions = {
+    ...WalletHeaderScreenOptionsPreset,
+    headerStyle: style.flatten(["background-color-background"]),
+    headerTitleStyle: style.flatten(["color-white", "text-large-bold"]),
+  };
+
+  return (
+    <Stack.Navigator
+      screenOptions={screenOptions}
+      headerMode="screen"
+      initialRouteName="Tx.Confirmation"
+    >
+      <Stack.Screen
+        name="Tx.Confirmation"
+        component={TxConfirmationScreen}
+        options={{
+          headerShown: false,
+        }}
+      />
+
+      <Stack.Screen
+        name="Tx.EvmResult"
+        component={TxEvmResultScreen}
+        options={{
+          headerShown: false,
+        }}
+      />
+    </Stack.Navigator>
+  );
+};
+
 export const TransactionNavigation: FunctionComponent = () => {
   const style = useStyle();
   const screenOptions = {
@@ -298,24 +366,14 @@ export const TransactionNavigation: FunctionComponent = () => {
       initialRouteName="Tx.Result"
     >
       <Stack.Screen
-        name="Tx.Confirmation"
-        component={TxConfirmationScreen}
-        options={{
-          headerShown: false,
-        }}
-      />
-      <Stack.Screen
         name="Tx.Result"
         component={TxResultScreen}
         options={{
+          cardShadowEnabled: true,
+          cardOverlayEnabled: true,
           headerShown: false,
-        }}
-      />
-      <Stack.Screen
-        name="Tx.EvmResult"
-        component={TxEvmResultScreen}
-        options={{
-          headerShown: false,
+          cardStyle: { backgroundColor: "transparent" },
+          cardStyleInterpolator: modalStyleInterpolator,
         }}
       />
     </Stack.Navigator>
@@ -911,7 +969,7 @@ export const AppNavigation: FunctionComponent = observer(() => {
       );
       transactionStore.updateTxState("pending");
 
-      navigationRef.current?.navigate("Tx", {
+      navigationRef.current?.navigate("Transaction", {
         screen: "Tx.Result",
         params: {
           txState: "pending",
@@ -970,7 +1028,18 @@ export const AppNavigation: FunctionComponent = observer(() => {
               <Stack.Screen name="Register" component={RegisterNavigation} />
               <Stack.Screen name="Others" component={OtherNavigation} />
               <Stack.Screen name="Wallet" component={WalletNavigation} />
-              <Stack.Screen name="Tx" component={TransactionNavigation} />
+              <Stack.Screen name="Tx" component={TxNavigation} />
+              <Stack.Screen
+                name="Transaction"
+                component={TransactionNavigation}
+                options={{
+                  cardShadowEnabled: true,
+                  cardOverlayEnabled: true,
+                  headerShown: false,
+                  cardStyle: { backgroundColor: "transparent" },
+                  cardStyleInterpolator: modalStyleInterpolator,
+                }}
+              />
               <Stack.Screen name="Swap" component={SwapStackScreen} />
               <Stack.Screen
                 name="AddressBooks"

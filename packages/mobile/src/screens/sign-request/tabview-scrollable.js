@@ -15,7 +15,7 @@ import { renderRawDataMessage } from "./components/messages";
 
 const windowHeight = Dimensions.get("window").height;
 const windowWidth = Dimensions.get("window").width;
-const TabBarHeight = 64;
+const TabBarHeight = 48;
 const HeaderHeight = 260;
 
 const SafeStatusBar = Platform.select({

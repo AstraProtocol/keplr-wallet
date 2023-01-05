@@ -179,7 +179,7 @@ const {
       upperScreenName: "Tx",
     },
     "Tx.Result": {
-      upperScreenName: "Tx",
+      upperScreenName: "Transaction",
     },
     "Tx.EvmResult": {
       upperScreenName: "Tx",

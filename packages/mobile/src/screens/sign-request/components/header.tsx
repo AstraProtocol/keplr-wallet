@@ -20,7 +20,7 @@ export const RequestHeaderView: FunctionComponent<{
     <View style={containerStyle}>
       <View
         style={style.flatten([
-          "padding-12",
+          "padding-x-12",
           "flex-row",
           "justify-center",
           "items-center",

@@ -1,5 +1,5 @@
 import React, { FunctionComponent, useEffect, useState } from "react";
-import { View, Image, Text, Animated } from "react-native";
+import { View, Image, Text, Animated, StyleSheet } from "react-native";
 // import { ScrollView, TouchableOpacity } from "react-native-gesture-handler";
 import { useIntl } from "react-intl";
 import { Button } from "../../components";
@@ -91,41 +91,35 @@ export const TransactionSignRequestView: FunctionComponent<{
 
   return (
     <React.Fragment>
-      {type === SignMsgType.Unknown ? (
-        <Animated.ScrollView
-          style={style.flatten(["flex-1", "background-color-card-background"])}
-          contentContainerStyle={style.flatten(["flex-grow-1"])}
-        >
-          <RequestHeaderView
-            containerStyle={style.flatten([
-              "padding-x-16",
+      <Animated.View
+        style={StyleSheet.flatten([
+          style.flatten(["background-color-black", "absolute-fill"]),
+          {
+            opacity: 0,
+          },
+        ])}
+      />
+      <View
+        style={style.flatten([
+          "margin-x-0",
+          "flex-1",
+          "margin-top-106",
+          "background-color-card-background",
+          "border-radius-16",
+          "overflow-hidden",
+        ])}
+      >
+        {type === SignMsgType.Unknown ? (
+          <Animated.ScrollView
+            style={style.flatten([
               "flex-1",
-              "margin-top-64",
               "background-color-card-background",
             ])}
-            metadata={metadata}
-            source={source}
-            sourceUrl={sourceUrl}
-            chain={chainStore.current.chainName}
-            type={intl.formatMessage({ id: type })}
-          />
-          <RawDataCard
-            containerStyle={style.flatten([
-              "margin-y-card-gap",
-              "background-color-transparent",
-              "flex-1",
-            ])}
-            msgs={msgs as AminoMsg[]}
-          />
-        </Animated.ScrollView>
-      ) : (
-        <SignRequestTabView
-          data={msgs as any[]}
-          routes={routes}
-          renderDetails={renderDetail}
-          header={
+            contentContainerStyle={style.flatten(["flex-grow-1"])}
+          >
             <RequestHeaderView
               containerStyle={style.flatten([
+                "padding-x-16",
                 "flex-1",
                 "margin-top-64",
                 "background-color-card-background",
@@ -136,45 +130,163 @@ export const TransactionSignRequestView: FunctionComponent<{
               chain={chainStore.current.chainName}
               type={intl.formatMessage({ id: type })}
             />
-          }
-        />
-      )}
-      <View
-        style={style.flatten([
-          "margin-bottom-0",
-          "margin-x-0",
-          "flex",
-          "background-color-card-background",
-        ])}
-      >
-        <CardDivider
-          style={style.flatten(["background-color-gray-70", "margin-0"])}
-        />
+            <RawDataCard
+              containerStyle={style.flatten([
+                "margin-y-card-gap",
+                "background-color-transparent",
+                "flex-1",
+              ])}
+              msgs={msgs as AminoMsg[]}
+            />
+          </Animated.ScrollView>
+        ) : (
+          <SignRequestTabView
+            data={msgs as any[]}
+            routes={routes}
+            renderDetails={renderDetail}
+            header={
+              <RequestHeaderView
+                containerStyle={style.flatten([
+                  "flex-1",
+                  "margin-top-64",
+                  "background-color-card-background",
+                ])}
+                metadata={metadata}
+                source={source}
+                sourceUrl={sourceUrl}
+                chain={chainStore.current.chainName}
+                type={intl.formatMessage({ id: type })}
+              />
+            }
+          />
+        )}
         <View
           style={style.flatten([
-            "flex-row",
-            "padding-16",
-            "items-center",
-            "margin-bottom-16",
+            "margin-bottom-0",
+            "margin-x-0",
+            // "flex-1",
+            "background-color-card-background",
           ])}
         >
-          <Button
-            containerStyle={style.flatten(["margin-right-12", "flex-1"])}
-            color="neutral"
-            text={intl.formatMessage({ id: "common.text.reject" })}
-            onPress={async () => {
-              onReject(source, isWC);
-            }}
+          <CardDivider
+            style={style.flatten(["background-color-gray-70", "margin-0"])}
           />
-          <Button
-            text={intl.formatMessage({ id: "Confirm" })}
-            onPress={async () => {
-              onApprove(source);
-            }}
-            containerStyle={style.flatten(["flex-1"])}
-          />
+          <View
+            style={style.flatten([
+              "flex-row",
+              "padding-16",
+              "items-center",
+              "margin-bottom-16",
+              "height-68",
+            ])}
+          >
+            <Button
+              containerStyle={style.flatten(["margin-right-12", "flex-1"])}
+              color="neutral"
+              text={intl.formatMessage({ id: "common.text.reject" })}
+              onPress={async () => {
+                onReject(source, isWC);
+              }}
+            />
+            <Button
+              text={intl.formatMessage({ id: "Confirm" })}
+              onPress={async () => {
+                onApprove(source);
+              }}
+              containerStyle={style.flatten(["flex-1"])}
+            />
+          </View>
         </View>
       </View>
     </React.Fragment>
   );
+
+  // return (
+  //   <View style={style.flatten(["opacity-80", "background-color-black"])}>
+  //     {type === SignMsgType.Unknown ? (
+  //       <Animated.ScrollView
+  //         style={style.flatten(["flex-1", "background-color-card-background"])}
+  //         contentContainerStyle={style.flatten(["flex-grow-1"])}
+  //       >
+  //         <RequestHeaderView
+  //           containerStyle={style.flatten([
+  //             "padding-x-16",
+  //             "flex-1",
+  //             "margin-top-64",
+  //             "background-color-card-background",
+  //           ])}
+  //           metadata={metadata}
+  //           source={source}
+  //           sourceUrl={sourceUrl}
+  //           chain={chainStore.current.chainName}
+  //           type={intl.formatMessage({ id: type })}
+  //         />
+  //         <RawDataCard
+  //           containerStyle={style.flatten([
+  //             "margin-y-card-gap",
+  //             "background-color-transparent",
+  //             "flex-1",
+  //           ])}
+  //           msgs={msgs as AminoMsg[]}
+  //         />
+  //       </Animated.ScrollView>
+  //     ) : (
+  //       <SignRequestTabView
+  //         data={msgs as any[]}
+  //         routes={routes}
+  //         renderDetails={renderDetail}
+  //         header={
+  //           <RequestHeaderView
+  //             containerStyle={style.flatten([
+  //               "flex-1",
+  //               "margin-top-64",
+  //               "background-color-card-background",
+  //             ])}
+  //             metadata={metadata}
+  //             source={source}
+  //             sourceUrl={sourceUrl}
+  //             chain={chainStore.current.chainName}
+  //             type={intl.formatMessage({ id: type })}
+  //           />
+  //         }
+  //       />
+  //     )}
+  //     <View
+  //       style={style.flatten([
+  //         "margin-bottom-0",
+  //         "margin-x-0",
+  //         "flex",
+  //         "background-color-card-background",
+  //       ])}
+  //     >
+  //       <CardDivider
+  //         style={style.flatten(["background-color-gray-70", "margin-0"])}
+  //       />
+  //       <View
+  //         style={style.flatten([
+  //           "flex-row",
+  //           "padding-16",
+  //           "items-center",
+  //           "margin-bottom-16",
+  //         ])}
+  //       >
+  //         <Button
+  //           containerStyle={style.flatten(["margin-right-12", "flex-1"])}
+  //           color="neutral"
+  //           text={intl.formatMessage({ id: "common.text.reject" })}
+  //           onPress={async () => {
+  //             onReject(source, isWC);
+  //           }}
+  //         />
+  //         <Button
+  //           text={intl.formatMessage({ id: "Confirm" })}
+  //           onPress={async () => {
+  //             onApprove(source);
+  //           }}
+  //           containerStyle={style.flatten(["flex-1"])}
+  //         />
+  //       </View>
+  //     </View>
+  //   </View>
+  // );
 };
