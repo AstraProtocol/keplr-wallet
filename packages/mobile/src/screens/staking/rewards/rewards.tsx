@@ -3,7 +3,7 @@ import React, { FunctionComponent } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
 import { Text, ViewStyle } from "react-native";
 import { StakableRewards } from ".";
-import { formatCoinRewards } from "../../../common/utils";
+import { formatCoinAmount } from "../../../common/utils";
 import { ItemRow, TextAlign } from "../../../components";
 import { Card, CardBody } from "../../../components/card";
 import { ValidatorItem } from "../../../components/input";
@@ -57,7 +57,7 @@ export const RewardDetails: FunctionComponent<{
               key={index}
               thumbnail={thumbnail}
               name={validatorName}
-              value={formatCoinRewards(rewardsAmount)}
+              value={formatCoinAmount(rewardsAmount)}
               containerStyle={style.flatten(["margin-x-16", "margin-bottom-8"])}
             />
           );

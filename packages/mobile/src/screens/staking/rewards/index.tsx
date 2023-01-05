@@ -14,8 +14,8 @@ import { CoinPretty, Dec } from "@keplr-wallet/unit";
 import { useIntl } from "react-intl";
 import { SafeAreaView, ScrollView, Text, View } from "react-native";
 import {
+  formatCoinAmount,
   formatCoinFee,
-  formatCoinRewards,
   MIN_AMOUNT,
   TX_GAS_DEFAULT,
 } from "../../../common/utils";
@@ -177,7 +177,7 @@ export const StakingRewardScreen: FunctionComponent = () => {
           "margin-bottom-24",
         ])}
       >
-        {formatCoinRewards(stakingReward)}
+        {formatCoinAmount(stakingReward)}
       </Text>
       <View
         style={style.flatten([
