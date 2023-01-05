@@ -56,7 +56,14 @@ export const RequestHeaderView: FunctionComponent<{
           )}
         </View>
       </View>
-      <Text style={style.flatten(["color-gray-10", "text-center", "h4"])}>
+      <Text
+        style={style.flatten([
+          "color-gray-10",
+          "text-center",
+          "h4",
+          "margin-top-12",
+        ])}
+      >
         {intl
           .formatMessage(
             { id: "walletconnect.text.verify" },

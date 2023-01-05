@@ -1,5 +1,4 @@
-import { Bech32Address } from "@keplr-wallet/cosmos";
-import { CoinPrimitive, Staking } from "@keplr-wallet/stores";
+import { CoinPrimitive } from "@keplr-wallet/stores";
 import { AppCurrency } from "@keplr-wallet/types";
 import React, { FunctionComponent, useEffect, useMemo, useState } from "react";
 import { CoinUtils, Coin, CoinPretty } from "@keplr-wallet/unit";
@@ -54,6 +53,7 @@ export const RawMsgView: FunctionComponent<{
   showHeader: boolean;
   index: number;
 }> = ({ msg, showHeader, index }) => {
+  const intl = useIntl();
   const style = useStyle();
   const type = typeOf(msg);
   const [isOpen, setIsOpen] = useState(false);
@@ -83,9 +83,10 @@ export const RawMsgView: FunctionComponent<{
               "color-gray-10",
               "margin-right-16",
               "flex-1",
+              "capitalize",
             ])}
           >
-            {type}
+            {intl.formatMessage({ id: type })}
           </Text>
           <TouchableOpacity
             style={style.flatten(["width-24", "height-24"])}

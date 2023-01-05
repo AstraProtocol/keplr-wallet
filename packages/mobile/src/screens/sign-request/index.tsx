@@ -10,6 +10,7 @@ import { RawDataCard, renderMessage, RequestHeaderView } from "./components";
 import { Msg as AminoMsg } from "@cosmjs/launchpad";
 import { getType, SignMsgType } from "./helper";
 import SignRequestTabView from "./tabview-scrollable";
+import { useStaking } from "../staking/hook/use-staking";
 
 export const TransactionSignRequestView: FunctionComponent<{
   onApprove: (name?: string) => void;
@@ -20,8 +21,9 @@ export const TransactionSignRequestView: FunctionComponent<{
     signClientStore,
     chainStore,
     accountStore,
-    queriesStore,
   } = useStore();
+
+  const { getValidator, getRewardsAmountOf } = useStaking();
 
   const [isWC, setIsWC] = useState(false);
 
@@ -68,9 +70,8 @@ export const TransactionSignRequestView: FunctionComponent<{
       account,
       msg,
       chainInfo.currencies,
-      queriesStore,
-      chainId,
-      account.bech32Address,
+      getValidator,
+      getRewardsAmountOf,
       index,
       intl
     );
@@ -200,93 +201,4 @@ export const TransactionSignRequestView: FunctionComponent<{
       </View>
     </React.Fragment>
   );
-
-  // return (
-  //   <View style={style.flatten(["opacity-80", "background-color-black"])}>
-  //     {type === SignMsgType.Unknown ? (
-  //       <Animated.ScrollView
-  //         style={style.flatten(["flex-1", "background-color-card-background"])}
-  //         contentContainerStyle={style.flatten(["flex-grow-1"])}
-  //       >
-  //         <RequestHeaderView
-  //           containerStyle={style.flatten([
-  //             "padding-x-16",
-  //             "flex-1",
-  //             "margin-top-64",
-  //             "background-color-card-background",
-  //           ])}
-  //           metadata={metadata}
-  //           source={source}
-  //           sourceUrl={sourceUrl}
-  //           chain={chainStore.current.chainName}
-  //           type={intl.formatMessage({ id: type })}
-  //         />
-  //         <RawDataCard
-  //           containerStyle={style.flatten([
-  //             "margin-y-card-gap",
-  //             "background-color-transparent",
-  //             "flex-1",
-  //           ])}
-  //           msgs={msgs as AminoMsg[]}
-  //         />
-  //       </Animated.ScrollView>
-  //     ) : (
-  //       <SignRequestTabView
-  //         data={msgs as any[]}
-  //         routes={routes}
-  //         renderDetails={renderDetail}
-  //         header={
-  //           <RequestHeaderView
-  //             containerStyle={style.flatten([
-  //               "flex-1",
-  //               "margin-top-64",
-  //               "background-color-card-background",
-  //             ])}
-  //             metadata={metadata}
-  //             source={source}
-  //             sourceUrl={sourceUrl}
-  //             chain={chainStore.current.chainName}
-  //             type={intl.formatMessage({ id: type })}
-  //           />
-  //         }
-  //       />
-  //     )}
-  //     <View
-  //       style={style.flatten([
-  //         "margin-bottom-0",
-  //         "margin-x-0",
-  //         "flex",
-  //         "background-color-card-background",
-  //       ])}
-  //     >
-  //       <CardDivider
-  //         style={style.flatten(["background-color-gray-70", "margin-0"])}
-  //       />
-  //       <View
-  //         style={style.flatten([
-  //           "flex-row",
-  //           "padding-16",
-  //           "items-center",
-  //           "margin-bottom-16",
-  //         ])}
-  //       >
-  //         <Button
-  //           containerStyle={style.flatten(["margin-right-12", "flex-1"])}
-  //           color="neutral"
-  //           text={intl.formatMessage({ id: "common.text.reject" })}
-  //           onPress={async () => {
-  //             onReject(source, isWC);
-  //           }}
-  //         />
-  //         <Button
-  //           text={intl.formatMessage({ id: "Confirm" })}
-  //           onPress={async () => {
-  //             onApprove(source);
-  //           }}
-  //           containerStyle={style.flatten(["flex-1"])}
-  //         />
-  //       </View>
-  //     </View>
-  //   </View>
-  // );
 };

@@ -19,6 +19,7 @@ import {
   Staking,
 } from "@keplr-wallet/stores";
 import { AppCurrency } from "@keplr-wallet/types";
+import { CoinPretty } from "@keplr-wallet/unit";
 
 import {
   renderBeginRedelegateMsg,
@@ -28,7 +29,7 @@ import {
   renderUnDelegateMsg,
   renderWithdrawDelegatorRewardMsg,
 } from "./messages";
-import { KeplrETCQueries } from "@keplr-wallet/stores-etc";
+
 import { IntlShape } from "react-intl";
 
 export function renderMessage(
@@ -45,11 +46,10 @@ export function renderMessage(
   },
   unknownMsg: any,
   currencies: AppCurrency[],
-  queriesStore: QueriesStore<
-    [CosmosQueries, CosmwasmQueries, SecretQueries, KeplrETCQueries]
-  >,
-  chainId: string,
-  bech32Address: string,
+  getValidator: (
+    validatorAddress?: string | undefined
+  ) => Staking.Validator | undefined,
+  getRewardsAmountOf: (validatorAddress: string) => CoinPretty,
   index: number,
   intl: IntlShape
 ): {
@@ -61,16 +61,10 @@ export function renderMessage(
     const msg = unknownMsg as MsgObj;
     if (msg.type === msgOpts.cosmos.msgOpts.redelegate.type) {
       const value = msg.value as MsgBeginRedelegate["value"];
-      const queries = queriesStore.get(chainId);
-      const queryValidators = queries.cosmos.queryValidators.getQueryStatus(
-        Staking.BondStatus.Unspecified
-      );
-      const srcValidator = queryValidators.getValidator(
-        value.validator_src_address
-      );
-      const dstValidator = queryValidators.getValidator(
-        value.validator_dst_address
-      );
+
+      const srcValidator = getValidator(value.validator_src_address);
+      const dstValidator = getValidator(value.validator_dst_address);
+      console.log(srcValidator, dstValidator);
       return renderBeginRedelegateMsg(
         currencies,
         value.amount,
@@ -82,11 +76,7 @@ export function renderMessage(
 
     if (msg.type === msgOpts.cosmos.msgOpts.undelegate.type) {
       const value = msg.value as MsgUndelegate["value"];
-      const queries = queriesStore.get(chainId);
-      const queryValidators = queries.cosmos.queryValidators.getQueryStatus(
-        Staking.BondStatus.Unspecified
-      );
-      const validator = queryValidators.getValidator(value.validator_address);
+      const validator = getValidator(value.validator_address);
       return renderUnDelegateMsg(
         currencies,
         value.amount,
@@ -97,11 +87,7 @@ export function renderMessage(
 
     if (msg.type === msgOpts.cosmos.msgOpts.delegate.type) {
       const value = msg.value as MsgDelegate["value"];
-      const queries = queriesStore.get(chainId);
-      const queryValidators = queries.cosmos.queryValidators.getQueryStatus(
-        Staking.BondStatus.Unspecified
-      );
-      const validator = queryValidators.getValidator(value.validator_address);
+      const validator = getValidator(value.validator_address);
 
       return renderDelegateMsg(
         currencies,
@@ -113,15 +99,8 @@ export function renderMessage(
 
     if (msg.type === msgOpts.cosmos.msgOpts.withdrawRewards.type) {
       const value = msg.value as MsgWithdrawDelegatorReward["value"];
-      const queries = queriesStore.get(chainId);
-      const queryValidators = queries.cosmos.queryValidators.getQueryStatus(
-        Staking.BondStatus.Unspecified
-      );
-      const queryReward = queries.cosmos.queryRewards.getQueryBech32Address(
-        bech32Address
-      );
-      const rewards = queryReward.getStakableRewardOf(value.validator_address);
-      const validator = queryValidators.getValidator(value.validator_address);
+      const rewards = getRewardsAmountOf(value.validator_address);
+      const validator = getValidator(value.validator_address);
 
       return renderWithdrawDelegatorRewardMsg(
         rewards,
