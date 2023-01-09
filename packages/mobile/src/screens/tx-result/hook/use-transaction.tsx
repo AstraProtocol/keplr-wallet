@@ -48,7 +48,9 @@ export const useTransaction = () => {
   const sendSendTransaction = async (value?: any) => {
     const data = value as MsgSend["value"];
 
-    amountConfig.setAmount(formatCoinAmount(data.amount, true));
+    let amount = formatCoinAmount(data.amount, true);
+    amount = amount.split(",").join("");
+    amountConfig.setAmount(amount);
 
     await transfer(data.recipient, amountConfig, {
       onBroadcasted: (txHash) => {
@@ -69,10 +71,9 @@ export const useTransaction = () => {
   const sendDelegateTransaction = async (value?: any) => {
     const data = value as MsgDelegate["value"];
 
-    const tx = account.cosmos.makeDelegateTx(
-      formatCoinAmount(data.amount, true),
-      data.validatorAddress
-    );
+    let amount = formatCoinAmount(data.amount, true);
+    amount = amount.split(",").join("");
+    const tx = account.cosmos.makeDelegateTx(amount, data.validatorAddress);
 
     await tx.sendWithGasPrice(
       { gas: Number(data.gasLimit ?? 0) },
@@ -97,10 +98,9 @@ export const useTransaction = () => {
   const sendUndelegateTransaction = async (value?: any) => {
     const data = value as MsgUndelegate["value"];
 
-    const tx = account.cosmos.makeUndelegateTx(
-      formatCoinAmount(data.amount, true),
-      data.validatorAddress
-    );
+    let amount = formatCoinAmount(data.amount, true);
+    amount = amount.split(",").join("");
+    const tx = account.cosmos.makeUndelegateTx(amount, data.validatorAddress);
     await tx.sendWithGasPrice(
       { gas: Number(data.gasLimit ?? 0) },
       "",
@@ -124,8 +124,10 @@ export const useTransaction = () => {
   const sendRedelegateTransaction = async (value?: any) => {
     const data = value as MsgBeginRedelegate["value"];
 
+    let amount = formatCoinAmount(data.amount, true);
+    amount = amount.split(",").join("");
     const tx = account.cosmos.makeBeginRedelegateTx(
-      formatCoinAmount(data.amount, true),
+      amount,
       data.srcValidatorAddress,
       data.dstValidatorAddress
     );

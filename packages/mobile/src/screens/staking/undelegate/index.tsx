@@ -150,10 +150,7 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
 
   const updateNavigationTitle = () => {
     smartNavigation.setOptions({
-      title: intl.formatMessage(
-        { id: "undelegate.title" },
-        { coin: chainStore.current.stakeCurrency.coinDenom }
-      ),
+      title: intl.formatMessage({ id: "undelegate.title" }),
     });
   };
 

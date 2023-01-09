@@ -1,5 +1,5 @@
 import { observer } from "mobx-react-lite";
-import React, { FunctionComponent, useMemo } from "react";
+import React, { FunctionComponent, useEffect, useState } from "react";
 import { useIntl } from "react-intl";
 import { View, ViewStyle } from "react-native";
 import { formatDate } from "../../../common";
@@ -35,17 +35,27 @@ export const TransactionDetailsView: FunctionComponent<{
   const chainInfo = chainStore.getChain(chainId);
   const rawData = transactionStore.rawData;
 
-  const rows = useMemo(() => {
+  const [txState, setTxState] = useState(transactionStore.txState);
+
+  useEffect(() => {
+    setTxState(transactionStore.txState);
+  }, [transactionStore.txState]);
+
+  const rows = (() => {
     let rows = getTxDetailsRows();
 
     if (
       rawData?.type !=
       accountStore.getAccount(chainId).cosmos.msgOpts.withdrawRewards.type
     ) {
-      rows = insert(rows, getTransactionTimeRow(), rows.length - 1);
+      rows = insert(
+        rows,
+        getTransactionTimeRow(transactionStore.rawData?.time),
+        rows.length - 1
+      );
 
       if (
-        transactionStore.txState === "success" &&
+        txState === "success" &&
         rawData?.type ===
           accountStore.getAccount(chainId).cosmos.msgOpts.undelegate.type
       ) {
@@ -73,7 +83,7 @@ export const TransactionDetailsView: FunctionComponent<{
       rows = join(rows, getSeparatorRow());
     }
     return rows;
-  }, [transactionStore.txState]);
+  })();
 
   const viewDetailsHandler = () => {
     let txHash = "";
@@ -84,7 +94,7 @@ export const TransactionDetailsView: FunctionComponent<{
     } else if (
       rawData &&
       rawData.type === "wallet-swap" &&
-      transactionStore.txState !== "failure"
+      txState !== "failure"
     ) {
       const rawDataValue = rawData.value;
       txHash = (rawDataValue as MsgSwap).transactionHash || "";

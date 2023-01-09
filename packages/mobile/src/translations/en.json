@@ -101,6 +101,7 @@
   "Apply": "Apply",
   "ClearFilter": "Clear filter",
   "MyUnstaking": "My unstaking",
+  "FromStakingProvider": "From staking provider",
 
   "Dashboard.Banner.1": "Staking",
   "Dashboard.Banner.2": "17%/year",
@@ -256,7 +257,7 @@
   "settings.unlockBiometrics.fingerprint": "Use Fingerprint authentication",
   "settings.unlockBiometrics.touch": "Use Touch ID authentication",
   "settings.viewPassphase": "Reveal secret phrase",
-  "undelegate.title": "Unstake {coin}",
+  "undelegate.title": "Unstake",
   "viewPassphase.title": "Reveal secret phrase",
   "wallet.create.success": "Create wallet successfully",
   "wallet.receive.address.guide": "Scan QR code or copy address to send {denom} from another wallet",

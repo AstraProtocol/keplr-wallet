@@ -195,6 +195,7 @@ export const AmountInput: FunctionComponent<{
     return (
       <View style={containerStyle}>
         <NormalInput
+          maxLength={22}
           value={amountText}
           label={labelText}
           info={infoText}

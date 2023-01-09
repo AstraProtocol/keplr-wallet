@@ -39,6 +39,7 @@ interface NormalInputProps {
   ) => void;
   returnKeyType?: ReturnKeyTypeOptions;
   editable?: boolean;
+  maxLength?: number;
   rightLabelView?: React.ReactNode;
 }
 
@@ -66,6 +67,7 @@ export const NormalInput: FunctionComponent<NormalInputProps> = observer(
     onSubmitEditting,
     returnKeyType = "done",
     editable = true,
+    maxLength,
     rightLabelView,
   }) => {
     const styleBuilder = useStyle();
@@ -217,6 +219,7 @@ export const NormalInput: FunctionComponent<NormalInputProps> = observer(
           onSubmitEditing={onSubmitEditting}
           returnKeyType={returnKeyType}
           editable={editable}
+          maxLength={maxLength}
         />
       </View>
     );

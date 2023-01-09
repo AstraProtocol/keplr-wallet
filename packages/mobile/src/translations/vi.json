@@ -101,6 +101,7 @@
   "Apply": "Áp dụng",
   "ClearFilter": "Xóa bộ lọc",
   "MyUnstaking": "Nhà cung cấp và số ASA đang rút",
+  "FromStakingProvider": "Từ nhà cung cấp",
 
   "Dashboard.Banner.1": "Staking lợi nhuận tới",
   "Dashboard.Banner.2": "17%/năm",
@@ -256,7 +257,7 @@
   "settings.unlockBiometrics.fingerprint": "Xác thực bằng vân tay",
   "settings.unlockBiometrics.touch": "Xác thực bằng vân tay",
   "settings.viewPassphase": "Xem cụm từ bí mật",
-  "undelegate.title": "Rút {coin}",
+  "undelegate.title": "Rút staking",
   "viewPassphase.title": "Xem cụm từ bí mật",
   "wallet.create.success": "Tạo ví mới thành công",
   "wallet.receive.address.guide": "Quét mã QR hoặc bấm sao chép để gửi {denom} vào địa chỉ này từ ví khác",

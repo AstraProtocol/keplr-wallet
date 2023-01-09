@@ -344,7 +344,11 @@ export const TxNavigation: FunctionComponent = () => {
         name="Tx.EvmResult"
         component={TxEvmResultScreen}
         options={{
+          cardShadowEnabled: true,
+          cardOverlayEnabled: true,
           headerShown: false,
+          cardStyle: { backgroundColor: "transparent" },
+          cardStyleInterpolator: modalStyleInterpolator,
         }}
       />
     </Stack.Navigator>

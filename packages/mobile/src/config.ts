@@ -35,7 +35,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
   {
     rpc: "https://cosmos.astranaut.dev",
     rest: "https://api.astranaut.dev",
-    chainId: "astra_11115-2",
+    chainId: "astra_11115-1",
     chainIdNumber: 11115,
     chainName: "Testnet",
     stakeCurrency: {

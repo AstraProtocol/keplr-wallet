@@ -1,6 +1,6 @@
 import { Staking } from "@keplr-wallet/stores";
 import React, { FunctionComponent } from "react";
-import { FormattedMessage, useIntl } from "react-intl";
+import { useIntl } from "react-intl";
 import { Text, ViewStyle } from "react-native";
 import { StakableRewards } from ".";
 import { formatCoinAmount } from "../../../common/utils";
@@ -39,7 +39,7 @@ export const RewardDetails: FunctionComponent<{
             "margin-bottom-8",
           ])}
         >
-          <FormattedMessage id="MyStaking" />
+          {intl.formatMessage({ id: "FromStakingProvider" })}
         </Text>
         {stakableRewardsList?.map((stakableRewards, index) => {
           const {

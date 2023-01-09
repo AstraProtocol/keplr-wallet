@@ -40,6 +40,7 @@ export class TransactionStore {
   @observable protected _rawData?: {
     type: string;
     value: Record<string, any>;
+    time?: Date;
   } = undefined;
   @observable protected _txContent?: string = undefined;
 
@@ -77,6 +78,7 @@ export class TransactionStore {
     | {
         type: string;
         value: Record<string, any>;
+        time?: Date;
       }
     | undefined {
     return this._rawData;
@@ -116,7 +118,7 @@ export class TransactionStore {
 
   @action
   updateRawData(rawData: { type: string; value: Record<string, any> }) {
-    this._rawData = rawData;
+    this._rawData = { ...rawData, time: new Date() };
     this.setContent(rawData?.value);
   }
 
