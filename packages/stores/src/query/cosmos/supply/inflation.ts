@@ -1,7 +1,6 @@
 import { Dec, DecUtils, Int, IntPretty } from "@keplr-wallet/unit";
 import { computed, makeObservable } from "mobx";
 import { ChainGetter } from "../../../common";
-import { ObservableChainQuery } from "../../chain-query";
 import { ObservableQueryDistributionParams } from "../distribution";
 import { ObservableQueryStakingPool } from "../staking";
 import {
@@ -15,6 +14,7 @@ import {
 } from "./astra";
 import { ObservableQueryIrisMintingInfation } from "./iris-minting";
 import { ObservableQueryJunoAnnualProvisions } from "./juno/annual-provisions";
+import { ObservableQueryMint } from "./minting";
 import {
   ObservableQueryOsmosisEpochProvisions,
   ObservableQueryOsmosisEpochs,
@@ -22,13 +22,12 @@ import {
 } from "./osmosis";
 import { ObservableQuerySifchainLiquidityAPY } from "./sifchain";
 import { ObservableQuerySupplyTotal } from "./supply";
-import { MintingInflation } from "./types";
 
 export class ObservableQueryInflation {
   constructor(
     protected readonly chainId: string,
     protected readonly chainGetter: ChainGetter,
-    protected readonly _queryMint: ObservableChainQuery<MintingInflation>,
+    protected readonly _queryMint: ObservableQueryMint,
     protected readonly _queryPool: ObservableQueryStakingPool,
     protected readonly _querySupplyTotal: ObservableQuerySupplyTotal,
     protected readonly _queryIrisMint: ObservableQueryIrisMintingInfation,
@@ -48,15 +47,14 @@ export class ObservableQueryInflation {
 
   get error() {
     return (
-      this._queryMint.error ??
-      this._queryPool.error ??
-      this._querySupplyTotal.getQueryStakeDenom().error
+      // this._queryMint.error ??
+      this._queryPool.error ?? this._querySupplyTotal.getQueryStakeDenom().error
     );
   }
 
   get isFetching() {
     return (
-      this._queryMint.isFetching ||
+      // this._queryMint.isFetching ||
       this._queryPool.isFetching ||
       this._querySupplyTotal.getQueryStakeDenom().isFetching
     );
@@ -142,9 +140,9 @@ export class ObservableQueryInflation {
           return new IntPretty(dec);
         }
       } else {
-        dec = new Dec(this._queryMint.response?.data.inflation ?? "0").mul(
-          DecUtils.getPrecisionDec(2)
-        );
+        // dec = new Dec(this._queryMint.response?.data.inflation ?? "0").mul(
+        //   DecUtils.getPrecisionDec(2)
+        // );
       }
 
       if (!dec || dec.equals(new Dec(0))) {

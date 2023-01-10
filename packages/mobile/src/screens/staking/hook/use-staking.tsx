@@ -27,19 +27,31 @@ export const useStaking = () => {
   );
   const queryPool = queries.cosmos.queryPool;
   const queryInflation = queries.cosmos.queryInflation;
+  const queryMint = queries.cosmos.queryMint;
 
   const getChainAPR = () => {
-    const dailyRewards = Number(
-      queryInflation.epochMintProvision?.amount || "0"
+    // const dailyRewards = Number(
+    //   queryInflation.epochMintProvision?.amount || "0"
+    // );
+
+    // if (queryPool.bondedTokens.toDec().isZero() || dailyRewards === 0) {
+    //   return 0;
+    // }
+
+    // const bonded = Number(queryPool.bondedTokens.toCoin().amount);
+
+    // return (dailyRewards * 365.25) / bonded;
+    const blockProvision = Number(
+      queryMint.mintBlockProvision?.amount || "0"
     );
 
-    if (queryPool.bondedTokens.toDec().isZero() || dailyRewards === 0) {
+    if (queryPool.bondedTokens.toDec().isZero() || blockProvision === 0) {
       return 0;
     }
 
     const bonded = Number(queryPool.bondedTokens.toCoin().amount);
 
-    return (dailyRewards * 365.25) / bonded;
+    return (blockProvision * 10519200) / bonded;
   };
 
   const getValidators = (
@@ -186,5 +198,6 @@ export const useStaking = () => {
     queryRedelegations,
     queryPool,
     queryInflation,
+    queryMint,
   };
 };

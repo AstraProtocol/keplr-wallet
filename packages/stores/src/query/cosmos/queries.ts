@@ -37,6 +37,7 @@ import {
 import { ObservableQueryRPCStatus } from "./status";
 import {
   ObservableQueryInflation,
+  ObservableQueryMint,
   ObservableQueryMintingInfation,
   ObservableQuerySupplyTotal,
 } from "./supply";
@@ -45,6 +46,7 @@ import {
   ObservableQueryInflationInflationPeriod,
   ObservableQueryInflationInflationRate,
   ObservableQueryInflationParams,
+  ObservableQueryMintBlockProvision,
 } from "./supply/astra";
 import { ObservableQueryIrisMintingInfation } from "./supply/iris-minting";
 import { ObservableQueryJunoAnnualProvisions } from "./supply/juno";
@@ -89,7 +91,7 @@ export class CosmosQueriesImpl {
 
   public readonly queryAccount: DeepReadonly<ObservableQueryAccount>;
   public readonly querySpendableBalances: DeepReadonly<ObservableQuerySpendableBalances>;
-  public readonly queryMint: DeepReadonly<ObservableQueryMintingInfation>;
+  public readonly queryMint: DeepReadonly<ObservableQueryMint>;
   public readonly queryPool: DeepReadonly<ObservableQueryStakingPool>;
   public readonly queryStakingParams: DeepReadonly<ObservableQueryStakingParams>;
   public readonly querySupplyTotal: DeepReadonly<ObservableQuerySupplyTotal>;
@@ -115,6 +117,8 @@ export class CosmosQueriesImpl {
 
   public readonly queryTokens: DeepReadonly<ObservableQueryTokens>;
   public readonly queryNfts: DeepReadonly<ObservableQueryNFTs>;
+
+  // public readonly queryMint: DeepReadonly<ObservableQueryMint>;
 
   constructor(
     base: QueriesSetBase,
@@ -147,10 +151,12 @@ export class CosmosQueriesImpl {
       chainId,
       chainGetter
     );
-    this.queryMint = new ObservableQueryMintingInfation(
+    this.queryMint = new ObservableQueryMint(
       kvStore,
       chainId,
-      chainGetter
+      chainGetter,
+      new ObservableQueryMintingInfation(kvStore, chainId, chainGetter),
+      new ObservableQueryMintBlockProvision(kvStore, chainId, chainGetter)
     );
     this.queryPool = new ObservableQueryStakingPool(
       kvStore,

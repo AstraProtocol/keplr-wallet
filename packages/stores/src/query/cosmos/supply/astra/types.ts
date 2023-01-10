@@ -29,3 +29,7 @@ export type InflationPeriod = {
 export type InflationRate = {
   inflation_rate: string;
 };
+
+export type MintBlockProvision = {
+  provision: Coin;
+};

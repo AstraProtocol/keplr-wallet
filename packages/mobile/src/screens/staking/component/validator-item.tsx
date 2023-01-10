@@ -329,7 +329,7 @@ export const DashboardValidatorItem: FunctionComponent<{
   containerStyle?: ViewStyle;
   validator: Staking.Validator;
   hideStakeButton?: boolean;
-}> = ({ containerStyle, validator, hideStakeButton = false }) => {
+}> = observer(({ containerStyle, validator, hideStakeButton = false }) => {
   const { getValidatorAPR, getTotalSharesAmountOf } = useStaking();
 
   const style = useStyle();
@@ -389,7 +389,7 @@ export const DashboardValidatorItem: FunctionComponent<{
       />
     </View>
   );
-};
+});
 
 const ValidatorInfo: FunctionComponent<{
   containerStyle?: ViewStyle;
