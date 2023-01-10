@@ -93,9 +93,9 @@ export const EmbedChainInfos: AppChainInfo[] = [
       txUrl: "https://explorer.astranaut.dev/tx/{txHash}",
     },
     wcInfor: {
-      relayUrl: "wss://wc-relay.astranaut.dev",
+      relayUrl: "wss://relay.walletconnect.com",
       pushServerUrl: "https://wc-push.astranaut.dev",
-      projectId: "dd47fbeda006ccb670152d74136f846a",
+      projectId: "af3dd8c81db591806b87e9dbdd42d670",
       metadata: {
         name: "Astra Wallet",
         description: "Everything for Astra",
