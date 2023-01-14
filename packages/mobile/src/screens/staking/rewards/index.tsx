@@ -1,15 +1,8 @@
 import React, { FunctionComponent, useEffect, useState } from "react";
-import { ChainStore, useStore } from "../../../stores";
+import { useStore } from "../../../stores";
 import { useStyle } from "../../../styles";
 
-import { FeeType, useSendTxConfig } from "@keplr-wallet/hooks";
-import { MsgWithdrawDelegatorReward } from "@keplr-wallet/proto-types/cosmos/distribution/v1beta1/tx";
-import {
-  AccountStore,
-  CosmosAccount,
-  CosmwasmAccount,
-  SecretAccount,
-} from "@keplr-wallet/stores";
+import { useSendTxConfig } from "@keplr-wallet/hooks";
 import { CoinPretty, Dec } from "@keplr-wallet/unit";
 import { useIntl } from "react-intl";
 import { SafeAreaView, ScrollView, Text, View } from "react-native";
@@ -17,10 +10,10 @@ import {
   formatCoinAmount,
   formatCoinFee,
   MIN_AMOUNT,
-  TX_GAS_DEFAULT,
 } from "../../../common/utils";
 import { Button } from "../../../components/button";
 import { EthereumEndpoint } from "../../../config";
+import { useTransaction } from "../../tx-result/hook/use-transaction";
 import { useStaking } from "../hook/use-staking";
 import { RewardDetails } from "./rewards";
 
@@ -40,6 +33,7 @@ export const StakingRewardScreen: FunctionComponent = () => {
     transactionStore,
   } = useStore();
   const { getValidator, getRewardsAmountOf, getDelegations } = useStaking();
+  const { simulateWithdrawRewardsTx } = useTransaction();
 
   const account = accountStore.getAccount(chainStore.current.chainId);
 
@@ -90,13 +84,20 @@ export const StakingRewardScreen: FunctionComponent = () => {
     (info) => info.validatorAddress
   ) as string[];
 
-  const { gasPrice, gasLimit, feeType } = simulateWithdrawRewardGasFee(
-    chainStore,
-    accountStore,
-    validatorAddresses
-  );
-  sendConfigs.gasConfig.setGas(gasLimit);
-  sendConfigs.feeConfig.setFeeType(feeType);
+  useEffect(() => {
+    simulateWithdrawRewardsTx(validatorAddresses).then(
+      ({ feeAmount, gasPrice, gasLimit }) => {
+        sendConfigs.feeConfig.setManualFee(feeAmount);
+        sendConfigs.gasConfig.setGas(gasLimit);
+        setGasPrice(gasPrice);
+        setGasLimit(gasLimit);
+      }
+    );
+  }, []);
+
+  const [gasPrice, setGasPrice] = useState(0);
+  const [gasLimit, setGasLimit] = useState(0);
+
   const feeText = formatCoinFee(sendConfigs.feeConfig.fee);
 
   const withdrawAllRewards = async () => {
@@ -203,74 +204,4 @@ export const StakingRewardScreen: FunctionComponent = () => {
       <SafeAreaView />
     </View>
   );
-};
-
-const simulateWithdrawRewardGasFee = (
-  chainStore: ChainStore,
-  accountStore: AccountStore<[CosmosAccount, CosmwasmAccount, SecretAccount]>,
-  validatorAddresses: string[]
-) => {
-  useEffect(() => {
-    simulate();
-  }, []);
-
-  const chainId = chainStore.current.chainId;
-  const [gasLimit, setGasLimit] = useState(TX_GAS_DEFAULT.withdraw);
-
-  const simulate = async () => {
-    const account = accountStore.getAccount(chainId);
-
-    const msgs = validatorAddresses.map((validatorAddress) => {
-      return {
-        type: account.cosmos.msgOpts.withdrawRewards.type,
-        value: {
-          delegator_address: account.bech32Address,
-          validator_address: validatorAddress,
-        },
-      };
-    });
-    try {
-      const { gasUsed } = await account.cosmos.simulateTx(
-        msgs.map((msg) => {
-          return {
-            typeUrl: "/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward",
-            value: MsgWithdrawDelegatorReward.encode({
-              delegatorAddress: msg.value.delegator_address,
-              validatorAddress: msg.value.validator_address,
-            }).finish(),
-          };
-        }),
-        { amount: [] }
-      );
-
-      const gasLimit = Math.ceil(gasUsed * 1.3);
-      console.log("__DEBUG__ simulate gasUsed", gasUsed);
-      console.log("__DEBUG__ simulate gasLimit", gasLimit);
-      setGasLimit(gasLimit);
-    } catch (e) {
-      console.log("simulateWithdrawRewardGasFee error", e);
-      setGasLimit(TX_GAS_DEFAULT.withdraw); // default gas
-    }
-  };
-
-  const feeType = "average" as FeeType;
-  var gasPrice = 1000000000; // default 1 gwei = 1 nano aastra
-  const feeConfig = chainStore.current.feeCurrencies
-    .filter((feeCurrency) => {
-      return (
-        feeCurrency.coinMinimalDenom ===
-        chainStore.current.stakeCurrency.coinMinimalDenom
-      );
-    })
-    .shift();
-  if (feeConfig?.gasPriceStep) {
-    const { [feeType]: wei } = feeConfig.gasPriceStep;
-    gasPrice = wei;
-  }
-
-  return {
-    gasPrice,
-    gasLimit,
-    feeType,
-  };
 };

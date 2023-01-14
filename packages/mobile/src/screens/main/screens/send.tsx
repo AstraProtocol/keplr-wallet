@@ -22,6 +22,7 @@ import { EthereumEndpoint } from "../../../config";
 import { useWeb3Transfer } from "../../../hooks/use-web3-transfer";
 import { useSmartNavigation } from "../../../navigation-util";
 import { useStore } from "../../../stores";
+import { useStaking } from "../../staking/hook/use-staking";
 
 export const SendTokenScreen: FunctionComponent = observer(() => {
   const {
@@ -46,6 +47,7 @@ export const SendTokenScreen: FunctionComponent = observer(() => {
     >
   >();
 
+  const { queryFeeMarket } = useStaking();
   const { estimateGas } = useWeb3Transfer();
 
   const chainId = route.params.chainId
@@ -123,7 +125,13 @@ export const SendTokenScreen: FunctionComponent = observer(() => {
     if (amountIsValid && addressIsValid) {
       const { gasLimit: gas, gasPrice: price } = await estimateGas(
         sendConfigs.recipientConfig.recipient,
-        sendConfigs.amountConfig
+        sendConfigs.amountConfig,
+        queryFeeMarket.baseFee
+          ? {
+              baseFee: Number(queryFeeMarket.baseFee),
+              priorityFee: 1_500_000_000,
+            }
+          : {}
       );
 
       const gasLimit = parseInt(gas.toHexString().slice(2), 16);

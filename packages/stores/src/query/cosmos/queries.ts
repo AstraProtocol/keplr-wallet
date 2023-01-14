@@ -3,6 +3,7 @@ import { DeepReadonly } from "utility-types";
 import { ChainGetter } from "../../common";
 import { ObservableQueryTokens } from "../blockscout";
 import { ObservableQueryTxs } from "../chain-indexing/tx";
+import { ObservableQueryFeeMarket } from "../ethermint";
 import { ObservableQueryNFTs } from "../nft";
 import { QueriesSetBase } from "../queries";
 import { ObservableQueryAccount } from "./account";
@@ -118,7 +119,7 @@ export class CosmosQueriesImpl {
   public readonly queryTokens: DeepReadonly<ObservableQueryTokens>;
   public readonly queryNfts: DeepReadonly<ObservableQueryNFTs>;
 
-  // public readonly queryMint: DeepReadonly<ObservableQueryMint>;
+  public readonly queryFeeMarket: DeepReadonly<ObservableQueryFeeMarket>;
 
   constructor(
     base: QueriesSetBase,
@@ -288,5 +289,10 @@ export class CosmosQueriesImpl {
 
     this.queryTokens = new ObservableQueryTokens(kvStore, chainId, chainGetter);
     this.queryNfts = new ObservableQueryNFTs(kvStore, chainId, chainGetter);
+    this.queryFeeMarket = new ObservableQueryFeeMarket(
+      kvStore,
+      chainId,
+      chainGetter
+    );
   }
 }

@@ -1,15 +1,4 @@
-import {
-  FeeType,
-  IAmountConfig,
-  useDelegateTxConfig,
-} from "@keplr-wallet/hooks";
-import { MsgDelegate } from "@keplr-wallet/proto-types/cosmos/staking/v1beta1/tx";
-import {
-  AccountStore,
-  CosmosAccount,
-  CosmwasmAccount,
-  SecretAccount,
-} from "@keplr-wallet/stores";
+import { useDelegateTxConfig } from "@keplr-wallet/hooks";
 import { CoinPretty, Dec, DecUtils } from "@keplr-wallet/unit";
 import { RouteProp, useRoute } from "@react-navigation/native";
 import { observer } from "mobx-react-lite";
@@ -21,7 +10,6 @@ import {
   FEE_RESERVATION,
   formatUnbondingTime,
   MIN_AMOUNT,
-  TX_GAS_DEFAULT,
 } from "../../../common/utils";
 import { AlertInline } from "../../../components";
 import { AvoidingKeyboardBottomView } from "../../../components/avoiding-keyboard/avoiding-keyboard-bottom";
@@ -36,9 +24,10 @@ import {
 } from "../../../components/foundation-view/list-row-view";
 import { EthereumEndpoint } from "../../../config";
 import { useSmartNavigation } from "../../../navigation-util";
-import { ChainStore, useStore } from "../../../stores";
+import { useStore } from "../../../stores";
 import { useStyle } from "../../../styles";
 import { AmountInput } from "../../main/components";
+import { useTransaction } from "../../tx-result/hook/use-transaction";
 import { EstimateRewardsView, StakingValidatorItem } from "../component";
 import { useStaking } from "../hook/use-staking";
 
@@ -69,6 +58,7 @@ export const DelegateScreen: FunctionComponent = observer(() => {
   const intl = useIntl();
   const smartNavigation = useSmartNavigation();
   const { getValidator, isStakingTo, getUnbondingTime } = useStaking();
+  const { simulateDelegateTx } = useTransaction();
 
   const account = accountStore.getAccount(chainStore.current.chainId);
 
@@ -95,14 +85,6 @@ export const DelegateScreen: FunctionComponent = observer(() => {
 
   const balanceText = userBalanceStore.getBalanceString();
 
-  const { gasPrice, gasLimit, feeType } = simulateDelegateGasFee(
-    chainStore,
-    accountStore,
-    sendConfigs.amountConfig,
-    validatorAddress
-  );
-  sendConfigs.gasConfig.setGas(gasLimit);
-  sendConfigs.feeConfig.setFeeType(feeType);
   const feeText = `${FEE_RESERVATION} ${sendConfigs.amountConfig.sendCurrency.coinDenom}`;
 
   const unbondingTime = getUnbondingTime();
@@ -146,6 +128,13 @@ export const DelegateScreen: FunctionComponent = observer(() => {
 
   const onContinueHandler = async () => {
     Keyboard.dismiss();
+
+    const { feeAmount, gasPrice, gasLimit } = await simulateDelegateTx(
+      sendConfigs.amountConfig.amount,
+      validatorAddress
+    );
+    sendConfigs.feeConfig.setManualFee(feeAmount);
+    sendConfigs.gasConfig.setGas(gasLimit);
 
     if (account.isReadyToSendTx && amountIsValid) {
       let dec = new Dec(sendConfigs.amountConfig.amount);
@@ -264,84 +253,3 @@ export const DelegateScreen: FunctionComponent = observer(() => {
     </View>
   );
 });
-
-const simulateDelegateGasFee = (
-  chainStore: ChainStore,
-  accountStore: AccountStore<[CosmosAccount, CosmwasmAccount, SecretAccount]>,
-  amountConfig: IAmountConfig,
-  validatorAddress: string
-) => {
-  useEffect(() => {
-    simulate();
-  }, [amountConfig.amount]);
-
-  const chainId = chainStore.current.chainId;
-  const [gasLimit, setGasLimit] = useState(TX_GAS_DEFAULT.delegate);
-
-  const simulate = async () => {
-    const account = accountStore.getAccount(chainId);
-
-    const amount = amountConfig.amount || "0";
-    let dec = new Dec(amount);
-    dec = dec.mulTruncate(
-      DecUtils.getTenExponentN(amountConfig.sendCurrency.coinDecimals)
-    );
-
-    const msg = {
-      type: account.cosmos.msgOpts.delegate.type,
-      value: {
-        delegator_address: account.bech32Address,
-        validator_address: validatorAddress,
-        amount: {
-          denom: amountConfig.sendCurrency.coinMinimalDenom,
-          amount: dec.truncate().toString(),
-        },
-      },
-    };
-
-    try {
-      const { gasUsed } = await account.cosmos.simulateTx(
-        [
-          {
-            typeUrl: "/cosmos.staking.v1beta1.MsgDelegate",
-            value: MsgDelegate.encode({
-              delegatorAddress: msg.value.delegator_address,
-              validatorAddress: msg.value.validator_address,
-              amount: msg.value.amount,
-            }).finish(),
-          },
-        ],
-        { amount: [] }
-      );
-
-      const gasLimit = Math.ceil(gasUsed * 1.3);
-      console.log("__DEBUG__ simulate gasUsed", gasUsed);
-      console.log("__DEBUG__ simulate gasLimit", gasLimit);
-      setGasLimit(gasLimit);
-    } catch (e) {
-      console.log("simulateDelegateGasFee error", e);
-      setGasLimit(TX_GAS_DEFAULT.delegate); // default gas
-    }
-  };
-
-  const feeType = "average" as FeeType;
-  var gasPrice = 1000000000; // default 1 gwei = 1 nano aastra
-  const feeConfig = chainStore.current.feeCurrencies
-    .filter((feeCurrency) => {
-      return (
-        feeCurrency.coinMinimalDenom ===
-        chainStore.current.stakeCurrency.coinMinimalDenom
-      );
-    })
-    .shift();
-  if (feeConfig?.gasPriceStep) {
-    const { [feeType]: wei } = feeConfig.gasPriceStep;
-    gasPrice = wei;
-  }
-
-  return {
-    gasPrice,
-    gasLimit,
-    feeType,
-  };
-};

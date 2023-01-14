@@ -1,11 +1,18 @@
 import { useAmountConfig } from "@keplr-wallet/hooks";
-import { CoinPretty } from "@keplr-wallet/unit";
+import { MsgWithdrawDelegatorReward as _MsgWithdrawDelegatorReward } from "@keplr-wallet/proto-types/cosmos/distribution/v1beta1/tx";
+import {
+  MsgBeginRedelegate as _MsgBeginRedelegate,
+  MsgDelegate as _MsgDelegate,
+  MsgUndelegate as _MsgUndelegate,
+} from "@keplr-wallet/proto-types/cosmos/staking/v1beta1/tx";
+import { CoinPretty, Dec, DecUtils } from "@keplr-wallet/unit";
 import { useIntl } from "react-intl";
-import { formatCoinAmount } from "../../../common";
+import { formatCoinAmount, TX_GAS_DEFAULT } from "../../../common";
 import { IRow } from "../../../components";
 import { useWeb3Transfer } from "../../../hooks/use-web3-transfer";
 import { useSmartNavigation } from "../../../navigation-util";
 import { useStore } from "../../../stores";
+import { useStaking } from "../../staking/hook/use-staking";
 import {
   MsgBeginRedelegate,
   MsgDelegate,
@@ -32,6 +39,8 @@ export const useTransaction = () => {
     analyticsStore,
   } = useStore();
   const { transfer } = useWeb3Transfer();
+  const { queryFeeMarket } = useStaking();
+
   const intl = useIntl();
   const smartNavigation = useSmartNavigation();
 
@@ -45,6 +54,258 @@ export const useTransaction = () => {
     account.bech32Address
   );
 
+  const simulateDelegateTx = async (
+    amount: string,
+    validatorAddress: string,
+    defaultConfig: {
+      gasPrice: number;
+      gasLimit: number;
+      gasMultiplier: number;
+    } = {
+      gasPrice: 1_000_000_000_000,
+      gasLimit: TX_GAS_DEFAULT.delegate,
+      gasMultiplier: 1.3,
+    }
+  ) => {
+    amountConfig.setAmount(amount);
+
+    const msg = {
+      typeUrl: "/cosmos.staking.v1beta1.MsgDelegate",
+      value: _MsgDelegate
+        .encode({
+          delegatorAddress: account.bech32Address,
+          validatorAddress: validatorAddress,
+          amount: {
+            denom: amountConfig.sendCurrency.coinMinimalDenom,
+            amount: new Dec(amount)
+              .mulTruncate(
+                DecUtils.getTenExponentN(amountConfig.sendCurrency.coinDecimals)
+              )
+              .truncate()
+              .toString(),
+          },
+        })
+        .finish(),
+    };
+
+    const gasPrice = Number(queryFeeMarket.gasPrice ?? defaultConfig.gasPrice);
+    let gasLimit = defaultConfig.gasLimit;
+    let feeAmount = {
+      amount: new Dec(gasPrice).mul(new Dec(gasLimit)).toString(0),
+      denom: chainStore.current.feeCurrencies[0].coinMinimalDenom,
+    };
+
+    try {
+      const { gasUsed } = await account.cosmos.simulateTransaction([msg], {
+        amount: [feeAmount],
+        gasLimit,
+      });
+
+      gasLimit = Math.ceil(gasUsed * defaultConfig.gasMultiplier);
+      feeAmount = {
+        amount: new Dec(gasPrice).mul(new Dec(gasLimit)).toString(0),
+        denom: chainStore.current.feeCurrencies[0].coinMinimalDenom,
+      };
+      console.log("__DEBUG__ simulate gasUsed", gasUsed);
+      console.log("__DEBUG__ simulate gasLimit", gasLimit);
+    } catch (e) {
+      console.log("simulateDelegateTx error", e);
+    }
+
+    return {
+      feeAmount,
+      gasPrice,
+      gasLimit,
+    };
+  };
+
+  const simulateUndelegateTx = async (
+    amount: string,
+    validatorAddress: string,
+    defaultConfig: {
+      gasPrice: number;
+      gasLimit: number;
+      gasMultiplier: number;
+    } = {
+      gasPrice: 1_000_000_000_000,
+      gasLimit: TX_GAS_DEFAULT.delegate,
+      gasMultiplier: 1.3,
+    }
+  ) => {
+    amountConfig.setAmount(amount);
+
+    const msg = {
+      typeUrl: "/cosmos.staking.v1beta1.MsgUndelegate",
+      value: _MsgUndelegate
+        .encode({
+          delegatorAddress: account.bech32Address,
+          validatorAddress: validatorAddress,
+          amount: {
+            denom: amountConfig.sendCurrency.coinMinimalDenom,
+            amount: new Dec(amount)
+              .mulTruncate(
+                DecUtils.getTenExponentN(amountConfig.sendCurrency.coinDecimals)
+              )
+              .truncate()
+              .toString(),
+          },
+        })
+        .finish(),
+    };
+
+    const gasPrice = Number(queryFeeMarket.gasPrice ?? defaultConfig.gasPrice);
+    let gasLimit = defaultConfig.gasLimit;
+    let feeAmount = {
+      amount: new Dec(gasPrice).mul(new Dec(gasLimit)).toString(0),
+      denom: chainStore.current.feeCurrencies[0].coinMinimalDenom,
+    };
+
+    try {
+      const { gasUsed } = await account.cosmos.simulateTransaction([msg], {
+        amount: [feeAmount],
+        gasLimit,
+      });
+
+      gasLimit = Math.ceil(gasUsed * defaultConfig.gasMultiplier);
+      feeAmount = {
+        amount: new Dec(gasPrice).mul(new Dec(gasLimit)).toString(0),
+        denom: chainStore.current.feeCurrencies[0].coinMinimalDenom,
+      };
+      console.log("__DEBUG__ simulate gasUsed", gasUsed);
+      console.log("__DEBUG__ simulate gasLimit", gasLimit);
+    } catch (e) {
+      console.log("simulateUndelegateTx error", e);
+    }
+
+    return {
+      feeAmount,
+      gasPrice,
+      gasLimit,
+    };
+  };
+
+  const simulateRedelegateTx = async (
+    amount: string,
+    validatorSrcAddress: string,
+    validatorDstAddress: string,
+    defaultConfig: {
+      gasPrice: number;
+      gasLimit: number;
+      gasMultiplier: number;
+    } = {
+      gasPrice: 1_000_000_000_000,
+      gasLimit: TX_GAS_DEFAULT.redelegate,
+      gasMultiplier: 1.3,
+    }
+  ) => {
+    amountConfig.setAmount(amount);
+
+    const msg = {
+      typeUrl: "/cosmos.staking.v1beta1.MsgBeginRedelegate",
+      value: _MsgBeginRedelegate
+        .encode({
+          delegatorAddress: account.bech32Address,
+          validatorSrcAddress,
+          validatorDstAddress,
+          amount: {
+            denom: amountConfig.sendCurrency.coinMinimalDenom,
+            amount: new Dec(amount)
+              .mulTruncate(
+                DecUtils.getTenExponentN(amountConfig.sendCurrency.coinDecimals)
+              )
+              .truncate()
+              .toString(),
+          },
+        })
+        .finish(),
+    };
+
+    const gasPrice = Number(queryFeeMarket.gasPrice ?? defaultConfig.gasPrice);
+    let gasLimit = defaultConfig.gasLimit;
+    let feeAmount = {
+      amount: new Dec(gasPrice).mul(new Dec(gasLimit)).toString(0),
+      denom: chainStore.current.feeCurrencies[0].coinMinimalDenom,
+    };
+
+    try {
+      const { gasUsed } = await account.cosmos.simulateTransaction([msg], {
+        amount: [feeAmount],
+        gasLimit,
+      });
+
+      gasLimit = Math.ceil(gasUsed * defaultConfig.gasMultiplier);
+      feeAmount = {
+        amount: new Dec(gasPrice).mul(new Dec(gasLimit)).toString(0),
+        denom: chainStore.current.feeCurrencies[0].coinMinimalDenom,
+      };
+      console.log("__DEBUG__ simulate gasUsed", gasUsed);
+      console.log("__DEBUG__ simulate gasLimit", gasLimit);
+    } catch (e) {
+      console.log("simulateRedelegateTx error", e);
+    }
+
+    return {
+      feeAmount,
+      gasPrice,
+      gasLimit,
+    };
+  };
+
+  const simulateWithdrawRewardsTx = async (
+    validatorAddresses: string[],
+    defaultConfig: {
+      gasPrice: number;
+      gasLimit: number;
+      gasMultiplier: number;
+    } = {
+      gasPrice: 1_000_000_000_000,
+      gasLimit: TX_GAS_DEFAULT.withdraw,
+      gasMultiplier: 1.3,
+    }
+  ) => {
+    const msgs = validatorAddresses.map((validatorAddress) => {
+      return {
+        typeUrl: "/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward",
+        value: _MsgWithdrawDelegatorReward
+          .encode({
+            delegatorAddress: account.bech32Address,
+            validatorAddress,
+          })
+          .finish(),
+      };
+    });
+
+    const gasPrice = Number(queryFeeMarket.gasPrice ?? defaultConfig.gasPrice);
+    let gasLimit = defaultConfig.gasLimit;
+    let feeAmount = {
+      amount: new Dec(gasPrice).mul(new Dec(gasLimit)).toString(0),
+      denom: chainStore.current.feeCurrencies[0].coinMinimalDenom,
+    };
+
+    try {
+      const { gasUsed } = await account.cosmos.simulateTransaction(msgs, {
+        amount: [feeAmount],
+        gasLimit,
+      });
+
+      gasLimit = Math.ceil(gasUsed * defaultConfig.gasMultiplier);
+      feeAmount = {
+        amount: new Dec(gasPrice).mul(new Dec(gasLimit)).toString(0),
+        denom: chainStore.current.feeCurrencies[0].coinMinimalDenom,
+      };
+      console.log("__DEBUG__ simulate gasUsed", gasUsed);
+      console.log("__DEBUG__ simulate gasLimit", gasLimit);
+    } catch (e) {
+      console.log("simulateWithdrawRewardsTx error", e);
+    }
+
+    return {
+      feeAmount,
+      gasPrice,
+      gasLimit,
+    };
+  };
+
   const sendSendTransaction = async (value?: any) => {
     const data = value as MsgSend["value"];
 
@@ -52,20 +313,30 @@ export const useTransaction = () => {
     amount = amount.split(",").join("");
     amountConfig.setAmount(amount);
 
-    await transfer(data.recipient, amountConfig, {
-      onBroadcasted: (txHash) => {
-        // analyticsStore.logEvent("astra_hub_transfer_token", {
-        //   ...params,
-        //   tx_hash: "0x" + Buffer.from(txHash).toString("hex"),
-        //   success: true,
-        // });
-        transactionStore.updateTxHash(txHash);
+    await transfer(
+      data.recipient,
+      amountConfig,
+      queryFeeMarket.baseFee
+        ? {
+            baseFee: Number(queryFeeMarket.baseFee),
+            priorityFee: 1_500_000_000,
+          }
+        : {},
+      {
+        onBroadcasted: (txHash) => {
+          // analyticsStore.logEvent("astra_hub_transfer_token", {
+          //   ...params,
+          //   tx_hash: "0x" + Buffer.from(txHash).toString("hex"),
+          //   success: true,
+          // });
+          transactionStore.updateTxHash(txHash);
 
-        smartNavigation.navigate("Tx", {
-          screen: "Tx.EvmResult",
-        });
-      },
-    });
+          smartNavigation.navigate("Tx", {
+            screen: "Tx.EvmResult",
+          });
+        },
+      }
+    );
   };
 
   const sendDelegateTransaction = async (value?: any) => {
@@ -388,5 +659,10 @@ export const useTransaction = () => {
     sendTransaction,
     getTxAmount,
     getTxText,
+
+    simulateDelegateTx,
+    simulateUndelegateTx,
+    simulateRedelegateTx,
+    simulateWithdrawRewardsTx,
   };
 };

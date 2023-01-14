@@ -1,15 +1,4 @@
-import {
-  FeeType,
-  IAmountConfig,
-  useUndelegateTxConfig,
-} from "@keplr-wallet/hooks";
-import { MsgUndelegate } from "@keplr-wallet/proto-types/cosmos/staking/v1beta1/tx";
-import {
-  AccountStore,
-  CosmosAccount,
-  CosmwasmAccount,
-  SecretAccount,
-} from "@keplr-wallet/stores";
+import { useUndelegateTxConfig } from "@keplr-wallet/hooks";
 import { CoinPretty, Dec, DecUtils } from "@keplr-wallet/unit";
 import { RouteProp, useRoute } from "@react-navigation/native";
 import { observer } from "mobx-react-lite";
@@ -17,11 +6,7 @@ import React, { FunctionComponent, useEffect, useState } from "react";
 import { useIntl } from "react-intl";
 import { Keyboard, Text, View } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-import {
-  formatCoinFee,
-  formatUnbondingTime,
-  TX_GAS_DEFAULT,
-} from "../../../common/utils";
+import { formatCoinFee, formatUnbondingTime } from "../../../common/utils";
 import { IRow, ListRowView } from "../../../components";
 import { AlertInline } from "../../../components/alert-inline";
 import { AvoidingKeyboardBottomView } from "../../../components/avoiding-keyboard/avoiding-keyboard-bottom";
@@ -31,9 +16,10 @@ import {
   buildRightColumn,
 } from "../../../components/foundation-view/item-row";
 import { useSmartNavigation } from "../../../navigation-util";
-import { ChainStore, useStore } from "../../../stores";
+import { useStore } from "../../../stores";
 import { useStyle } from "../../../styles";
 import { AmountInput } from "../../main/components";
+import { useTransaction } from "../../tx-result/hook/use-transaction";
 import { StakingValidatorItem } from "../component";
 import { useStaking } from "../hook/use-staking";
 
@@ -51,6 +37,7 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
   >();
 
   const { getValidator, getUnbondingTime } = useStaking();
+  const { simulateUndelegateTx } = useTransaction();
 
   const validatorAddress = route.params.validatorAddress;
 
@@ -91,14 +78,21 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
     sendConfigs.recipientConfig.setRawRecipient(validatorAddress);
   }, [sendConfigs.recipientConfig, validatorAddress]);
 
-  const { gasPrice, gasLimit, feeType } = simulateUndelegateGasFee(
-    chainStore,
-    accountStore,
-    sendConfigs.amountConfig,
-    validatorAddress
-  );
-  sendConfigs.gasConfig.setGas(gasLimit);
-  sendConfigs.feeConfig.setFeeType(feeType);
+  useEffect(() => {
+    simulateUndelegateTx(
+      sendConfigs.amountConfig.amount,
+      validatorAddress
+    ).then(({ feeAmount, gasPrice, gasLimit }) => {
+      sendConfigs.feeConfig.setManualFee(feeAmount);
+      sendConfigs.gasConfig.setGas(gasLimit);
+      setGasPrice(gasPrice);
+      setGasLimit(gasLimit);
+    });
+  }, [sendConfigs.amountConfig.amount]);
+
+  const [gasPrice, setGasPrice] = useState(0);
+  const [gasLimit, setGasLimit] = useState(0);
+
   const feeText = formatCoinFee(sendConfigs.feeConfig.fee);
 
   const unbondingTime = getUnbondingTime();
@@ -240,83 +234,3 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
     </View>
   );
 });
-
-const simulateUndelegateGasFee = (
-  chainStore: ChainStore,
-  accountStore: AccountStore<[CosmosAccount, CosmwasmAccount, SecretAccount]>,
-  amountConfig: IAmountConfig,
-  validatorAddress: string
-) => {
-  useEffect(() => {
-    simulate();
-  }, [amountConfig.amount]);
-
-  const chainId = chainStore.current.chainId;
-  const [gasLimit, setGasLimit] = useState(TX_GAS_DEFAULT.undelegate);
-
-  const simulate = async () => {
-    const account = accountStore.getAccount(chainId);
-
-    const amount = amountConfig.amount || "0";
-    let dec = new Dec(amount);
-    dec = dec.mulTruncate(
-      DecUtils.getTenExponentN(amountConfig.sendCurrency.coinDecimals)
-    );
-
-    const msg = {
-      type: account.cosmos.msgOpts.undelegate.type,
-      value: {
-        delegator_address: account.bech32Address,
-        validator_address: validatorAddress,
-        amount: {
-          denom: amountConfig.sendCurrency.coinMinimalDenom,
-          amount: dec.truncate().toString(),
-        },
-      },
-    };
-    try {
-      const { gasUsed } = await account.cosmos.simulateTx(
-        [
-          {
-            typeUrl: "/cosmos.staking.v1beta1.MsgUndelegate",
-            value: MsgUndelegate.encode({
-              delegatorAddress: msg.value.delegator_address,
-              validatorAddress: msg.value.validator_address,
-              amount: msg.value.amount,
-            }).finish(),
-          },
-        ],
-        { amount: [] }
-      );
-
-      const gasLimit = Math.ceil(gasUsed * 1.3);
-      console.log("__DEBUG__ simulate gasUsed", gasUsed);
-      console.log("__DEBUG__ simulate gasLimit", gasLimit);
-      setGasLimit(gasLimit);
-    } catch (e) {
-      console.log("simulateUndelegateGasFee error", e);
-      setGasLimit(TX_GAS_DEFAULT.undelegate); // default gas
-    }
-  };
-
-  const feeType = "average" as FeeType;
-  var gasPrice = 1000000000; // default 1 gwei = 1 nano aastra
-  const feeConfig = chainStore.current.feeCurrencies
-    .filter((feeCurrency) => {
-      return (
-        feeCurrency.coinMinimalDenom ===
-        chainStore.current.stakeCurrency.coinMinimalDenom
-      );
-    })
-    .shift();
-  if (feeConfig?.gasPriceStep) {
-    const { [feeType]: wei } = feeConfig.gasPriceStep;
-    gasPrice = wei;
-  }
-
-  return {
-    gasPrice,
-    gasLimit,
-    feeType,
-  };
-};

@@ -1,16 +1,4 @@
-import {
-  FeeType,
-  IAmountConfig,
-  useRedelegateTxConfig,
-} from "@keplr-wallet/hooks";
-import { MsgBeginRedelegate } from "@keplr-wallet/proto-types/cosmos/staking/v1beta1/tx";
-import {
-  AccountStore,
-  CosmosAccount,
-  CosmwasmAccount,
-  SecretAccount,
-  Staking,
-} from "@keplr-wallet/stores";
+import { useRedelegateTxConfig } from "@keplr-wallet/hooks";
 import { CoinPretty, Dec, DecUtils } from "@keplr-wallet/unit";
 import { RouteProp, useRoute } from "@react-navigation/native";
 import { observer } from "mobx-react-lite";
@@ -18,11 +6,7 @@ import React, { FunctionComponent, useEffect, useState } from "react";
 import { useIntl } from "react-intl";
 import { Keyboard, Text, View } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-import {
-  formatCoinAmount,
-  formatCoinFee,
-  TX_GAS_DEFAULT,
-} from "../../../common/utils";
+import { formatCoinAmount, formatCoinFee } from "../../../common/utils";
 import { AlertInline, IRow, ListRowView } from "../../../components";
 import { AvoidingKeyboardBottomView } from "../../../components/avoiding-keyboard/avoiding-keyboard-bottom";
 import { Button } from "../../../components/button";
@@ -31,9 +15,10 @@ import {
   buildRightColumn,
 } from "../../../components/foundation-view/item-row";
 import { useSmartNavigation } from "../../../navigation-util";
-import { ChainStore, useStore } from "../../../stores";
+import { useStore } from "../../../stores";
 import { useStyle } from "../../../styles";
 import { AmountInput } from "../../main/components";
+import { useTransaction } from "../../tx-result/hook/use-transaction";
 import { StakingValidatorItem } from "../component";
 import { useStaking } from "../hook/use-staking";
 import { SelectValidatorItem } from "./select-validator";
@@ -52,6 +37,7 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
   >();
 
   const { getValidator, getRewardsAmountOf } = useStaking();
+  const { simulateRedelegateTx } = useTransaction();
 
   const validatorAddress = route.params.validatorAddress;
 
@@ -87,23 +73,28 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
 
   const [dstValidatorAddress, setDstValidatorAddress] = useState("");
 
-  const dstValidator = queries.cosmos.queryValidators
-    .getQueryStatus(Staking.BondStatus.Unspecified)
-    .getValidator(dstValidatorAddress);
+  const dstValidator = getValidator(dstValidatorAddress);
 
   useEffect(() => {
     sendConfigs.recipientConfig.setRawRecipient(dstValidatorAddress);
   }, [dstValidatorAddress, sendConfigs.recipientConfig]);
 
-  const { gasPrice, gasLimit, feeType } = simulateRedelegateGasFee(
-    chainStore,
-    accountStore,
-    sendConfigs.amountConfig,
-    sendConfigs.srcValidatorAddress,
-    dstValidatorAddress
-  );
-  sendConfigs.gasConfig.setGas(gasLimit);
-  sendConfigs.feeConfig.setFeeType(feeType);
+  useEffect(() => {
+    simulateRedelegateTx(
+      sendConfigs.amountConfig.amount,
+      sendConfigs.srcValidatorAddress,
+      dstValidatorAddress
+    ).then(({ feeAmount, gasPrice, gasLimit }) => {
+      sendConfigs.feeConfig.setManualFee(feeAmount);
+      sendConfigs.gasConfig.setGas(gasLimit);
+      setGasPrice(gasPrice);
+      setGasLimit(gasLimit);
+    });
+  }, [sendConfigs.amountConfig.amount]);
+
+  const [gasPrice, setGasPrice] = useState(0);
+  const [gasLimit, setGasLimit] = useState(0);
+
   const feeText = formatCoinFee(sendConfigs.feeConfig.fee);
 
   const [amountIsValid, setAmountIsValid] = useState(false);
@@ -253,86 +244,3 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
     </View>
   );
 });
-
-const simulateRedelegateGasFee = (
-  chainStore: ChainStore,
-  accountStore: AccountStore<[CosmosAccount, CosmwasmAccount, SecretAccount]>,
-  amountConfig: IAmountConfig,
-  srcValidatorAddress: string,
-  dstValidatorAddress: string
-) => {
-  useEffect(() => {
-    simulate();
-  }, [amountConfig.amount]);
-
-  const chainId = chainStore.current.chainId;
-  const [gasLimit, setGasLimit] = useState(TX_GAS_DEFAULT.redelegate);
-
-  const simulate = async () => {
-    const account = accountStore.getAccount(chainId);
-
-    const amount = amountConfig.amount || "0";
-    let dec = new Dec(amount);
-    dec = dec.mulTruncate(
-      DecUtils.getTenExponentN(amountConfig.sendCurrency.coinDecimals)
-    );
-
-    const msg = {
-      type: account.cosmos.msgOpts.redelegate.type,
-      value: {
-        delegator_address: account.bech32Address,
-        validator_src_address: srcValidatorAddress,
-        validator_dst_address: dstValidatorAddress,
-        amount: {
-          denom: amountConfig.sendCurrency.coinMinimalDenom,
-          amount: dec.truncate().toString(),
-        },
-      },
-    };
-    try {
-      const { gasUsed } = await account.cosmos.simulateTx(
-        [
-          {
-            typeUrl: "/cosmos.staking.v1beta1.MsgBeginRedelegate",
-            value: MsgBeginRedelegate.encode({
-              delegatorAddress: msg.value.delegator_address,
-              validatorSrcAddress: msg.value.validator_src_address,
-              validatorDstAddress: msg.value.validator_dst_address,
-              amount: msg.value.amount,
-            }).finish(),
-          },
-        ],
-        { amount: [] }
-      );
-
-      const gasLimit = Math.ceil(gasUsed * 1.3);
-      console.log("__DEBUG__ simulate gasUsed", gasUsed);
-      console.log("__DEBUG__ simulate gasLimit", gasLimit);
-      setGasLimit(gasLimit);
-    } catch (e) {
-      console.log("simulateRedelegateGasFee error", e);
-      setGasLimit(TX_GAS_DEFAULT.redelegate); // default gas
-    }
-  };
-
-  const feeType = "average" as FeeType;
-  var gasPrice = 1000000000; // default 1 gwei = 1 nano aastra
-  const feeConfig = chainStore.current.feeCurrencies
-    .filter((feeCurrency) => {
-      return (
-        feeCurrency.coinMinimalDenom ===
-        chainStore.current.stakeCurrency.coinMinimalDenom
-      );
-    })
-    .shift();
-  if (feeConfig?.gasPriceStep) {
-    const { [feeType]: wei } = feeConfig.gasPriceStep;
-    gasPrice = wei;
-  }
-
-  return {
-    gasPrice,
-    gasLimit,
-    feeType,
-  };
-};

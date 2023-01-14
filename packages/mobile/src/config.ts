@@ -66,7 +66,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
         coinDecimals: 18,
         coinImageUrl:
           "https://salt.tikicdn.com/ts/ta/9d/c3/c2/4420480a5596c4e366a5342f9d7ef87e.png",
-        contractAddress: "0x41591484aEB5FA3d1759f1cbA369dC8dc1281298",
+        contractAddress: "0x6f74f5511ba144990A8aeBaF20AFBD3B56EedCb2",
       },
     ],
     feeCurrencies: [
@@ -79,7 +79,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
           "https://salt.tikicdn.com/ts/upload/2a/74/6d/1000f0249fd530a9313a07fc3e13c1b2.png",
         gasPriceStep: {
           low: 500000000,
-          average: 1000000000,
+          average: 1000000000000,
           high: 2000000000,
         },
       },

@@ -13,10 +13,10 @@ export const LOCALE_FORMAT = {
   },
 };
 export const TX_GAS_DEFAULT = {
-  delegate: 250000,
-  undelegate: 250000,
-  redelegate: 250000,
-  withdraw: 250000,
+  delegate: 300_000,
+  undelegate: 300_000,
+  redelegate: 300_000,
+  withdraw: 300_000,
 };
 
 export const formatCoinAmount = (
