@@ -153,8 +153,8 @@ export const useWeb3Transfer = () => {
       value: getTxAmount(amountConfig),
       nonce,
       type: 2,
-      maxPriorityFeePerGas: "0x" + Number(1_500_000_000).toString(16),
-      maxFeePerGas: "0x" + Number(1_001_500_000_000).toString(16),
+      maxPriorityFeePerGas: "0x" + Number(1500000000).toString(16),//1.5 nano aastra
+      maxFeePerGas: "0x" + Number(1001500000000).toString(16),//1001.5 nano aastra
     };
     return txData;
   };

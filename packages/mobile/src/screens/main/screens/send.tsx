@@ -129,7 +129,7 @@ export const SendTokenScreen: FunctionComponent = observer(() => {
         queryFeeMarket.baseFee
           ? {
               baseFee: Number(queryFeeMarket.baseFee),
-              priorityFee: 1_500_000_000,
+              priorityFee: 1500000000,//1.5 nano aastra
             }
           : {}
       );

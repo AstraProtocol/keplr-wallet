@@ -62,7 +62,7 @@ export const useTransaction = () => {
       gasLimit: number;
       gasMultiplier: number;
     } = {
-      gasPrice: 1_000_000_000_000,
+      gasPrice: 1000000000000,//1000 nano aastra
       gasLimit: TX_GAS_DEFAULT.delegate,
       gasMultiplier: 1.3,
     }
@@ -127,7 +127,7 @@ export const useTransaction = () => {
       gasLimit: number;
       gasMultiplier: number;
     } = {
-      gasPrice: 1_000_000_000_000,
+      gasPrice: 1000000000000,//1000 nano aastra
       gasLimit: TX_GAS_DEFAULT.delegate,
       gasMultiplier: 1.3,
     }
@@ -193,7 +193,7 @@ export const useTransaction = () => {
       gasLimit: number;
       gasMultiplier: number;
     } = {
-      gasPrice: 1_000_000_000_000,
+      gasPrice: 1000000000000,//1000 nano aastra
       gasLimit: TX_GAS_DEFAULT.redelegate,
       gasMultiplier: 1.3,
     }
@@ -258,7 +258,7 @@ export const useTransaction = () => {
       gasLimit: number;
       gasMultiplier: number;
     } = {
-      gasPrice: 1_000_000_000_000,
+      gasPrice: 1000000000000,//1000 nano aastra
       gasLimit: TX_GAS_DEFAULT.withdraw,
       gasMultiplier: 1.3,
     }
@@ -319,7 +319,7 @@ export const useTransaction = () => {
       queryFeeMarket.baseFee
         ? {
             baseFee: Number(queryFeeMarket.baseFee),
-            priorityFee: 1_500_000_000,
+            priorityFee: 1500000000,//1.5 nano aastra
           }
         : {},
       {
