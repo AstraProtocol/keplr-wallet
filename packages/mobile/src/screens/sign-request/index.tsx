@@ -1,5 +1,5 @@
 import React, { FunctionComponent, useEffect, useState } from "react";
-import { View, Image, Text, Animated, StyleSheet } from "react-native";
+import { View, Animated, StyleSheet, TouchableOpacity } from "react-native";
 // import { ScrollView, TouchableOpacity } from "react-native-gesture-handler";
 import { useIntl } from "react-intl";
 import { Button } from "../../components";
@@ -11,6 +11,7 @@ import { Msg as AminoMsg } from "@cosmjs/launchpad";
 import { getType, SignMsgType } from "./helper";
 import SignRequestTabView from "./tabview-scrollable";
 import { useStaking } from "../staking/hook/use-staking";
+import { CloseLargeIcon } from "../../components/icon/outlined";
 
 export const TransactionSignRequestView: FunctionComponent<{
   onApprove: (name?: string) => void;
@@ -100,6 +101,7 @@ export const TransactionSignRequestView: FunctionComponent<{
           },
         ])}
       />
+
       <View
         style={style.flatten([
           "margin-x-0",
@@ -148,6 +150,7 @@ export const TransactionSignRequestView: FunctionComponent<{
             header={
               <RequestHeaderView
                 containerStyle={style.flatten([
+                  "padding-x-16",
                   "flex-1",
                   "margin-top-64",
                   "background-color-card-background",
@@ -161,11 +164,27 @@ export const TransactionSignRequestView: FunctionComponent<{
             }
           />
         )}
+        <TouchableOpacity
+          onPress={async () => {
+            onReject(source, isWC);
+          }}
+          style={{
+            ...style.flatten([
+              "width-44",
+              "height-44",
+              "items-center",
+              "absolute",
+            ]),
+            right: 0,
+            top: 12,
+          }}
+        >
+          <CloseLargeIcon size={24} color={style.get("color-white").color} />
+        </TouchableOpacity>
         <View
           style={style.flatten([
             "margin-bottom-0",
             "margin-x-0",
-            // "flex-1",
             "background-color-card-background",
           ])}
         >
