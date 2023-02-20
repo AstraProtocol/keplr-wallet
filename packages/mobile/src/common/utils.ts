@@ -3,7 +3,7 @@ import { IntlShape } from "react-intl";
 
 export const MIN_PASSWORD_LENGTH = 8;
 export const MIN_AMOUNT = 0.01;
-export const FEE_RESERVATION = 0.1;
+export const FEE_RESERVATION = 0.5;
 export const FRACTION_DIGITS = 2;
 export const LOCALE_FORMAT = {
   locale: "en-US",
