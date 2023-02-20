@@ -1,4 +1,4 @@
-import { EmbedChainInfos, EthereumEndpoint } from "../config";
+import { EmbedChainInfos } from "../config";
 import {
   KeyRingStore,
   InteractionStore,
@@ -110,6 +110,9 @@ export class RootStore {
       this.interactionStore
     );
 
+    const chainId = this.chainStore.current.chainId;
+    const chain = this.chainStore.getChain(chainId);
+    const ethereumEndpoint = chain.raw.ethereumEndpoint;
     this.queriesStore = new QueriesStore(
       // Fix prefix key because there was a problem with storage being corrupted.
       // In the case of storage where the prefix key is "store_queries" or "store_queries_fix", "store_queries_fix2",
@@ -128,7 +131,7 @@ export class RootStore {
         },
       }),
       KeplrETCQueries.use({
-        ethereumURL: EthereumEndpoint,
+        ethereumURL: ethereumEndpoint,
       })
     );
 

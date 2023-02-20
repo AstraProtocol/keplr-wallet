@@ -22,7 +22,6 @@ import {
   IRow,
   ListRowView,
 } from "../../../components/foundation-view/list-row-view";
-import { EthereumEndpoint } from "../../../config";
 import { useSmartNavigation } from "../../../navigation-util";
 import { useStore } from "../../../stores";
 import { useStyle } from "../../../styles";
@@ -60,6 +59,10 @@ export const DelegateScreen: FunctionComponent = observer(() => {
   const { getValidator, isStakingTo, getUnbondingTime } = useStaking();
   const { simulateDelegateTx } = useTransaction();
 
+  const chainId = chainStore.current.chainId;
+  const chain = chainStore.getChain(chainId);
+  const ethereumEndpoint = chain.raw.ethereumEndpoint;
+
   const account = accountStore.getAccount(chainStore.current.chainId);
 
   const sendConfigs = useDelegateTxConfig(
@@ -68,7 +71,7 @@ export const DelegateScreen: FunctionComponent = observer(() => {
     accountStore,
     chainStore.current.chainId,
     account.bech32Address,
-    EthereumEndpoint
+    ethereumEndpoint
   );
 
   useEffect(() => {

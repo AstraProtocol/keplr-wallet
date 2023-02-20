@@ -2,7 +2,6 @@ import React, { FunctionComponent, useEffect } from "react";
 import { observer } from "mobx-react-lite";
 import { useSendTxConfig } from "@keplr-wallet/hooks";
 import { useStore } from "../../stores";
-import { EthereumEndpoint } from "../../config";
 import { PageWithScrollView } from "../../components/page";
 import { View } from "react-native";
 import {
@@ -19,7 +18,13 @@ import { useSmartNavigation } from "../../navigation-util";
 import { Buffer } from "buffer/";
 
 export const SendScreen: FunctionComponent = observer(() => {
-  const { chainStore, accountStore, queriesStore, analyticsStore, transactionStore } = useStore();
+  const {
+    chainStore,
+    accountStore,
+    queriesStore,
+    analyticsStore,
+    transactionStore,
+  } = useStore();
 
   const route = useRoute<
     RouteProp<
@@ -42,6 +47,8 @@ export const SendScreen: FunctionComponent = observer(() => {
   const chainId = route.params.chainId
     ? route.params.chainId
     : chainStore.current.chainId;
+  const chain = chainStore.getChain(chainId);
+  const ethereumEndpoint = chain.raw.ethereumEndpoint;
 
   const account = accountStore.getAccount(chainId);
 
@@ -51,7 +58,7 @@ export const SendScreen: FunctionComponent = observer(() => {
     accountStore,
     chainId,
     account.bech32Address,
-    EthereumEndpoint
+    ethereumEndpoint
   );
 
   useEffect(() => {

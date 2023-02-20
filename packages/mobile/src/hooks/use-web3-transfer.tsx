@@ -5,16 +5,18 @@ import { IAmountConfig } from "@keplr-wallet/hooks";
 import { Dec, DecUtils } from "@keplr-wallet/unit";
 import { useMemo } from "react";
 import { default as Web3HttpProvider } from "web3-providers-http";
-import { EthereumEndpoint } from "../config";
 import { useStore } from "../stores";
 
 export const useWeb3Transfer = () => {
-  const { keyRingStore, transactionStore } = useStore();
+  const { chainStore, keyRingStore, transactionStore } = useStore();
+  const chainId = chainStore.current.chainId;
+  const chain = chainStore.getChain(chainId);
+  const ethereumEndpoint = chain.raw.ethereumEndpoint;
 
   const asyncManager = useMemo(async () => {
     const privateKey = await keyRingStore.exportPrivateKey();
     const provider = new Web3Provider(
-      new (Web3HttpProvider as any)(EthereumEndpoint)
+      new (Web3HttpProvider as any)(ethereumEndpoint)
     );
     const wallet = new Wallet(privateKey, provider);
 

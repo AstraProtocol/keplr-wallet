@@ -10,7 +10,6 @@ import {
 import { observer } from "mobx-react-lite";
 import { View } from "react-native";
 import { useStore } from "../../../../stores";
-import { EthereumEndpoint } from "../../../../config";
 import {
   AddressInput,
   MemoInput,
@@ -34,6 +33,9 @@ export const AddAddressBookScreen: FunctionComponent = observer(() => {
   >();
 
   const { chainStore } = useStore();
+  const chainId = chainStore.current.chainId;
+  const chain = chainStore.getChain(chainId);
+  const ethereumEndpoint = chain.raw.ethereumEndpoint;
 
   const smartNavigation = useSmartNavigation();
   const addressBookConfig = route.params.addressBookConfig;
@@ -44,7 +46,7 @@ export const AddAddressBookScreen: FunctionComponent = observer(() => {
   const recipientConfig = useRecipientConfig(
     chainStore,
     route.params.chainId,
-    EthereumEndpoint
+    ethereumEndpoint
   );
   const memoConfig = useMemoConfig(chainStore, route.params.chainId);
 

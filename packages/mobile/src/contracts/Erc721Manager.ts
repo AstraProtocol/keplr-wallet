@@ -4,18 +4,20 @@ import Axios from "axios";
 import { BigNumberish, Wallet } from "ethers";
 import { useMemo } from "react";
 import { default as Web3HttpProvider } from "web3-providers-http";
-import { EthereumEndpoint } from "../config";
 import { useStore } from "../stores";
 import Erc721ABI from "./abis/erc721.json";
 import { Erc721 } from "./types/Erc721";
 
 export const useNFTContract = () => {
-  const { keyRingStore, transactionStore } = useStore();
+  const { chainStore, keyRingStore, transactionStore } = useStore();
+  const chainId = chainStore.current.chainId;
+  const chain = chainStore.getChain(chainId);
+  const ethereumEndpoint = chain.raw.ethereumEndpoint;
 
   const asyncManager = useMemo(async () => {
     const privateKey = await keyRingStore.exportPrivateKey();
     const provider = new Web3Provider(
-      new (Web3HttpProvider as any)(EthereumEndpoint)
+      new (Web3HttpProvider as any)(ethereumEndpoint)
     );
     const wallet = new Wallet(privateKey, provider);
 

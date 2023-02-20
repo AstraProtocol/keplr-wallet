@@ -18,7 +18,6 @@ import {
 } from "../../../components";
 import { AvoidingKeyboardBottomView } from "../../../components/avoiding-keyboard/avoiding-keyboard-bottom";
 import { Button } from "../../../components/button";
-import { EthereumEndpoint } from "../../../config";
 import { useWeb3Transfer } from "../../../hooks/use-web3-transfer";
 import { useSmartNavigation } from "../../../navigation-util";
 import { useStore } from "../../../stores";
@@ -53,6 +52,8 @@ export const SendTokenScreen: FunctionComponent = observer(() => {
   const chainId = route.params.chainId
     ? route.params.chainId
     : chainStore.current.chainId;
+  const chain = chainStore.getChain(chainId);
+  const ethereumEndpoint = chain.raw.ethereumEndpoint;
 
   const account = accountStore.getAccount(chainId);
 
@@ -62,7 +63,7 @@ export const SendTokenScreen: FunctionComponent = observer(() => {
     accountStore,
     chainId,
     account.bech32Address,
-    EthereumEndpoint
+    ethereumEndpoint
   );
 
   const amountInputRef = useRef<any>();
@@ -129,7 +130,7 @@ export const SendTokenScreen: FunctionComponent = observer(() => {
         queryFeeMarket.baseFee
           ? {
               baseFee: Number(queryFeeMarket.baseFee),
-              priorityFee: 1500000000,//1.5 nano aastra
+              priorityFee: 1500000000, //1.5 nano aastra
             }
           : {}
       );

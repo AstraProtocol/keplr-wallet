@@ -20,7 +20,6 @@ import {
 } from "../../../../components";
 import { AvoidingKeyboardBottomView } from "../../../../components/avoiding-keyboard/avoiding-keyboard-bottom";
 import { CustomNavigationBar } from "../../../../components/navigation-bar/custom-navigation-bar";
-import { EthereumEndpoint } from "../../../../config";
 import { useNFTContract } from "../../../../contracts/Erc721Manager";
 import { useSmartNavigation } from "../../../../navigation-util";
 import { useStore } from "../../../../stores";
@@ -94,6 +93,10 @@ export const NFTSendScreen: FunctionComponent = observer(() => {
     }
   }, [addressIsValid]);
 
+  const chainId = chainStore.current.chainId;
+  const chain = chainStore.getChain(chainId);
+  const ethereumEndpoint = chain.raw.ethereumEndpoint;
+
   const account = accountStore.getAccount(chainStore.current.chainId);
 
   const sendConfigs = useSendTxConfig(
@@ -102,7 +105,7 @@ export const NFTSendScreen: FunctionComponent = observer(() => {
     accountStore,
     chainStore.current.chainId,
     account.bech32Address,
-    EthereumEndpoint
+    ethereumEndpoint
   );
 
   const rows: IRow[] = [

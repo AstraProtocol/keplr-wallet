@@ -12,7 +12,6 @@ import {
   MIN_AMOUNT,
 } from "../../../common/utils";
 import { Button } from "../../../components/button";
-import { EthereumEndpoint } from "../../../config";
 import { useTransaction } from "../../tx-result/hook/use-transaction";
 import { useStaking } from "../hook/use-staking";
 import { RewardDetails } from "./rewards";
@@ -35,6 +34,10 @@ export const StakingRewardScreen: FunctionComponent = () => {
   const { getValidator, getRewardsAmountOf, getDelegations } = useStaking();
   const { simulateWithdrawRewardsTx } = useTransaction();
 
+  const chainId = chainStore.current.chainId;
+  const chain = chainStore.getChain(chainId);
+  const ethereumEndpoint = chain.raw.ethereumEndpoint;
+
   const account = accountStore.getAccount(chainStore.current.chainId);
 
   const style = useStyle();
@@ -46,7 +49,7 @@ export const StakingRewardScreen: FunctionComponent = () => {
     accountStore,
     chainStore.current.chainId,
     account.bech32Address,
-    EthereumEndpoint
+    ethereumEndpoint
   );
 
   const stakableRewardsList = getDelegations()

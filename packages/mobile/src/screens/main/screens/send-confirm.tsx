@@ -8,7 +8,6 @@ import { useStore } from "../../../stores";
 import { Button } from "../../../components/button";
 import { useSmartNavigation } from "../../../navigation-util";
 import { useSendTxConfig } from "@keplr-wallet/hooks";
-import { EthereumEndpoint } from "../../../config";
 import { RouteProp, useRoute } from "@react-navigation/native";
 import { useIntl } from "react-intl";
 
@@ -38,6 +37,8 @@ export const SendConfirmScreen: FunctionComponent = observer(() => {
   const chainId = route.params.chainId
     ? route.params.chainId
     : chainStore.current.chainId;
+  const chain = chainStore.getChain(chainId);
+  const ethereumEndpoint = chain.raw.ethereumEndpoint;
 
   const account = accountStore.getAccount(chainId);
 
@@ -47,7 +48,7 @@ export const SendConfirmScreen: FunctionComponent = observer(() => {
     accountStore,
     chainId,
     account.bech32Address,
-    EthereumEndpoint
+    ethereumEndpoint
   );
   const intl = useIntl();
   useEffect(() => {
