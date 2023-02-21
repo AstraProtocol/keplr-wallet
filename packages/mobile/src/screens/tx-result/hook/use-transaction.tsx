@@ -62,7 +62,7 @@ export const useTransaction = () => {
       gasLimit: number;
       gasMultiplier: number;
     } = {
-      gasPrice: 1000000000000,//1000 nano aastra
+      gasPrice: 100000000000, //100 nano aastra
       gasLimit: TX_GAS_DEFAULT.delegate,
       gasMultiplier: 1.3,
     }
@@ -88,7 +88,10 @@ export const useTransaction = () => {
         .finish(),
     };
 
-    const gasPrice = Number(queryFeeMarket.gasPrice ?? defaultConfig.gasPrice);
+    const gasPrice =
+      Number(queryFeeMarket.gasPrice ?? 0) > 0
+        ? Number(queryFeeMarket.gasPrice)
+        : defaultConfig.gasPrice;
     let gasLimit = defaultConfig.gasLimit;
     let feeAmount = {
       amount: new Dec(gasPrice).mul(new Dec(gasLimit)).toString(0),
@@ -127,7 +130,7 @@ export const useTransaction = () => {
       gasLimit: number;
       gasMultiplier: number;
     } = {
-      gasPrice: 1000000000000,//1000 nano aastra
+      gasPrice: 100000000000, //100 nano aastra
       gasLimit: TX_GAS_DEFAULT.delegate,
       gasMultiplier: 1.3,
     }
@@ -153,7 +156,10 @@ export const useTransaction = () => {
         .finish(),
     };
 
-    const gasPrice = Number(queryFeeMarket.gasPrice ?? defaultConfig.gasPrice);
+    const gasPrice =
+      Number(queryFeeMarket.gasPrice ?? 0) > 0
+        ? Number(queryFeeMarket.gasPrice)
+        : defaultConfig.gasPrice;
     let gasLimit = defaultConfig.gasLimit;
     let feeAmount = {
       amount: new Dec(gasPrice).mul(new Dec(gasLimit)).toString(0),
@@ -193,7 +199,7 @@ export const useTransaction = () => {
       gasLimit: number;
       gasMultiplier: number;
     } = {
-      gasPrice: 1000000000000,//1000 nano aastra
+      gasPrice: 100000000000, //100 nano aastra
       gasLimit: TX_GAS_DEFAULT.redelegate,
       gasMultiplier: 1.3,
     }
@@ -220,7 +226,10 @@ export const useTransaction = () => {
         .finish(),
     };
 
-    const gasPrice = Number(queryFeeMarket.gasPrice ?? defaultConfig.gasPrice);
+    const gasPrice =
+      Number(queryFeeMarket.gasPrice ?? 0) > 0
+        ? Number(queryFeeMarket.gasPrice)
+        : defaultConfig.gasPrice;
     let gasLimit = defaultConfig.gasLimit;
     let feeAmount = {
       amount: new Dec(gasPrice).mul(new Dec(gasLimit)).toString(0),
@@ -258,7 +267,7 @@ export const useTransaction = () => {
       gasLimit: number;
       gasMultiplier: number;
     } = {
-      gasPrice: 1000000000000,//1000 nano aastra
+      gasPrice: 100000000000, //100 nano aastra
       gasLimit: TX_GAS_DEFAULT.withdraw,
       gasMultiplier: 1.3,
     }
@@ -275,7 +284,10 @@ export const useTransaction = () => {
       };
     });
 
-    const gasPrice = Number(queryFeeMarket.gasPrice ?? defaultConfig.gasPrice);
+    const gasPrice =
+      Number(queryFeeMarket.gasPrice ?? 0) > 0
+        ? Number(queryFeeMarket.gasPrice)
+        : defaultConfig.gasPrice;
     let gasLimit = defaultConfig.gasLimit;
     let feeAmount = {
       amount: new Dec(gasPrice).mul(new Dec(gasLimit)).toString(0),
@@ -319,7 +331,6 @@ export const useTransaction = () => {
       queryFeeMarket.baseFee
         ? {
             baseFee: Number(queryFeeMarket.baseFee),
-            priorityFee: 1500000000,//1.5 nano aastra
           }
         : {},
       {
@@ -347,7 +358,13 @@ export const useTransaction = () => {
     const tx = account.cosmos.makeDelegateTx(amount, data.validatorAddress);
 
     await tx.sendWithGasPrice(
-      { gas: Number(data.gasLimit ?? 0) },
+      {
+        gas: Number(data.gasLimit ?? 0),
+        gasPrice: {
+          denom: chainStore.current.feeCurrencies[0].coinMinimalDenom,
+          amount: new Dec(data.gasPrice ?? 0),
+        },
+      },
       "",
       {
         preferNoSetMemo: true,
@@ -373,7 +390,13 @@ export const useTransaction = () => {
     amount = amount.split(",").join("");
     const tx = account.cosmos.makeUndelegateTx(amount, data.validatorAddress);
     await tx.sendWithGasPrice(
-      { gas: Number(data.gasLimit ?? 0) },
+      {
+        gas: Number(data.gasLimit ?? 0),
+        gasPrice: {
+          denom: chainStore.current.feeCurrencies[0].coinMinimalDenom,
+          amount: new Dec(data.gasPrice ?? 0),
+        },
+      },
       "",
       {
         preferNoSetMemo: true,
@@ -403,7 +426,13 @@ export const useTransaction = () => {
       data.dstValidatorAddress
     );
     await tx.sendWithGasPrice(
-      { gas: Number(data.gasLimit ?? 0) },
+      {
+        gas: Number(data.gasLimit ?? 0),
+        gasPrice: {
+          denom: chainStore.current.feeCurrencies[0].coinMinimalDenom,
+          amount: new Dec(data.gasPrice ?? 0),
+        },
+      },
       "",
       {
         preferNoSetMemo: true,
@@ -433,7 +462,13 @@ export const useTransaction = () => {
       validatorAddresses
     );
     await tx.sendWithGasPrice(
-      { gas: Number(data.gasLimit ?? 0) },
+      {
+        gas: Number(data.gasLimit ?? 0),
+        gasPrice: {
+          denom: chainStore.current.feeCurrencies[0].coinMinimalDenom,
+          amount: new Dec(data.gasPrice ?? 0),
+        },
+      },
       "",
       {
         preferNoSetMemo: true,

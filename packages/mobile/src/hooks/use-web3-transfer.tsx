@@ -41,20 +41,23 @@ export const useWeb3Transfer = () => {
       value: getTxAmount(amountConfig),
     });
 
-    let gasPrice = "0x0";
-    let baseFee = defaultConfig?.baseFee;
-    if (baseFee) {
-      if (defaultConfig?.priorityFee) {
-        baseFee += defaultConfig?.priorityFee;
-      }
-      gasPrice = "0x" + baseFee.toString(16);
-    } else {
-      gasPrice = (await manager.provider.getGasPrice()).toHexString();
+    const feeData = await manager.provider.getFeeData();
+
+    let maxPriorityFeePerGas =
+      feeData.maxPriorityFeePerGas?.toNumber() ?? 1500000000;
+    if (defaultConfig?.priorityFee) {
+      maxPriorityFeePerGas = defaultConfig.priorityFee;
+    }
+
+    let maxFeePerGas = feeData.maxFeePerGas?.toNumber() ?? 0;
+    if (defaultConfig?.baseFee) {
+      maxFeePerGas = defaultConfig.baseFee + maxPriorityFeePerGas;
     }
 
     return {
       gasLimit: estimateGas,
-      gasPrice,
+      maxFeePerGas: "0x" + maxFeePerGas.toString(16),
+      maxPriorityFeePerGas: "0x" + maxPriorityFeePerGas.toString(16),
     };
   };
 
@@ -75,7 +78,7 @@ export const useWeb3Transfer = () => {
 
     const manager = await asyncManager;
 
-    const { gasLimit, gasPrice } = await estimateGas(
+    const { gasLimit, maxFeePerGas, maxPriorityFeePerGas } = await estimateGas(
       toAddress,
       amountConfig,
       defaultConfig
@@ -86,13 +89,8 @@ export const useWeb3Transfer = () => {
       ...txData,
       to: toAddress,
       gasLimit,
-      ...(defaultConfig?.priorityFee
-        ? {
-            maxPriorityFeePerGas:
-              "0x" + defaultConfig?.priorityFee.toString(16),
-          }
-        : {}),
-      maxFeePerGas: gasPrice,
+      maxPriorityFeePerGas,
+      maxFeePerGas,
     };
 
     const signedTx = await manager.wallet.signTransaction(txData);

@@ -68,6 +68,11 @@ export const SendTokenScreen: FunctionComponent = observer(() => {
 
   const amountInputRef = useRef<any>();
 
+  const [baseFee, setBaseFee] = useState(queryFeeMarket.baseFee);
+  useEffect(() => {
+    setBaseFee(queryFeeMarket.baseFee);
+  }, [queryFeeMarket, queryFeeMarket.params]);
+
   useEffect(() => {
     if (route.params.currency) {
       const currency = sendConfigs.amountConfig.sendableCurrencies.find(
@@ -124,13 +129,12 @@ export const SendTokenScreen: FunctionComponent = observer(() => {
     Keyboard.dismiss();
 
     if (amountIsValid && addressIsValid) {
-      const { gasLimit: gas, gasPrice: price } = await estimateGas(
+      const { gasLimit: gas, maxFeePerGas: price } = await estimateGas(
         sendConfigs.recipientConfig.recipient,
         sendConfigs.amountConfig,
-        queryFeeMarket.baseFee
+        baseFee
           ? {
-              baseFee: Number(queryFeeMarket.baseFee),
-              priorityFee: 1500000000, //1.5 nano aastra
+              baseFee: Number(baseFee),
             }
           : {}
       );

@@ -78,7 +78,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
           "https://salt.tikicdn.com/ts/upload/2a/74/6d/1000f0249fd530a9313a07fc3e13c1b2.png",
         gasPriceStep: {
           low: 500000000,
-          average: 1000000000000,
+          average: 100000000000,
           high: 2000000000,
         },
       },
@@ -157,7 +157,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
           "https://salt.tikicdn.com/ts/upload/2a/74/6d/1000f0249fd530a9313a07fc3e13c1b2.png",
         gasPriceStep: {
           low: 500000000,
-          average: 1000000000000,
+          average: 100000000000,
           high: 2000000000,
         },
       },
