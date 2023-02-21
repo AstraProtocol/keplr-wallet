@@ -164,6 +164,7 @@ export const StakingValidatorItem: FunctionComponent<{
         {rows.map(({ key, value, valueColor }) => {
           return (
             <View
+              key={key}
               style={style.flatten([
                 "flex-row",
                 "items-center",
@@ -457,6 +458,7 @@ const ValidatorInfo: FunctionComponent<{
         {data.map(({ key, value, valueColor }) => {
           return (
             <View
+              key={key}
               style={style.flatten([
                 "flex-row",
                 "items-center",

@@ -31,9 +31,7 @@ export const useStaking = () => {
   const queryFeeMarket = queries.cosmos.queryFeeMarket;
 
   const getChainAPR = () => {
-    const blockProvision = Number(
-      queryMint.mintBlockProvision?.amount || "0"
-    );
+    const blockProvision = Number(queryMint.mintBlockProvision?.amount || "0");
 
     if (queryPool.bondedTokens.toDec().isZero() || blockProvision === 0) {
       return 0;
