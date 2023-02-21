@@ -1,6 +1,7 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import { TransactionRequest, Web3Provider } from "@ethersproject/providers";
 import { Wallet } from "@ethersproject/wallet";
+import { Bech32Address } from "@keplr-wallet/cosmos";
 import { IAmountConfig } from "@keplr-wallet/hooks";
 import { Dec, DecUtils } from "@keplr-wallet/unit";
 import { useMemo } from "react";
@@ -33,11 +34,12 @@ export const useWeb3Transfer = () => {
       | { baseFee?: number; priorityFee?: number }
       | undefined = undefined
   ) => {
+    const hexAddress = convertToHexAddress(toAddress);
     const manager = await asyncManager;
 
     const estimateGas = await manager.provider.estimateGas({
       from: manager.wallet.address,
-      to: toAddress,
+      to: hexAddress,
       value: getTxAmount(amountConfig),
     });
 
@@ -75,11 +77,12 @@ export const useWeb3Transfer = () => {
         }
   ) => {
     transactionStore.updateTxState("pending");
+    const hexAddress = convertToHexAddress(toAddress);
 
     const manager = await asyncManager;
 
     const { gasLimit, maxFeePerGas, maxPriorityFeePerGas } = await estimateGas(
-      toAddress,
+      hexAddress,
       amountConfig,
       defaultConfig
     );
@@ -87,7 +90,7 @@ export const useWeb3Transfer = () => {
     let txData = await buildTxData(amountConfig);
     txData = {
       ...txData,
-      to: toAddress,
+      to: hexAddress,
       gasLimit,
       maxPriorityFeePerGas,
       maxFeePerGas,
@@ -128,6 +131,17 @@ export const useWeb3Transfer = () => {
     }
   };
 
+  const convertToHexAddress = (bech32Address: string) => {
+    if (bech32Address.startsWith("0x")) {
+      return bech32Address;
+    }
+
+    return Bech32Address.fromBech32(
+      bech32Address,
+      chain.bech32Config.bech32PrefixAccAddr
+    ).toHex(true);
+  };
+
   const getTxAmount = (amountConfig: IAmountConfig) => {
     const actualAmount = (() => {
       let dec = new Dec(amountConfig.amount);
@@ -160,5 +174,6 @@ export const useWeb3Transfer = () => {
   return {
     estimateGas,
     transfer,
+    convertToHexAddress,
   };
 };

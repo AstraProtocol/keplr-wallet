@@ -271,12 +271,12 @@ export function renderMsgSend(value: MsgSend["value"]): IRow[] {
   const intl = useIntl();
 
   let _toAddress = value.recipient;
-  if (_toAddress.startsWith("astra")) {
-    try {
-      _toAddress = converter("astra").toHex(value.recipient);
-      console.log("toAddress: ", _toAddress);
-    } catch {}
-  }
+  // if (_toAddress.startsWith("astra")) {
+  //   try {
+  //     _toAddress = converter("astra").toHex(value.recipient);
+  //     console.log("toAddress: ", _toAddress);
+  //   } catch {}
+  // }
 
   const rows: IRow[] = [
     {
