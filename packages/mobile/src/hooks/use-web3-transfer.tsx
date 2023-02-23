@@ -51,7 +51,7 @@ export const useWeb3Transfer = () => {
       maxPriorityFeePerGas = defaultConfig.priorityFee;
     }
 
-    let maxFeePerGas = feeData.maxFeePerGas?.toNumber() ?? 0;
+    let maxFeePerGas = feeData.maxFeePerGas?.toNumber() ?? 1000000000000; // 1000 nano aastra
     if (defaultConfig?.baseFee) {
       maxFeePerGas = defaultConfig.baseFee + maxPriorityFeePerGas;
     }

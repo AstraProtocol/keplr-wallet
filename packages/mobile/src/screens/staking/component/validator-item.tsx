@@ -331,7 +331,7 @@ export const DashboardValidatorItem: FunctionComponent<{
   validator: Staking.Validator;
   hideStakeButton?: boolean;
 }> = observer(({ containerStyle, validator, hideStakeButton = false }) => {
-  const { getValidatorAPR, getTotalSharesAmountOf } = useStaking();
+  const { getValidatorAPR, getTotalSharesAmountOf, getValidatorThumbnail } = useStaking();
 
   const style = useStyle();
   const intl = useIntl();
@@ -341,6 +341,7 @@ export const DashboardValidatorItem: FunctionComponent<{
 
   const apr = getValidatorAPR(validatorAddress);
   const totalSharesAmount = getTotalSharesAmountOf(validatorAddress);
+  const thumbnail = getValidatorThumbnail(validatorAddress);
 
   const rows = [
     {
@@ -374,6 +375,7 @@ export const DashboardValidatorItem: FunctionComponent<{
         hideStatus
         hideButton={hideStakeButton}
         name={validator.description.moniker}
+        thumbnail={thumbnail}
         thumbnailSize={56}
         data={rows}
         buttonText={intl.formatMessage({ id: "Stake" })}

@@ -19,7 +19,7 @@ export const EstimateRewardsView: FunctionComponent<{
   const safeAreaInsets = useSafeAreaInsets();
 
   const apr = getValidatorAPR(validatorAddress);
-  const daysPerYear = 365;
+  const daysPerYear = 365.25;
   const rewardsAmount = stakingAmount.mul(new Dec(apr / daysPerYear));
 
   const estimatedRewardsText =
