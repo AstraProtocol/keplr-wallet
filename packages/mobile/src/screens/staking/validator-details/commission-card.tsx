@@ -141,6 +141,7 @@ export const CommissionsCard: FunctionComponent<{
                 "text-left",
                 "color-label-text-1",
                 "body3",
+                "margin-top-12",
               ])}
             >
               {validator.description.details}
