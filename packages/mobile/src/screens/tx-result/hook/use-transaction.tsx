@@ -64,7 +64,7 @@ export const useTransaction = () => {
     } = {
       gasPrice: 100000000000, //100 nano aastra
       gasLimit: TX_GAS_DEFAULT.delegate,
-      gasMultiplier: 1.3,
+      gasMultiplier: 1,
     }
   ) => {
     amountConfig.setAmount(amount);
@@ -132,7 +132,7 @@ export const useTransaction = () => {
     } = {
       gasPrice: 100000000000, //100 nano aastra
       gasLimit: TX_GAS_DEFAULT.delegate,
-      gasMultiplier: 1.3,
+      gasMultiplier: 1,
     }
   ) => {
     amountConfig.setAmount(amount);
@@ -201,7 +201,7 @@ export const useTransaction = () => {
     } = {
       gasPrice: 100000000000, //100 nano aastra
       gasLimit: TX_GAS_DEFAULT.redelegate,
-      gasMultiplier: 1.3,
+      gasMultiplier: 1,
     }
   ) => {
     amountConfig.setAmount(amount);
@@ -269,7 +269,7 @@ export const useTransaction = () => {
     } = {
       gasPrice: 100000000000, //100 nano aastra
       gasLimit: TX_GAS_DEFAULT.withdraw,
-      gasMultiplier: 1.3,
+      gasMultiplier: 1,
     }
   ) => {
     const msgs = validatorAddresses.map((validatorAddress) => {
@@ -365,7 +365,7 @@ export const useTransaction = () => {
           amount: new Dec(data.gasPrice ?? 0),
         },
       },
-      "",
+      "Delegate from Rewards Hub",
       {
         preferNoSetMemo: true,
         preferNoSetFee: true,
@@ -397,7 +397,7 @@ export const useTransaction = () => {
           amount: new Dec(data.gasPrice ?? 0),
         },
       },
-      "",
+      "Undelegate from Rewards Hub",
       {
         preferNoSetMemo: true,
         preferNoSetFee: true,
@@ -433,7 +433,7 @@ export const useTransaction = () => {
           amount: new Dec(data.gasPrice ?? 0),
         },
       },
-      "",
+      "Redelegate from Rewards Hub",
       {
         preferNoSetMemo: true,
         preferNoSetFee: true,
@@ -469,7 +469,7 @@ export const useTransaction = () => {
           amount: new Dec(data.gasPrice ?? 0),
         },
       },
-      "",
+      "Withdraw rewards from Rewards Hub",
       {
         preferNoSetMemo: true,
         preferNoSetFee: true,

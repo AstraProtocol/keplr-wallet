@@ -32,7 +32,7 @@ export const StakingRewardScreen: FunctionComponent = () => {
     transactionStore,
   } = useStore();
   const { getValidator, getRewardsAmountOf, getDelegations } = useStaking();
-  const { simulateWithdrawRewardsTx } = useTransaction();
+  const { simulateWithdrawRewardsTx, sendTransaction } = useTransaction();
 
   const chainId = chainStore.current.chainId;
   const chain = chainStore.getChain(chainId);
@@ -104,14 +104,14 @@ export const StakingRewardScreen: FunctionComponent = () => {
   const feeText = formatCoinFee(sendConfigs.feeConfig.fee);
 
   const withdrawAllRewards = async () => {
-    const params = {
-      token: stakingReward?.denom,
-      amount: Number(stakingReward?.toDec() || 0),
-      fee: Number(sendConfigs.feeConfig.fee?.toDec() ?? "0"),
-      gas: gasLimit,
-      gas_price: gasPrice,
-      validator_addresses: JSON.stringify(validatorAddresses),
-    };
+    // const params = {
+    //   token: stakingReward?.denom,
+    //   amount: Number(stakingReward?.toDec() || 0),
+    //   fee: Number(sendConfigs.feeConfig.fee?.toDec() ?? "0"),
+    //   gas: gasLimit,
+    //   gas_price: gasPrice,
+    //   validator_addresses: JSON.stringify(validatorAddresses),
+    // };
 
     try {
       transactionStore.updateRawData({
@@ -125,38 +125,18 @@ export const StakingRewardScreen: FunctionComponent = () => {
         },
       });
 
-      const tx = account.cosmos.makeWithdrawDelegationRewardTx(
-        validatorAddresses
-      );
-      await tx.sendWithGasPrice(
-        { gas: gasLimit },
-        sendConfigs.memoConfig.memo,
-        {
-          preferNoSetMemo: true,
-          preferNoSetFee: true,
-        },
-        {
-          onBroadcasted: (txHash) => {
-            analyticsStore.logEvent("astra_hub_claim_reward", {
-              ...params,
-              tx_hash: Buffer.from(txHash).toString("hex"),
-              success: true,
-            });
-            transactionStore.updateTxHash(txHash);
-          },
-        }
-      );
+      await sendTransaction();
     } catch (e: any) {
-      analyticsStore.logEvent("astra_hub_claim_reward", {
-        ...params,
-        success: false,
-        error: e?.message,
-      });
-      if (e?.message === "Request rejected") {
-        return;
-      }
-      console.log("got e", e);
-      transactionStore.updateTxState("failure");
+      // analyticsStore.logEvent("astra_hub_claim_reward", {
+      //   ...params,
+      //   success: false,
+      //   error: e?.message,
+      // });
+      // if (e?.message === "Request rejected") {
+      //   return;
+      // }
+      // transactionStore.updateTxState("failure");
+      console.log("__TRANSACTION__FAIL__", e);
     }
   };
 
