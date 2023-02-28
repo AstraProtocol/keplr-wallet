@@ -64,7 +64,7 @@ export const useTransaction = () => {
     } = {
       gasPrice: 100000000000, //100 nano aastra
       gasLimit: TX_GAS_DEFAULT.delegate,
-      gasMultiplier: 1,
+      gasMultiplier: 1.1,
     }
   ) => {
     amountConfig.setAmount(amount);
@@ -93,30 +93,24 @@ export const useTransaction = () => {
         ? Number(queryFeeMarket.gasPrice)
         : defaultConfig.gasPrice;
     let gasLimit = defaultConfig.gasLimit;
-    let feeAmount = {
-      amount: new Dec(gasPrice).mul(new Dec(gasLimit)).toString(0),
-      denom: chainStore.current.feeCurrencies[0].coinMinimalDenom,
-    };
 
     try {
       const { gasUsed } = await account.cosmos.simulateTransaction([msg], {
-        amount: [feeAmount],
+        amount: [calculateFeeAmount(gasPrice, gasLimit)],
         gasLimit,
       });
 
-      gasLimit = Math.ceil(gasUsed * defaultConfig.gasMultiplier);
-      feeAmount = {
-        amount: new Dec(gasPrice).mul(new Dec(gasLimit)).toString(0),
-        denom: chainStore.current.feeCurrencies[0].coinMinimalDenom,
-      };
-      console.log("__DEBUG__ simulate gasUsed", gasUsed);
-      console.log("__DEBUG__ simulate gasLimit", gasLimit);
+      gasLimit = gasUsed;
     } catch (e) {
       console.log("simulateDelegateTx error", e);
     }
 
+    // Buffer with gasMultiplier
+    gasLimit = Math.ceil(gasLimit * defaultConfig.gasMultiplier);
+    console.log("__DEBUG__ simulate gasLimit", gasLimit);
+
     return {
-      feeAmount,
+      feeAmount: calculateFeeAmount(gasPrice, gasLimit),
       gasPrice,
       gasLimit,
     };
@@ -132,7 +126,7 @@ export const useTransaction = () => {
     } = {
       gasPrice: 100000000000, //100 nano aastra
       gasLimit: TX_GAS_DEFAULT.delegate,
-      gasMultiplier: 1,
+      gasMultiplier: 1.1,
     }
   ) => {
     amountConfig.setAmount(amount);
@@ -161,30 +155,24 @@ export const useTransaction = () => {
         ? Number(queryFeeMarket.gasPrice)
         : defaultConfig.gasPrice;
     let gasLimit = defaultConfig.gasLimit;
-    let feeAmount = {
-      amount: new Dec(gasPrice).mul(new Dec(gasLimit)).toString(0),
-      denom: chainStore.current.feeCurrencies[0].coinMinimalDenom,
-    };
 
     try {
       const { gasUsed } = await account.cosmos.simulateTransaction([msg], {
-        amount: [feeAmount],
+        amount: [calculateFeeAmount(gasPrice, gasLimit)],
         gasLimit,
       });
 
-      gasLimit = Math.ceil(gasUsed * defaultConfig.gasMultiplier);
-      feeAmount = {
-        amount: new Dec(gasPrice).mul(new Dec(gasLimit)).toString(0),
-        denom: chainStore.current.feeCurrencies[0].coinMinimalDenom,
-      };
-      console.log("__DEBUG__ simulate gasUsed", gasUsed);
-      console.log("__DEBUG__ simulate gasLimit", gasLimit);
+      gasLimit = gasUsed;
     } catch (e) {
       console.log("simulateUndelegateTx error", e);
     }
 
+    // Buffer with gasMultiplier
+    gasLimit = Math.ceil(gasLimit * defaultConfig.gasMultiplier);
+    console.log("__DEBUG__ simulate gasLimit", gasLimit);
+
     return {
-      feeAmount,
+      feeAmount: calculateFeeAmount(gasPrice, gasLimit),
       gasPrice,
       gasLimit,
     };
@@ -201,7 +189,7 @@ export const useTransaction = () => {
     } = {
       gasPrice: 100000000000, //100 nano aastra
       gasLimit: TX_GAS_DEFAULT.redelegate,
-      gasMultiplier: 1,
+      gasMultiplier: 1.1,
     }
   ) => {
     amountConfig.setAmount(amount);
@@ -231,30 +219,24 @@ export const useTransaction = () => {
         ? Number(queryFeeMarket.gasPrice)
         : defaultConfig.gasPrice;
     let gasLimit = defaultConfig.gasLimit;
-    let feeAmount = {
-      amount: new Dec(gasPrice).mul(new Dec(gasLimit)).toString(0),
-      denom: chainStore.current.feeCurrencies[0].coinMinimalDenom,
-    };
 
     try {
       const { gasUsed } = await account.cosmos.simulateTransaction([msg], {
-        amount: [feeAmount],
+        amount: [calculateFeeAmount(gasPrice, gasLimit)],
         gasLimit,
       });
 
-      gasLimit = Math.ceil(gasUsed * defaultConfig.gasMultiplier);
-      feeAmount = {
-        amount: new Dec(gasPrice).mul(new Dec(gasLimit)).toString(0),
-        denom: chainStore.current.feeCurrencies[0].coinMinimalDenom,
-      };
-      console.log("__DEBUG__ simulate gasUsed", gasUsed);
-      console.log("__DEBUG__ simulate gasLimit", gasLimit);
+      gasLimit = gasUsed;
     } catch (e) {
       console.log("simulateRedelegateTx error", e);
     }
 
+    // Buffer with gasMultiplier
+    gasLimit = Math.ceil(gasLimit * defaultConfig.gasMultiplier);
+    console.log("__DEBUG__ simulate gasLimit", gasLimit);
+
     return {
-      feeAmount,
+      feeAmount: calculateFeeAmount(gasPrice, gasLimit),
       gasPrice,
       gasLimit,
     };
@@ -269,7 +251,7 @@ export const useTransaction = () => {
     } = {
       gasPrice: 100000000000, //100 nano aastra
       gasLimit: TX_GAS_DEFAULT.withdraw,
-      gasMultiplier: 1,
+      gasMultiplier: 1.1,
     }
   ) => {
     const msgs = validatorAddresses.map((validatorAddress) => {
@@ -288,31 +270,25 @@ export const useTransaction = () => {
       Number(queryFeeMarket.gasPrice ?? 0) > 0
         ? Number(queryFeeMarket.gasPrice)
         : defaultConfig.gasPrice;
-    let gasLimit = defaultConfig.gasLimit;
-    let feeAmount = {
-      amount: new Dec(gasPrice).mul(new Dec(gasLimit)).toString(0),
-      denom: chainStore.current.feeCurrencies[0].coinMinimalDenom,
-    };
+    let gasLimit = defaultConfig.gasLimit * msgs.length;
 
     try {
       const { gasUsed } = await account.cosmos.simulateTransaction(msgs, {
-        amount: [feeAmount],
+        amount: [calculateFeeAmount(gasPrice, gasLimit)],
         gasLimit,
       });
 
-      gasLimit = Math.ceil(gasUsed * defaultConfig.gasMultiplier);
-      feeAmount = {
-        amount: new Dec(gasPrice).mul(new Dec(gasLimit)).toString(0),
-        denom: chainStore.current.feeCurrencies[0].coinMinimalDenom,
-      };
-      console.log("__DEBUG__ simulate gasUsed", gasUsed);
-      console.log("__DEBUG__ simulate gasLimit", gasLimit);
+      gasLimit = gasUsed;
     } catch (e) {
       console.log("simulateWithdrawRewardsTx error", e);
     }
 
+    // Buffer with gasMultiplier
+    gasLimit = Math.ceil(gasLimit * defaultConfig.gasMultiplier);
+    console.log("__DEBUG__ simulate gasLimit", gasLimit);
+
     return {
-      feeAmount,
+      feeAmount: calculateFeeAmount(gasPrice, gasLimit),
       gasPrice,
       gasLimit,
     };
@@ -687,6 +663,13 @@ export const useTransaction = () => {
     }
 
     return;
+  };
+
+  const calculateFeeAmount = (gasPrice: number, gasLimit: number) => {
+    return {
+      amount: new Dec(gasPrice).mul(new Dec(gasLimit)).toString(0),
+      denom: chainStore.current.feeCurrencies[0].coinMinimalDenom,
+    };
   };
 
   return {

@@ -13,10 +13,10 @@ export const LOCALE_FORMAT = {
   },
 };
 export const TX_GAS_DEFAULT = {
-  delegate: 300000,
-  undelegate: 300000,
-  redelegate: 300000,
-  withdraw: 300000,
+  delegate: 250000,
+  undelegate: 250000,
+  redelegate: 250000,
+  withdraw: 150000,
 };
 
 export const formatCoinAmount = (
@@ -30,6 +30,10 @@ export const formatCoinFee = (
   coin?: CoinPretty,
   hideDenom: boolean = false
 ) => {
+  // if (coin && coin.toDec().lt(new Dec(0.000001))) {
+  //   return `< 0.000001 ${coin.denom.toUpperCase()}`;
+  // }
+
   return formatCoin(coin, hideDenom, (value: number): number => {
     return value >= 1 ? FRACTION_DIGITS : 6;
   });

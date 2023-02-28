@@ -36,7 +36,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
     rest: "https://api.astranaut.io",
     chainId: "astra_11110-1",
     chainIdNumber: 11110,
-    chainName: "Astra Mainnet",
+    chainName: "Mainnet",
     stakeCurrency: {
       coinDenom: "ASA",
       coinMinimalDenom: "aastra",
