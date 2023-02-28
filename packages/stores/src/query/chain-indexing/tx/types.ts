@@ -43,6 +43,7 @@ export type TxMessage = {
     | RevokeContent
     | ExecContent
     | EthereumTxContent
+    | VoteContent
     | undefined;
 };
 
@@ -184,6 +185,20 @@ export interface EthereumTxContent {
     hash: string;
     size: number;
   };
+  txHash: string;
+  msgName: string;
+  version: number;
+  msgIndex: number;
+  name: string;
+  uuid: string;
+  height: number;
+}
+
+export interface VoteContent {
+  voter: string;
+  // amount: { amount: string; denom: string }[];
+  option: string;
+  proposalId: string;
   txHash: string;
   msgName: string;
   version: number;

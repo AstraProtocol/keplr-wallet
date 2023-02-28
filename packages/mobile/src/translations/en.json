@@ -185,6 +185,7 @@
   "History.Swap.USDT/ASA": "Swap USDT/ASA",
   "History.SendNFT": "Send NFT",
   "History.ReceiveNFT": "Receive NFT",
+  "History.Vote": "Vote",
 
   "nft.collectible.empty": "No NFTs yet",
   "nft.collectible.send": "Send NFT",

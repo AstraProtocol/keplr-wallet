@@ -7,6 +7,7 @@ import {
   SendContent,
   Tx,
   UndelegateContent,
+  VoteContent,
   WithdrawDelegatorRewardContent,
 } from "@keplr-wallet/stores/build/query/chain-indexing/tx";
 import { CoinPretty, Dec } from "@keplr-wallet/unit";
@@ -25,6 +26,7 @@ enum SupportedMsgs {
   MsgRevoke = "/cosmos.authz.v1beta1.MsgRevoke",
   MsgExec = "/cosmos.authz.v1beta1.MsgExec",
   MsgEthereumTx = "/ethermint.evm.v1.MsgEthereumTx",
+  MsgVote = "/cosmos.gov.v1beta1.MsgVote",
 }
 
 export interface ITransactionItem {
@@ -348,6 +350,22 @@ export const useTransactionHistory = () => {
     };
   };
 
+  const parseMsgVote = (tx: Tx): Record<string, any> => {
+    const msg = tx.messages.find((msg) => msg.type === SupportedMsgs.MsgVote);
+    if (!msg) {
+      return {};
+    }
+    const content = msg.content as VoteContent;
+    console.log("__DEBUG__ content: ", content);
+    const action = intl.formatMessage({
+      id: "History.Vote",
+    });
+
+    return {
+      action,
+      rightText: "",
+    };
+  };
   const parseTx = (tx: Tx): Record<string, any> => {
     let messageTypes = tx.messageTypes;
     let msgType = messageTypes[0];
@@ -378,6 +396,7 @@ export const useTransactionHistory = () => {
       [SupportedMsgs.MsgRevoke]: parseMsgRevoke,
       [SupportedMsgs.MsgExec]: parseMsgExec,
       [SupportedMsgs.MsgEthereumTx]: parseMsgEthereumTx,
+      [SupportedMsgs.MsgVote]: parseMsgVote,
     };
 
     let params: Record<string, any> = {};

@@ -185,6 +185,7 @@
   "History.Swap.USDT/ASA": "Chuyển đổi USDT/ASA",
   "History.SendNFT": "Gửi NFT",
   "History.ReceiveNFT": "Nhận NFT",
+  "History.Vote": "Bầu chọn",
 
   "nft.collectible.empty": "Bạn chưa sở hữu bộ sưu tập nào",
   "nft.collectible.send": "Gửi bộ sưu tập",
