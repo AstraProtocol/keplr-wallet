@@ -298,7 +298,7 @@
   "tx.result.models.msgVote.option.yes": "Yes",
   "tx.result.models.msgVote.proposalLabel": "On",
   "tx.result.models.msgVote.proposalValue": "Proposal {proposalId}",
-  "tx.result.state.error": "Hệ thông bị quá tải. Vui lòng thử lại",
+  "tx.result.state.error": "Giao dịch thất bại. Vui lòng thử lại",
   "tx.result.state.initialized": "Đã ghi nhận",
   "tx.result.state.processing": "Đang xử lý",
   "tx.result.state.sucess": "Giao dịch thành công",

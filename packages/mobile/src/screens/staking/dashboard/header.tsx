@@ -1,3 +1,4 @@
+import { observer } from "mobx-react-lite";
 import React, { FunctionComponent } from "react";
 import { useIntl } from "react-intl";
 import {
@@ -7,17 +8,22 @@ import {
   View,
   ViewStyle,
 } from "react-native";
+import { formatPercent } from "../../../common";
 import { useSmartNavigation } from "../../../navigation-util";
 import { useStyle } from "../../../styles";
 import { QuestionIcon } from "../component/tooltip-icon";
+import { useStaking } from "../hook/use-staking";
 import { GradientBackground } from "./gradient-background";
 
 export const DashboardHeader: FunctionComponent<{
   containerStyle?: ViewStyle;
-}> = ({ containerStyle }) => {
+}> = observer(({ containerStyle }) => {
   const style = useStyle();
   const intl = useIntl();
   const smartNavigation = useSmartNavigation();
+  const { getChainAPR } = useStaking();
+
+  const chainApr = getChainAPR();
 
   return (
     <View
@@ -70,7 +76,7 @@ export const DashboardHeader: FunctionComponent<{
               "margin-y-2",
             ])}
           >
-            {intl.formatMessage({ id: "Dashboard.Banner.2" })}
+            {formatPercent(chainApr) + "/" + intl.formatMessage({ id: "Year" })}
           </Text>
         </View>
         <Text
@@ -114,4 +120,4 @@ export const DashboardHeader: FunctionComponent<{
       </View>
     </View>
   );
-};
+});

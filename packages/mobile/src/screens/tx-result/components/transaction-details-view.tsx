@@ -36,10 +36,15 @@ export const TransactionDetailsView: FunctionComponent<{
   const rawData = transactionStore.rawData;
 
   const [txState, setTxState] = useState(transactionStore.txState);
+  const [txHash, setTxHash] = useState(transactionStore.txHash);
 
   useEffect(() => {
     setTxState(transactionStore.txState);
   }, [transactionStore.txState]);
+
+  useEffect(() => {
+    setTxHash(transactionStore.txHash);
+  }, [transactionStore.txHash]);
 
   const rows = (() => {
     let rows = getTxDetailsRows();
@@ -86,21 +91,21 @@ export const TransactionDetailsView: FunctionComponent<{
   })();
 
   const viewDetailsHandler = () => {
-    let txHash = "";
-    if (transactionStore.txHash) {
-      txHash =
+    let hash = "";
+    if (txHash) {
+      hash =
         (rawData?.type === "cosmos-sdk/MsgSend" ? "0x" : "") +
-        Buffer.from(transactionStore.txHash).toString("hex").toUpperCase();
+        Buffer.from(txHash).toString("hex").toUpperCase();
     } else if (
       rawData &&
       rawData.type === "wallet-swap" &&
       txState !== "failure"
     ) {
       const rawDataValue = rawData.value;
-      txHash = (rawDataValue as MsgSwap).transactionHash || "";
+      hash = (rawDataValue as MsgSwap).transactionHash || "";
     }
 
-    const url = chainInfo.raw.txExplorer?.txUrl.replace("{txHash}", txHash);
+    const url = chainInfo.raw.txExplorer?.txUrl.replace("{txHash}", hash);
     smartNavigation.pushSmart("WebView", {
       url: url,
     });
@@ -109,12 +114,12 @@ export const TransactionDetailsView: FunctionComponent<{
   return (
     <View style={containerStyle}>
       <ListRowView hideBorder rows={rows} />
-      {chainInfo.raw.txExplorer && (
+      {txHash && (
         <View style={style.flatten(["margin-y-16", "items-center"])}>
           <TextLink size="medium" onPress={viewDetailsHandler}>
             {intl.formatMessage(
               { id: "tx.result.viewDetails" },
-              { page: chainInfo.raw.txExplorer.name }
+              { page: chainInfo.raw.txExplorer?.name }
             )}
           </TextLink>
         </View>
