@@ -141,7 +141,7 @@ export const SendTokenScreen: FunctionComponent = observer(() => {
 
       const gasLimit = parseInt(gas.toHexString().slice(2), 16);
       const gasPrice = parseInt(price.slice(2), 16);
-      let feeDec = new Dec(gasLimit).mul(new Dec(gasPrice));
+      const feeDec = new Dec(gasLimit).mul(new Dec(gasPrice));
 
       let dec = new Dec(sendConfigs.amountConfig.amount);
       dec = dec.mulTruncate(

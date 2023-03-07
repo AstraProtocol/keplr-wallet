@@ -123,9 +123,10 @@ export class SignClientStore extends SignClientManager {
     | SignClientTypes.EventArguments["session_proposal"]
     | undefined = undefined;
 
-  @observable protected _pendingRequest:
-    | SignClientTypes.EventArguments["session_request"]
-    | undefined = undefined;
+  @observable
+  protected _sessionRequests: SignClientTypes.EventArguments["session_request"][] = [];
+
+  @observable protected _cancelRequestId: string | undefined = undefined;
 
   @observable protected _changedConnection:
     | SessionConnectInfor
@@ -201,11 +202,35 @@ export class SignClientStore extends SignClientManager {
   protected async onSessionRequest(
     request: SignClientTypes.EventArguments["session_request"]
   ): Promise<void> {
-    console.log("onSessionRequest: ", request);
-    runInAction(() => {
-      this._pendingRequest = request;
-    });
     const params = request.params;
+    console.log("onSessionRequest: params", params);
+
+    if (params.request.method === "cancel_request") {
+      const requestParams = JSON.stringify({
+        ...params.request.params,
+      });
+      runInAction(() => {
+        this._cancelRequestId = params.request.params.requestId;
+        console.log("__DEBUG__ cancel_request id: ", this._cancelRequestId);
+      });
+      // await this.reject(request);
+      // await this.approveRequest(request, requestParams);
+      return;
+    }
+
+    if (
+      this._cancelRequestId &&
+      this._cancelRequestId === params.request.params.requestId
+    ) {
+      await this.reject(request);
+      runInAction(() => {
+        this._cancelRequestId = undefined;
+      });
+      return;
+    }
+    runInAction(() => {
+      this._sessionRequests.push(request);
+    });
     if (params.request.method === "sign") {
       const requestParams = params.request.params;
       const messages = requestParams.messages;
@@ -251,12 +276,6 @@ export class SignClientStore extends SignClientManager {
       const hexResult = `0x${buffer.toString("hex")}`;
       console.log("__DEBUG__ hexResult: ", hexResult);
       await this.approveRequest(request, hexResult);
-    } else if (params.request.method === "cancel_request") {
-      const requestParams = JSON.stringify({
-        ...params.request.params,
-      });
-      console.log("__DEBUG__ cancel_request params: ", requestParams);
-      await this.approveRequest(request, requestParams);
     }
   }
 
@@ -286,7 +305,33 @@ export class SignClientStore extends SignClientManager {
   get pendingRequest():
     | SignClientTypes.EventArguments["session_request"]
     | undefined {
-    return this._pendingRequest;
+    if (this._sessionRequests.length > 0) {
+      return this._sessionRequests[0];
+    }
+  }
+
+  @computed
+  get hasPendingRequest(): boolean {
+    if (this._sessionRequests.length > 0) {
+      return true;
+    }
+    return false;
+  }
+
+  @computed
+  get cancelRequestId(): string | undefined {
+    return this._cancelRequestId;
+  }
+
+  canceledRequest(
+    requestId: string
+  ): SignClientTypes.EventArguments["session_request"] | undefined {
+    if (this._sessionRequests.length > 0) {
+      const canceledRequests = this._sessionRequests.find(
+        (request) => request.params.request.params.requestId === requestId
+      );
+      return canceledRequests;
+    }
   }
 
   requestSession(topic: string | undefined): SessionTypes.Struct | undefined {
@@ -361,19 +406,25 @@ export class SignClientStore extends SignClientManager {
     }
   }
 
-  async rejectRequest() {
-    if (this.client && this.pendingRequest) {
+  async reject(request: SignClientTypes.EventArguments["session_request"]) {
+    if (this.client) {
       await this.client.respond({
-        topic: this.pendingRequest.topic,
+        topic: request.topic,
         response: {
           jsonrpc: "2.0",
-          id: this.pendingRequest.id,
+          id: request.id,
           error: getSdkError("USER_REJECTED_METHODS"),
         },
       });
+    }
+  }
+
+  async rejectRequest() {
+    if (this.client && this.pendingRequest) {
+      await this.reject(this.pendingRequest);
       runInAction(() => {
         console.log("__DEBUG__ rejectRequest");
-        this._pendingRequest = undefined;
+        this._sessionRequests.shift();
       });
     }
   }
@@ -392,7 +443,7 @@ export class SignClientStore extends SignClientManager {
         },
       });
       runInAction(() => {
-        this._pendingRequest = undefined;
+        this._sessionRequests.shift();
       });
     }
   }

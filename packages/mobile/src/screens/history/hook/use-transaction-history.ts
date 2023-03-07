@@ -356,14 +356,12 @@ export const useTransactionHistory = () => {
       return {};
     }
     const content = msg.content as VoteContent;
-    console.log("__DEBUG__ content: ", content);
     const action = intl.formatMessage({
       id: "History.Vote",
     });
 
     return {
       action,
-      rightText: "",
     };
   };
   const parseTx = (tx: Tx): Record<string, any> => {
