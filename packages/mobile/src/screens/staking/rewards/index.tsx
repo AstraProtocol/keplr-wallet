@@ -88,18 +88,23 @@ export const StakingRewardScreen: FunctionComponent = () => {
   ) as string[];
 
   useEffect(() => {
-    simulateWithdrawRewardsTx(validatorAddresses).then(
-      ({ feeAmount, gasPrice, gasLimit }) => {
+    simulateWithdrawRewardsTx(validatorAddresses)
+      .then(({ feeAmount, gasPrice, gasLimit }) => {
         sendConfigs.feeConfig.setManualFee(feeAmount);
         sendConfigs.gasConfig.setGas(gasLimit);
         setGasPrice(gasPrice);
         setGasLimit(gasLimit);
-      }
-    );
+        setIsGasEstimated(true);
+      })
+      .catch((e) => {
+        console.log("__ERROR__", e);
+        setIsGasEstimated(false);
+      });
   }, []);
 
   const [gasPrice, setGasPrice] = useState(0);
   const [gasLimit, setGasLimit] = useState(0);
+  const [isGasEstimated, setIsGasEstimated] = useState(false);
 
   const feeText = formatCoinFee(sendConfigs.feeConfig.fee);
 
@@ -183,6 +188,7 @@ export const StakingRewardScreen: FunctionComponent = () => {
         text={intl.formatMessage({ id: "ClaimRewards" })}
         onPress={withdrawAllRewards}
         loading={account.txTypeInProgress === "withdrawRewards"}
+        disabled={!isGasEstimated}
       />
       <SafeAreaView />
     </View>
