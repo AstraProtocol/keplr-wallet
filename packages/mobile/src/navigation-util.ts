@@ -151,6 +151,9 @@ const {
     "Settings.NewPasswordInput": {
       upperScreenName: "Wallet",
     },
+    "Settings.Version": {
+      upperScreenName: "Wallet",
+    },
     "Staking.Dashboard": {
       upperScreenName: "Stake",
     },

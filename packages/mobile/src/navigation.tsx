@@ -106,10 +106,15 @@ import {
 import {
   NewPasswordInputScreen,
   PasswordInputScreen,
+  VersionScreen,
 } from "./screens/settings/screens";
 import { WebpageScreenScreenOptionsPreset } from "./screens/web/components/webpage-screen";
 import { DappsWebpageScreen } from "./screens/web/webpages";
 
+import {
+  StackCardInterpolationProps,
+  StackCardStyleInterpolator,
+} from "@react-navigation/stack";
 import { useIntl } from "react-intl";
 import { SmartNavigatorProvider } from "./navigation-util";
 import { SwapProvider } from "./providers/swap/provider";
@@ -122,10 +127,6 @@ import { SetupBiometricsScreen } from "./screens/register/biometrics";
 import { RegisterCreateEntryScreen } from "./screens/register/create-entry";
 import { SessionProposalScreen } from "./screens/wallet-connect";
 import { WebViewScreen } from "./screens/web/default";
-import {
-  StackCardInterpolationProps,
-  StackCardStyleInterpolator,
-} from "@react-navigation/stack";
 
 export const modalStyleInterpolator: StackCardStyleInterpolator = (
   props: StackCardInterpolationProps
@@ -517,6 +518,13 @@ export const WalletNavigation: FunctionComponent = () => {
         }}
         name="Settings.NewPasswordInput"
         component={NewPasswordInputScreen}
+      />
+      <Stack.Screen
+        options={{
+          title: intl.formatMessage({ id: "Version" }),
+        }}
+        name="Settings.Version"
+        component={VersionScreen}
       />
       <Stack.Screen
         options={{

@@ -31,6 +31,7 @@ import { AccountBiometricsItem } from "./items/select-biometrics";
 import { AccountLanguageItem } from "./items/select-language";
 import { AccountNetworkItem, RightView } from "./items/select-network";
 import { AccountVersionItem } from "./items/version-item";
+import DeviceInfo from "react-native-device-info";
 
 export const SettingsScreen: FunctionComponent = observer(() => {
   const {
@@ -236,6 +237,21 @@ export const SettingsScreen: FunctionComponent = observer(() => {
           <View style={style.get("height-32")} />
           <AccountItem
             containerStyle={accountItemProps.containerStyle}
+            label={intl.formatMessage({ id: "Version" })}
+            right={
+              <RightView
+                paragraph={
+                  DeviceInfo.getVersion() + ` (${DeviceInfo.getBuildNumber()})`
+                }
+              />
+            }
+            onPress={() => {
+              smartNavigation.navigateSmart("Settings.Version", {});
+            }}
+          />
+          <View style={style.get("height-32")} />
+          <AccountItem
+            containerStyle={accountItemProps.containerStyle}
             label={intl.formatMessage({ id: "settings.lockScreen" })}
             onPress={lock}
           />
@@ -251,7 +267,6 @@ export const SettingsScreen: FunctionComponent = observer(() => {
             labelStyle={style.flatten(["color-negative-text"])}
           />
           <View style={style.get("height-32")} />
-          <AccountVersionItem />
           {debugEnabled && fcmToken.length !== 0 && (
             <View
               style={style.flatten(["flex-row", "margin-page", "items-center"])}
