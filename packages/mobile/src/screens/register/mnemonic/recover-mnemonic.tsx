@@ -10,7 +10,6 @@ import { StyleSheet, Text, View } from "react-native";
 import { Button } from "../../../components/button";
 import Clipboard from "expo-clipboard";
 import { Buffer } from "buffer/";
-import { useBIP44Option } from "../bip44";
 import { useNewMnemonicConfig } from "./hook";
 import { useIntl } from "react-intl";
 import { AvoidingKeyboardBottomView } from "../../../components/avoiding-keyboard/avoiding-keyboard-bottom";
@@ -70,7 +69,6 @@ export const RecoverMnemonicScreen: FunctionComponent = observer(() => {
   const smartNavigation = useSmartNavigation();
 
   const registerConfig: RegisterConfig = route.params.registerConfig;
-  const bip44Option = useBIP44Option();
   const newMnemonicConfig = useNewMnemonicConfig(registerConfig);
 
   const {
@@ -95,11 +93,14 @@ export const RecoverMnemonicScreen: FunctionComponent = observer(() => {
     setIsCreating(true);
     const mnemonic = trimWordsStr(getValues("mnemonic"));
     newMnemonicConfig.setMnemonic(mnemonic);
+    const mnemonicOrPrivateKey =
+      newMnemonicConfig.mnemonic.split(" ").length >= 12
+        ? { mnemonic: newMnemonicConfig.mnemonic }
+        : { privateKey: Buffer.from(newMnemonicConfig.mnemonic, "hex") };
     smartNavigation.navigateSmart("Register.SetPincode", {
       registerType: RegisterType.recover,
       registerConfig,
-      bip44HDPath: bip44Option.bip44HDPath,
-      mnemonic: newMnemonicConfig.mnemonic,
+      ...mnemonicOrPrivateKey,
     });
     setIsCreating(false);
   });

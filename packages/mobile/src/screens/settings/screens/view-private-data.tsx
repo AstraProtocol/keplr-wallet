@@ -91,7 +91,16 @@ export const ViewPrivateDataScreen: FunctionComponent = () => {
             return <WordChip key={i.toString()} index={i + 1} word={word} />;
           })
         ) : (
-          <Text style={style.flatten(["h6", "margin-bottom-30"])}>{words}</Text>
+          <Text
+            style={style.flatten([
+              "text-medium-regular",
+              "margin-bottom-16",
+              "margin-right-16",
+              "color-label-text-1",
+            ])}
+          >
+            {words}
+          </Text>
         )}
       </View>
       <View style={style.flatten(["items-center", "margin-top-16"])}>

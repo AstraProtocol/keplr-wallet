@@ -49,16 +49,6 @@ export const NewPasswordInputScreen: FunctionComponent = observer(() => {
 
     const currentPassword = route.params.currentPassword;
 
-    if (userLoginStore.isSocialLoginActive) {
-      try {
-        await userLoginStore.updatePassword(password);
-      } catch (e) {
-        console.log(e);
-        setIsCreating(false);
-        return;
-      }
-    }
-
     const index = keyRingStore.multiKeyStoreInfo.findIndex((keyStore: any) => {
       return keyStore.selected;
     });

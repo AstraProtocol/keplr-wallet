@@ -72,6 +72,7 @@
     "@tkey/seed-phrase": "6.1.0",
     "@tkey/storage-layer-torus": "6.1.0",
     "@khanh-vo/service-provider-tiki": "6.1.0-rc2",
+    "@web3auth/react-native-sdk": "3.5.0",
     "aes-js": "^3.1.2",
     "appcenter": "^4.4.4",
     "appcenter-analytics": "^4.4.4",

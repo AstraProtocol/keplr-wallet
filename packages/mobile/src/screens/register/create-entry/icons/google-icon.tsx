@@ -1,9 +1,11 @@
 import React, { FunctionComponent } from "react";
 import Svg, { ClipPath, Defs, G, Path, Rect } from "react-native-svg";
 
-export const GoogleIcon: FunctionComponent = () => {
+export const GoogleIcon: FunctionComponent<{ size?: number }> = ({
+  size = 40,
+}) => {
   return (
-    <Svg width="40" height="41" viewBox="0 0 40 41" fill="none">
+    <Svg width={size} height={size} viewBox="0 0 40 41" fill="none">
       <G clipPath="url(#clip0_3574_92553)">
         <Path
           d="M20.0181 11.3052C22.1004 11.304 24.1159 12.0398 25.7075 13.3824L30.1658 9.13678C28.4544 7.55872 26.3987 6.40128 24.1619 5.7563C21.9251 5.11133 19.5688 4.99658 17.2799 5.42117C14.991 5.84576 12.8326 6.79799 10.976 8.20229C9.11934 9.6066 7.61555 11.4243 6.58398 13.5112L11.6101 17.3853C12.1963 15.6177 13.3237 14.0794 14.8327 12.9881C16.3418 11.8969 18.1559 11.3082 20.0181 11.3052Z"
@@ -24,7 +26,12 @@ export const GoogleIcon: FunctionComponent = () => {
       </G>
       <Defs>
         <ClipPath id="clip0_3574_92553">
-          <Rect width="30" height="30" fill="white" transform="translate(5 5.16992)" />
+          <Rect
+            width="30"
+            height="30"
+            fill="white"
+            transform="translate(5 5.16992)"
+          />
         </ClipPath>
       </Defs>
     </Svg>
