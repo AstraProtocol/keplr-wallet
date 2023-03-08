@@ -226,6 +226,7 @@
   "common.text.reject": "Từ chối",
   "common.text.securePassword": "Mật khẩu bảo mật",
   "common.text.updateWalletName": "Đổi tên ví",
+  "common.text.close": "Đóng",
 
   "camera.qrcode.error": "Mã QR hiện không được hỗ trợ",
   "camera.text.description": "Quét mã QR để gửi và liên kết ứng dụng",
@@ -283,6 +284,7 @@
   "walletconnect.permission": "{name} sẽ có quyền",
   "walletconnect.permission.showBalance": "Xem số dư và hoạt động trong ví của bạn",
   "walletconnect.permission.requestTransaction": "Yêu cầu phê duyệt cho các giao dịch",
+  "walletconnect.permission.requestCanceled": "Yêu cầu đã bị hủy",
 
   "staking.unbonding.amount": "Số ASA đang rút",
   "staking.unbonding.noticeWithdrawalPeriod": "Bạn sẽ nhận được {coin} sau {days} sau khi rút",

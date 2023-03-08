@@ -31,15 +31,15 @@ export const DelegationsItem: FunctionComponent<{
   }, [queryValidators.validators]);
 
   const getDelegationItems = (delegations: Staking.Delegation[]) => {
-    return delegations.map((del) => {
+    return delegations.map((del, key) => {
       const validator = validatorsMap.get(del.delegation.validator_address);
-      return <DashboardMyValidatorItem validator={validator} />;
+      return <DashboardMyValidatorItem validator={validator} key={key} />;
     });
   };
 
   const getValidatorItems = (validators: Staking.Validator[]) => {
-    return validators.map((validator) => {
-      return <DashboardValidatorItem validator={validator} />;
+    return validators.map((validator, key) => {
+      return <DashboardValidatorItem validator={validator} key={key} />;
     });
   };
 
@@ -48,9 +48,7 @@ export const DelegationsItem: FunctionComponent<{
       <CardBody style={style.flatten(["padding-y-0"])}>
         <Text style={style.flatten(["text-large-semi-bold", "color-white"])}>
           {intl.formatMessage({
-            id: hasDelegations
-              ? "MyStaking"
-              : "StakingProviders",
+            id: hasDelegations ? "MyStaking" : "StakingProviders",
           })}
         </Text>
       </CardBody>

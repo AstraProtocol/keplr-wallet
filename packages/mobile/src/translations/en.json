@@ -226,6 +226,7 @@
   "common.text.reject": "Reject",
   "common.text.securePassword": "Secured password",
   "common.text.updateWalletName": "Change wallet name",
+  "common.text.close": "Close",
 
   "camera.qrcode.error": "This QR is not supported",
   "camera.text.description": "Scan QR to send assets or connect to other apps",
@@ -283,6 +284,7 @@
   "walletconnect.permission": "{name} will have permission",
   "walletconnect.permission.showBalance": "Show balance and history of your wallet",
   "walletconnect.permission.requestTransaction": "Request approval for transactions",
+  "walletconnect.permission.requestCanceled": "The request has been canceled",
 
   "staking.unbonding.amount": "Unstaking amount",
   "staking.unbonding.noticeWithdrawalPeriod": "You will receive {coin} in {days}",

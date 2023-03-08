@@ -63,7 +63,8 @@ export const TxResultScreen: FunctionComponent = observer(() => {
     if (pendingRequest && requestSession) {
       setIsPendingSignRequest(true);
     }
-  }, [signClientStore]);
+    console.log(signClientStore.cancelRequestId);
+  }, [signClientStore, signClientStore.cancelRequestId]);
 
   const onRejectSignRequest = useCallback(
     async (name, isWC) => {

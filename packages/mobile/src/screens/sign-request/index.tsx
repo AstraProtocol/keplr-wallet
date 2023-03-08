@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useEffect, useState } from "react";
+import React, { FunctionComponent, useCallback, useEffect, useState } from "react";
 import { View, Animated, StyleSheet, TouchableOpacity } from "react-native";
 // import { ScrollView, TouchableOpacity } from "react-native-gesture-handler";
 import { useIntl } from "react-intl";
@@ -25,19 +25,32 @@ export const TransactionSignRequestView: FunctionComponent<{
   } = useStore();
 
   const { getValidator, getRewardsAmountOf } = useStaking();
-
   const [isWC, setIsWC] = useState(false);
+  const [wasCanceled, setWasCanceled] = useState(false);
 
   useEffect(() => {
     const pendingRequest = signClientStore.pendingRequest;
+    console.log(
+      "__DEBUG__: id",
+      pendingRequest?.params.request,
+      pendingRequest?.params.request.params.requestId
+    );
     const requestSession = signClientStore.requestSession(
       pendingRequest?.topic
     );
-    console.log("__DEBUG__: ", requestSession);
     if (pendingRequest && requestSession) {
       setIsWC(true);
     }
-  }, [signClientStore]);
+    console.log("__DEBUG__: cancelRequestId", signClientStore.cancelRequestId);
+    if (
+      signClientStore.cancelRequestId &&
+      signClientStore.cancelRequestId ===
+        signClientStore.pendingRequest?.params.request.params.requestId
+    ) {
+      console.log("ahihih");
+      setWasCanceled(true);
+    }
+  }, [signClientStore, signClientStore.cancelRequestId]);
 
   const waitingData = signInteractionStore.waitingData;
   const request = signClientStore.pendingRequest;
@@ -59,7 +72,26 @@ export const TransactionSignRequestView: FunctionComponent<{
   const type = getType(msgs as any[]);
   const source = isWC ? session?.peer.metadata.name : data?.msgOrigin;
   const sourceUrl = isWC ? session?.peer.metadata.url : data?.msgOrigin;
-  console.log(source, sourceUrl);
+
+  function getNetworkName(str: string): string {
+    const delimiterIndex: number = str.indexOf("-");
+    if (delimiterIndex >= 0) {
+      const networkName: string = str.slice(delimiterIndex + 1);
+      return capitalizeFirstLetter(networkName);
+    } else {
+      return "";
+    }
+  }
+
+  function capitalizeFirstLetter(str: string): string {
+    if (!str) {
+      return str;
+    }
+    return str.charAt(0).toUpperCase() + str.slice(1);
+  }
+
+  const networkName = getNetworkName(request?.params.chainId ?? "");
+
   const intl = useIntl();
 
   const renderDetail = ({ index }: { index: number }) => {
@@ -124,14 +156,15 @@ export const TransactionSignRequestView: FunctionComponent<{
               containerStyle={style.flatten([
                 "padding-x-16",
                 "flex-1",
-                "margin-top-64",
                 "background-color-card-background",
+                wasCanceled ? "margin-top-40" : "margin-top-64",
               ])}
               metadata={metadata}
               source={source}
               sourceUrl={sourceUrl}
-              chain={chainStore.current.chainName}
+              chain={networkName}
               type={intl.formatMessage({ id: type })}
+              wasCanceled={wasCanceled}
             />
             <RawDataCard
               containerStyle={style.flatten([
@@ -152,14 +185,15 @@ export const TransactionSignRequestView: FunctionComponent<{
                 containerStyle={style.flatten([
                   "padding-x-16",
                   "flex-1",
-                  "margin-top-64",
                   "background-color-card-background",
+                  wasCanceled ? "margin-top-40" : "margin-top-64",
                 ])}
                 metadata={metadata}
                 source={source}
                 sourceUrl={sourceUrl}
-                chain={chainStore.current.chainName}
+                chain={networkName}
                 type={intl.formatMessage({ id: type })}
+                wasCanceled={wasCanceled}
               />
             }
           />
@@ -203,18 +237,22 @@ export const TransactionSignRequestView: FunctionComponent<{
             <Button
               containerStyle={style.flatten(["margin-right-12", "flex-1"])}
               color="neutral"
-              text={intl.formatMessage({ id: "common.text.reject" })}
+              text={intl.formatMessage({
+                id: wasCanceled ? "common.text.close" : "common.text.reject",
+              })}
               onPress={async () => {
                 onReject(source, isWC);
               }}
             />
-            <Button
-              text={intl.formatMessage({ id: "Confirm" })}
-              onPress={async () => {
-                onApprove(source);
-              }}
-              containerStyle={style.flatten(["flex-1"])}
-            />
+            {wasCanceled ? null : (
+              <Button
+                text={intl.formatMessage({ id: "Confirm" })}
+                onPress={async () => {
+                  onApprove(source);
+                }}
+                containerStyle={style.flatten(["flex-1"])}
+              />
+            )}
           </View>
         </View>
       </View>

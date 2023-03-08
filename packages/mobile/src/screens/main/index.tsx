@@ -49,6 +49,7 @@ export const MainScreen: FunctionComponent = observer(() => {
   const {
     queryRewards,
     queryDelegations,
+    queryValidators,
     queryUnbondingDelegations,
   } = useStaking();
 
@@ -147,6 +148,7 @@ export const MainScreen: FunctionComponent = observer(() => {
       queryRewards.waitFreshResponse(),
       queryDelegations.waitFreshResponse(),
       queryUnbondingDelegations.waitFreshResponse(),
+      queryValidators.waitFreshResponse(),
     ]);
   }, [accountStore, chainStore, queriesStore]);
 
