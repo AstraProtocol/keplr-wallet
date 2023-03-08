@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useCallback, useEffect, useState } from "react";
+import React, { FunctionComponent, useEffect, useState } from "react";
 import { View, Animated, StyleSheet, TouchableOpacity } from "react-native";
 // import { ScrollView, TouchableOpacity } from "react-native-gesture-handler";
 import { useIntl } from "react-intl";
