@@ -217,45 +217,6 @@ export const UnlockScreen: FunctionComponent = observer(() => {
       // Because javascript is synchronous language, the loadnig state change would not delivered to the UI thread
       // before the actually decryption is complete.
       // So to make sure that the loading state changes, just wait very short time.
-      if (
-        userLoginStore.socialLoginData &&
-        userLoginStore.isSocialLoginActive
-      ) {
-        try {
-          await userLoginStore.reconstructSocialLoginData({ password });
-          const name = userLoginStore.socialLoginData.email;
-          const registerMnemonic = await userLoginStore.getSeedPhrase();
-          const registerPassword = await userLoginStore.getPassword();
-
-          const index = keyRingStore.multiKeyStoreInfo.findIndex(
-            (keyStore: any) => {
-              return keyStore.selected;
-            }
-          );
-          if (index !== -1) {
-            await keyRingStore.forceDeleteKeyRing(index);
-          }
-
-          await registerConfig.createMnemonic(
-            name,
-            registerMnemonic,
-            registerPassword,
-            bip44Option.bip44HDPath
-          );
-
-          if (keychainStore.isBiometrySupported && keychainStore.isBiometryOn) {
-            await keychainStore.turnOnBiometry(registerPassword);
-          }
-        } catch (e) {
-          setIsLoading(false);
-          setIsFailed(true);
-          return;
-        }
-
-        await hideSplashScreen();
-        return;
-      }
-
       await delay(10);
       await keyRingStore.unlock(password);
 
@@ -298,13 +259,6 @@ export const UnlockScreen: FunctionComponent = observer(() => {
       isSplashEnd &&
       keyRingStore.status === KeyRingStatus.EMPTY
     ) {
-      if (
-        userLoginStore.isSocialLoginActive &&
-        userLoginStore.socialLoginData
-      ) {
-        return;
-      }
-
       if (userLoginStore.registerType === RegisterType.recover) {
         return;
       }

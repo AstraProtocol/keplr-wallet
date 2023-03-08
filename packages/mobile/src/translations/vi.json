@@ -102,6 +102,7 @@
   "ClearFilter": "Xóa bộ lọc",
   "MyUnstaking": "Nhà cung cấp và số ASA đang rút",
   "FromStakingProvider": "Từ nhà cung cấp",
+  "WalletName": "Tên ví",
 
   "Dashboard.Banner.1": "Staking lợi nhuận tới",
   "Dashboard.Banner.2": "17%/năm",
@@ -202,7 +203,6 @@
   "common.inline.staking.noticeWithdrawalPeriod": "Khi {denom} đang rút, bạn\n • sẽ không nhận được tiếp phần thưởng\n • sẽ không thể hủy giao dịch rút\n • sẽ phải đợi {time} để {denom} rút về ví\n • sẽ rút toàn bộ phần thưởng từ gói này",
   "common.modal.cannotRedelegate.title": "Không thể chuyển đổi nhà cung cấp staking",
   "common.modal.cannotRedelegate.content": "Sau khi chuyển sang nhà cung cấp staking đang chọn, bạn cần chờ {time} để chuyển đổi tiếp từ nhà cung cấp đó. Vui lòng thử lại vào {date}.",
-  "common.text.accountHolder": "Tên ví",
   "common.text.approve": "Cho phép",
   "common.text.backupNow": "Sao lưu ngay",
   "common.text.changePasswordSuccess": "Thay đổi mật khẩu thành công",
@@ -336,9 +336,8 @@
   "register.createEntry.item.title.apple": "Đăng nhập với tài khoản Apple",
   "register.createEntry.item.title.google": "Đăng nhập với tài khoản Google",
   "register.createEntry.item.title.mnemonic": "Cụm từ bí mật",
-  "register.createEntry.item.title.tiki": "Đăng nhập với tài khoản Tiki",
-  "register.createEntry.section.convenient": "Cách tiện lợi nhất",
-  "register.createEntry.section.safe": "Cách an toàn nhất",
+  "register.createEntry.section.convenient": "Tài khoản mạng xã hội",
+  "register.createEntry.section.safe": "Tạo ví mới",
   "register.intro.appDesc": "Nơi an toàn để lưu giữ Astra của bạn",
 
   "validator.details.unbonding.nameAndAmount": "Số ASA đang rút",

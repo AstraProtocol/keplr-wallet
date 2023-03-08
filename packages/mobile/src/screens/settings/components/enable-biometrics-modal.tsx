@@ -80,6 +80,7 @@ export const EnableBiometricsModal: FunctionComponent<{
         <NormalInput
           value={password}
           error={errorText}
+          placeholder={intl.formatMessage({ id: "Password" })}
           onChangeText={setPassword}
           secureTextEntry={true}
           showPassword={showPassword}

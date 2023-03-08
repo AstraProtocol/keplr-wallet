@@ -1,55 +1,88 @@
 import { useRegisterConfig } from "@keplr-wallet/hooks";
+import { RouteProp, useRoute } from "@react-navigation/native";
 import { observer } from "mobx-react-lite";
-import React, { FunctionComponent } from "react";
+import React, { FunctionComponent, useEffect } from "react";
 import { useIntl } from "react-intl";
 import { Platform, SafeAreaView, Text, View } from "react-native";
 import { RectButton } from "react-native-gesture-handler";
 import { AllIcon, PageWithView } from "../../../components";
-import { InfoIcon } from "../../../components/icon/outlined";
+import { useSocialLogin } from "../../../hooks/use-social-login";
 import { useSmartNavigation } from "../../../navigation-util";
 import { useStore } from "../../../stores";
-import { ServiceProviderType } from "../../../stores/user-login";
+import { RegisterType } from "../../../stores/user-login";
 import { useStyle } from "../../../styles";
-import { useBIP44Option } from "../bip44";
 import { AppleIcon, GoogleIcon, MnemonicIcon } from "./icons";
 
 export const RegisterCreateEntryScreen: FunctionComponent = observer(() => {
-  const { keyRingStore, userLoginStore } = useStore();
+  const route = useRoute<
+    RouteProp<
+      Record<
+        string,
+        {
+          registerType?: RegisterType;
+        }
+      >,
+      string
+    >
+  >();
+
+  const { keyRingStore } = useStore();
   const style = useStyle();
   const intl = useIntl();
   const smartNavigation = useSmartNavigation();
   const registerConfig = useRegisterConfig(keyRingStore, []);
-  const bip44Option = useBIP44Option();
+  const { SUPPORTED_LOGIN_PROVIDER, openLogin } = useSocialLogin();
+
+  useEffect(() => {
+    updateNavigationTitle();
+  });
+
+  function updateNavigationTitle() {
+    let textId = "CreateNewWallet";
+    if (route.params?.registerType === RegisterType.recover) {
+      textId = "RecoverWallet";
+    }
+
+    smartNavigation.setOptions({
+      title: intl.formatMessage({ id: textId }),
+    });
+  }
 
   async function registerWithGoogle() {
-    registerWithSocial("google");
+    const loginProvider = SUPPORTED_LOGIN_PROVIDER.GOOGLE;
+    const data = await openLogin(loginProvider);
+
+    smartNavigation.pushSmart("Register.SetPincode", {
+      walletName: data.userInfo?.name,
+      registerType: route.params?.registerType,
+      registerConfig,
+      privateKey: Buffer.from(data.privKey, "hex"),
+      metadata: { email: data.userInfo?.email, loginProvider },
+    });
   }
 
   async function registerWithApple() {
-    registerWithSocial("apple");
-  }
-
-  async function registerWithSocial(serviceProviderType: ServiceProviderType) {
-    await userLoginStore.openLogin({
-      serviceProviderType,
-    });
+    const loginProvider = SUPPORTED_LOGIN_PROVIDER.APPLE;
+    const data = await openLogin(loginProvider);
 
     smartNavigation.pushSmart("Register.SetPincode", {
-      walletName: userLoginStore.socialLoginData?.email,
-      isSocialLogin: true,
-      registerType: userLoginStore.registerType,
+      walletName: data.userInfo?.name,
+      registerType: route.params?.registerType,
       registerConfig,
-      bip44HDPath: bip44Option.bip44HDPath,
+      privateKey: Buffer.from(data.privKey, "hex"),
+      metadata: { email: data.userInfo?.email, loginProvider },
     });
   }
 
   function registerWithMnemonic() {
-    smartNavigation.navigateSmart("Register.Tutorial", {});
+    if (route.params?.registerType === RegisterType.recover) {
+      smartNavigation.navigateSmart("Register.RecoverMnemonic", {
+        registerConfig,
+      });
+    } else {
+      smartNavigation.navigateSmart("Register.Tutorial", {});
+    }
   }
-
-  function showConvenientInfo() {}
-
-  function showSafeInfo() {}
 
   return (
     <PageWithView
@@ -73,9 +106,6 @@ export const RegisterCreateEntryScreen: FunctionComponent = observer(() => {
               id: "register.createEntry.section.convenient",
             })}
           </Text>
-          <RectButton onPress={showConvenientInfo}>
-            <InfoIcon />
-          </RectButton>
         </View>
         <EntryItem
           iconType="google"
@@ -102,11 +132,13 @@ export const RegisterCreateEntryScreen: FunctionComponent = observer(() => {
               "margin-right-8",
             ])}
           >
-            {intl.formatMessage({ id: "register.createEntry.section.safe" })}
+            {intl.formatMessage({
+              id:
+                route.params?.registerType === RegisterType.recover
+                  ? "RecoverWallet"
+                  : "CreateNewWallet",
+            })}
           </Text>
-          <RectButton onPress={showSafeInfo}>
-            <InfoIcon />
-          </RectButton>
         </View>
         <EntryItem
           iconType="mnemonic"

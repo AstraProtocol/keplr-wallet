@@ -222,11 +222,11 @@ const {
     };
     "Register.SetPincode": {
       walletName?: string;
-      isSocialLogin?: boolean;
       registerType?: RegisterType;
       registerConfig: RegisterConfig;
-      bip44HDPath: BIP44HDPath;
       mnemonic?: string;
+      privateKey?: Uint8Array;
+      metadata?: Record<string, string>;
     };
     "Register.SetupBiometrics": {
       registerType?: RegisterType;
@@ -257,7 +257,7 @@ const {
       registerType?: RegisterType;
       password: string;
     };
-    "Register.CreateEntry": {};
+    "Register.CreateEntry": { registerType?: RegisterType };
     Send: {
       chainId?: string;
       currency?: string;

@@ -308,9 +308,6 @@ export const RegisterNavigation: FunctionComponent = () => {
         component={SetupBiometricsScreen}
       />
       <Stack.Screen
-        options={{
-          title: intl.formatMessage({ id: "CreateNewWallet" }),
-        }}
         name="Register.CreateEntry"
         component={RegisterCreateEntryScreen}
       />

@@ -1,9 +1,11 @@
 import React, { FunctionComponent } from "react";
 import Svg, { G, Path, Rect } from "react-native-svg";
 
-export const AppleIcon: FunctionComponent = () => {
+export const AppleIcon: FunctionComponent<{ size?: number }> = ({
+  size = 40,
+}) => {
   return (
-    <Svg width={40} height={40} viewBox="0 0 44 44">
+    <Svg width={size} height={size} viewBox="0 0 44 44">
       <Rect width="100%" height="100%" rx="50%" ry="50%" fill="#fff" />
       <G fill="none" fill-rule="evenodd">
         <Path

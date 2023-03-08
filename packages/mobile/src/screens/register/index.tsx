@@ -18,6 +18,7 @@ import { useStore } from "../../stores";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useIntl } from "react-intl";
 import { useLanguage } from "../../translations";
+import { RegisterType } from "../../stores/user-login";
 
 export const RegisterIntroScreen: FunctionComponent = observer(() => {
   const {
@@ -38,6 +39,10 @@ export const RegisterIntroScreen: FunctionComponent = observer(() => {
   const actualHeightHeight = headerHeight - safeAreaInsets.top;
   const intl = useIntl();
   const language = useLanguage();
+
+  const socialLoginEnabled = remoteConfigStore.getBool(
+    "feature_socialLogin_enabled"
+  );
 
   analyticsStore.setUserProperties({
     astra_hub_chain_id: chainStore.current.chainId,
@@ -99,11 +104,10 @@ export const RegisterIntroScreen: FunctionComponent = observer(() => {
           <Button
             text={intl.formatMessage({ id: "CreateNewWallet" })}
             onPress={() => {
-              const socialLoginEnabled = remoteConfigStore.getBool(
-                "feature_socialLogin_enabled"
-              );
               if (socialLoginEnabled) {
-                smartNavigation.navigateSmart("Register.CreateEntry", {});
+                smartNavigation.navigateSmart("Register.CreateEntry", {
+                  registerType: RegisterType.new,
+                });
                 return;
               }
               smartNavigation.navigateSmart("Register.Tutorial", {});
@@ -114,6 +118,12 @@ export const RegisterIntroScreen: FunctionComponent = observer(() => {
             text={intl.formatMessage({ id: "RecoverWallet" })}
             color="neutral"
             onPress={() => {
+              if (socialLoginEnabled) {
+                smartNavigation.navigateSmart("Register.CreateEntry", {
+                  registerType: RegisterType.recover,
+                });
+                return;
+              }
               smartNavigation.navigateSmart("Register.RecoverMnemonic", {
                 registerConfig,
               });

@@ -235,10 +235,6 @@ export const PasswordInputScreen: FunctionComponent = observer(() => {
   }
 
   async function checkPassword() {
-    if (userLoginStore.isSocialLoginActive) {
-      return await checkAndUpdateSocialLoginPassword();
-    }
-
     let isValidPassword;
     try {
       await keyRingStore.unlock(password);

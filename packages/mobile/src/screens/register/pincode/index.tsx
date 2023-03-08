@@ -1,20 +1,21 @@
-import { BIP44HDPath } from "@keplr-wallet/background";
 import { RegisterConfig } from "@keplr-wallet/hooks";
 import { RouteProp, useRoute } from "@react-navigation/native";
 import { observer } from "mobx-react-lite";
 import React, { FunctionComponent, useEffect, useRef, useState } from "react";
 import { useIntl } from "react-intl";
-import { Keyboard, View } from "react-native";
+import { Keyboard, Text, View } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { MIN_PASSWORD_LENGTH } from "../../../common/utils";
 import { AvoidingKeyboardBottomView } from "../../../components/avoiding-keyboard/avoiding-keyboard-bottom";
 import { Button } from "../../../components/button";
 import { NormalInput } from "../../../components/input/normal-input";
+import { useSocialLogin } from "../../../hooks/use-social-login";
 import { useSmartNavigation } from "../../../navigation-util";
-import { useToastModal } from "../../../providers/toast-modal";
 import { useStore } from "../../../stores";
 import { RegisterType } from "../../../stores/user-login";
 import { useStyle } from "../../../styles";
+import { useBIP44Option } from "../bip44";
+import { AppleIcon, GoogleIcon } from "../create-entry/icons";
 
 export const NewPincodeScreen: FunctionComponent = observer(() => {
   const route = useRoute<
@@ -23,11 +24,11 @@ export const NewPincodeScreen: FunctionComponent = observer(() => {
         string,
         {
           walletName?: string;
-          isSocialLogin?: boolean;
           registerType?: RegisterType;
           registerConfig: RegisterConfig;
           mnemonic?: string;
-          bip44HDPath: BIP44HDPath;
+          privateKey?: Uint8Array;
+          metadata?: Record<string, string>;
         }
       >,
       string
@@ -35,20 +36,20 @@ export const NewPincodeScreen: FunctionComponent = observer(() => {
   >();
 
   const { userLoginStore, keyRingStore, signClientStore } = useStore();
+  const { SUPPORTED_LOGIN_PROVIDER } = useSocialLogin();
   const style = useStyle();
   const intl = useIntl();
 
-  const toastModal = useToastModal();
-
   const smartNavigation = useSmartNavigation();
+  const bip44Option = useBIP44Option();
 
   const {
     walletName = "",
-    isSocialLogin = false,
     registerType,
     registerConfig,
     mnemonic,
-    bip44HDPath,
+    privateKey,
+    metadata,
   } = route.params;
 
   const [name, setName] = useState(walletName);
@@ -73,26 +74,11 @@ export const NewPincodeScreen: FunctionComponent = observer(() => {
     setIsCreating(true);
 
     let registerMnemonic = mnemonic;
+    let registerPrivateKey = privateKey;
     let registerPassword = confirmPassword;
 
     // Social Login
-    if (isSocialLogin) {
-      try {
-        await userLoginStore.reconstructSocialLoginData({
-          password: confirmPassword,
-        });
-
-        registerMnemonic = await userLoginStore.getSeedPhrase();
-        registerPassword = await userLoginStore.getPassword();
-      } catch (e) {
-        console.log(e);
-        setPasswordErrorText(
-          intl.formatMessage({ id: "WrongPassword" })
-        );
-        setIsCreating(false);
-        return;
-      }
-    } else if (!registerMnemonic) {
+    if (!registerMnemonic && !registerPrivateKey) {
       setIsCreating(false);
       return;
     }
@@ -111,12 +97,23 @@ export const NewPincodeScreen: FunctionComponent = observer(() => {
       await signClientStore.clear();
     }
 
-    await registerConfig.createMnemonic(
-      name,
-      registerMnemonic,
-      registerPassword,
-      bip44HDPath
-    );
+    console.log("__NAME__", name);
+    if (registerMnemonic) {
+      await registerConfig.createMnemonic(
+        name,
+        registerMnemonic,
+        registerPassword,
+        bip44Option.bip44HDPath,
+        metadata
+      );
+    } else if (registerPrivateKey) {
+      await registerConfig.createPrivateKey(
+        name,
+        registerPrivateKey,
+        registerPassword,
+        metadata
+      );
+    }
 
     try {
       // Definetly, the last key is newest keyring.
@@ -130,11 +127,6 @@ export const NewPincodeScreen: FunctionComponent = observer(() => {
     }
 
     userLoginStore.updateRegisterType(RegisterType.unknown);
-
-    // Clear social login data
-    if (!isSocialLogin) {
-      await userLoginStore.clearLoginData();
-    }
 
     smartNavigation.reset({
       index: 0,
@@ -162,28 +154,6 @@ export const NewPincodeScreen: FunctionComponent = observer(() => {
     }
     validateInputData();
   }, [name, password, confirmPassword]);
-
-  useEffect(() => {
-    // Social Login
-    if (isSocialLogin && registerType !== RegisterType.unknown) {
-      toastModal.makeToast({
-        title: intl.formatMessage(
-          {
-            id:
-              registerType !== RegisterType.recover
-                ? "register.alert.socialLogin.newAccount"
-                : "register.alert.socialLogin.existedAccount",
-          },
-          {
-            provider:
-              userLoginStore.selectedServiceProviderType?.toString() || "",
-          }
-        ),
-        type: registerType !== RegisterType.recover ? "success" : "infor",
-        bottomOffset: 60,
-      });
-    }
-  }, [registerType]);
 
   const actionButtonTitle =
     registerType === RegisterType.recover
@@ -245,6 +215,35 @@ export const NewPincodeScreen: FunctionComponent = observer(() => {
     setConfirmPasswordErrorText("");
   };
 
+  const getSocialLoginView = () => {
+    let icon: React.ReactNode;
+    switch (metadata?.loginProvider) {
+      case SUPPORTED_LOGIN_PROVIDER.GOOGLE:
+        icon = <GoogleIcon size={24} />;
+        break;
+      case SUPPORTED_LOGIN_PROVIDER.APPLE:
+        icon = <AppleIcon size={24} />;
+        break;
+      default:
+        return;
+    }
+
+    return (
+      <View style={style.flatten(["flex-row", "margin-top-8", "items-center"])}>
+        {icon}
+        <Text
+          style={style.flatten([
+            "text-base-regular",
+            "color-label-text-1",
+            "margin-left-8",
+          ])}
+        >
+          {metadata?.email}
+        </Text>
+      </View>
+    );
+  };
+
   return (
     <View style={style.flatten(["flex-1", "background-color-background"])}>
       <KeyboardAwareScrollView
@@ -255,23 +254,23 @@ export const NewPincodeScreen: FunctionComponent = observer(() => {
         ])}
         enableOnAndroid
       >
-        {!isSocialLogin && (
-          <NormalInput
-            returnKeyType="next"
-            autoFocus
-            value={name}
-            label={intl.formatMessage({ id: "common.text.accountHolder" })}
-            onChangeText={setName}
-            style={{ marginBottom: 24 }}
-            onSubmitEditting={() => {
-              passwordInputRef.current.focus();
-            }}
-            editable={!isCreating}
-          />
-        )}
+        <NormalInput
+          returnKeyType="next"
+          autoFocus={walletName.length == 0}
+          value={name}
+          label={intl.formatMessage({ id: "WalletName" })}
+          onChangeText={setName}
+          // style={{ marginBottom: 24 }}
+          onSubmitEditting={() => {
+            passwordInputRef.current.focus();
+          }}
+          editable={!isCreating}
+        />
+        {getSocialLoginView()}
 
         <NormalInput
           returnKeyType="next"
+          autoFocus={walletName.length != 0}
           value={password}
           label={intl.formatMessage({ id: "Password" })}
           error={canVerify ? "" : passwordErrorText}
@@ -281,7 +280,7 @@ export const NewPincodeScreen: FunctionComponent = observer(() => {
           onShowPasswordChanged={setShowPassword}
           onChangeText={setPassword}
           onBlur={validateInputData}
-          style={{ marginBottom: 24, paddingBottom: 24 }}
+          style={{ marginTop: 24, marginBottom: 24, paddingBottom: 24 }}
           inputRef={passwordInputRef}
           onSubmitEditting={() => {
             confirmPasswordInputRef.current.focus();
