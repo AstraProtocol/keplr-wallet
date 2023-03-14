@@ -73,9 +73,9 @@ export const NewPincodeScreen: FunctionComponent = observer(() => {
   const onCreate = async () => {
     setIsCreating(true);
 
-    let registerMnemonic = mnemonic;
-    let registerPrivateKey = privateKey;
-    let registerPassword = confirmPassword;
+    const registerMnemonic = mnemonic;
+    const registerPrivateKey = privateKey;
+    const registerPassword = confirmPassword;
 
     // Social Login
     if (!registerMnemonic && !registerPrivateKey) {

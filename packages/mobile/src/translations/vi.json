@@ -114,7 +114,7 @@
 
   "Dashboard.Banner.1": "Staking lợi nhuận tới",
   "Dashboard.Banner.2": "17%/năm",
-  "Dashboard.Banner.3": "Khóa một lượng ASA để nhận thưởng hàng ngày. Rút bất kỳ lúc nào, không mất phần thưởng. Không kỳ hạn.",
+  "Dashboard.Banner.3": "Khóa một lượng ASA\nđể nhận thưởng hàng ngày",
 
   "Tooltip.APR.Title": "Phần thưởng dự tính",
   "Tooltip.APR.Desc": "Phần trăm lợi nhuận theo năm. Tỷ lệ này biến động liên tục, nên phần thưởng dự tính có thể khác với phần thưởng thực tế nhận được.",
@@ -208,7 +208,7 @@
   "common.inline.staking.estimatedRewards": "Phần thưởng dự tính",
   "common.inline.staking.redelegatingInfo": "Sau khi chuyển đổi, phần thưởng từ nhà cung cấp này sẽ được rút về ví",
   "common.inline.staking.unstakingInfo": "Sau khi stake, phần thưởng từ nhà cung cấp này sẽ được rút về ví",
-  "common.inline.staking.noticeWithdrawalPeriod": "Khi {denom} đang rút, bạn\n • sẽ không nhận được tiếp phần thưởng\n • sẽ không thể hủy giao dịch rút\n • sẽ phải đợi {time} để {denom} rút về ví\n • sẽ rút toàn bộ phần thưởng từ gói này",
+  "common.inline.staking.noticeWithdrawalPeriod": "{denom} sẽ được rút về ví sau {time}. Phần thưởng từ nhà cung cấp này sẽ được rút về ví ngay lập tức.",
   "common.modal.cannotRedelegate.title": "Không thể chuyển đổi nhà cung cấp staking",
   "common.modal.cannotRedelegate.content": "Sau khi chuyển sang nhà cung cấp staking đang chọn, bạn cần chờ {time} để chuyển đổi tiếp từ nhà cung cấp đó. Vui lòng thử lại vào {date}.",
   "common.text.approve": "Cho phép",

@@ -103,10 +103,9 @@ export const ValidatorHeaderCard: FunctionComponent<{
   return (
     <Card style={containerStyle}>
       <Fragment>
-        {getNavigationBar(
-          inl.formatMessage({ id: "StakingProvider" }),
-          { hidden: true }
-        )}
+        {getNavigationBar(inl.formatMessage({ id: "StakingProvider" }), {
+          hidden: true,
+        })}
         <Animated.View
           style={[
             {

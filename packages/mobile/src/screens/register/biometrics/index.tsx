@@ -122,9 +122,9 @@ export const SetupBiometricsScreen: FunctionComponent = () => {
             keychainStore.isBiometryType === BIOMETRY_TYPE.FACE ||
             keychainStore.isBiometryType === BIOMETRY_TYPE.FACE_ID
               ? "biometrics.title.face"
-              : (Platform.OS === "ios"
+              : Platform.OS === "ios"
               ? "biometrics.title.touch"
-              : "biometrics.title.fingerprint"),
+              : "biometrics.title.fingerprint",
         })}
       </Text>
       <Text
@@ -144,9 +144,9 @@ export const SetupBiometricsScreen: FunctionComponent = () => {
             keychainStore.isBiometryType === BIOMETRY_TYPE.FACE ||
             keychainStore.isBiometryType === BIOMETRY_TYPE.FACE_ID
               ? "enableBiometrics.face"
-              : (Platform.OS === "ios"
+              : Platform.OS === "ios"
               ? "enableBiometrics.touch"
-              : "enableBiometrics.fingerprint"),
+              : "enableBiometrics.fingerprint",
         })}
         onPress={enableBiometrics}
       />

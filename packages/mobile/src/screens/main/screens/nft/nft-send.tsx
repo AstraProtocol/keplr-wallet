@@ -210,16 +210,6 @@ export const NFTSendScreen: FunctionComponent = observer(() => {
     }
   };
 
-  const privateKey = Buffer.from(
-    Mnemonic.generateWalletFromMnemonic(
-      "chase resist zone cube industry bunker rebuild direct season arrest mask run",
-      `m/44'/60'/0'/0/0`
-    )
-  );
-
-  // console.log("__mnemonic__", validMnemonic);
-  console.log("__privateKey__", privateKey.toString("hex"));
-
   return (
     <View style={style.flatten(["flex-1", "background-color-background"])}>
       <CustomNavigationBar

@@ -26,7 +26,7 @@ export const NewPasswordInputScreen: FunctionComponent = observer(() => {
 
   const style = useStyle();
   const intl = useIntl();
-  const { keyRingStore, keychainStore, userLoginStore } = useStore();
+  const { keyRingStore, keychainStore } = useStore();
   const navigation = useNavigation();
 
   const [password, setPassword] = useState("");

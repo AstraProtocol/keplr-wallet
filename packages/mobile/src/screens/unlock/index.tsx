@@ -1,3 +1,10 @@
+import { KeyRingStatus } from "@keplr-wallet/background";
+import { useRegisterConfig } from "@keplr-wallet/hooks";
+import { IAccountStore } from "@keplr-wallet/stores";
+import { StackActions, useNavigation } from "@react-navigation/native";
+import delay from "delay";
+import { autorun } from "mobx";
+import { observer } from "mobx-react-lite";
 import React, {
   FunctionComponent,
   useCallback,
@@ -5,40 +12,32 @@ import React, {
   useRef,
   useState,
 } from "react";
+import { useIntl } from "react-intl";
 import {
   Dimensions,
   Image,
-  StatusBar,
-  StyleSheet,
-  View,
-  Text,
+  Keyboard,
   Platform,
   SafeAreaView,
-  Keyboard,
+  StatusBar,
+  StyleSheet,
+  Text,
+  View,
 } from "react-native";
-import Animated, { Easing } from "react-native-reanimated";
-import { observer } from "mobx-react-lite";
-import { useStyle } from "../../styles";
-import { Button, TextLink } from "../../components/button";
-import delay from "delay";
-import { useStore } from "../../stores";
-import { StackActions, useNavigation } from "@react-navigation/native";
-import { KeyRingStatus } from "@keplr-wallet/background";
-import { KeychainStore } from "../../stores/keychain";
-import { IAccountStore } from "@keplr-wallet/stores";
-import { autorun } from "mobx";
-import { NormalInput } from "../../components/input/normal-input";
-import { useIntl } from "react-intl";
-import { BiometricsIcon } from "../../components";
 import { TouchableOpacity } from "react-native-gesture-handler";
-import { useRegisterConfig } from "@keplr-wallet/hooks";
-import { useBIP44Option } from "../register/bip44";
 import { BIOMETRY_TYPE } from "react-native-keychain";
-import { AvoidingKeyboardBottomView } from "../../components/avoiding-keyboard/avoiding-keyboard-bottom";
-import { hideSplashScreen } from "../splash";
-import { useLanguage } from "../../translations";
+import Animated, { Easing } from "react-native-reanimated";
 import { MIN_PASSWORD_LENGTH } from "../../common/utils";
+import { BiometricsIcon } from "../../components";
+import { AvoidingKeyboardBottomView } from "../../components/avoiding-keyboard/avoiding-keyboard-bottom";
+import { Button, TextLink } from "../../components/button";
+import { NormalInput } from "../../components/input/normal-input";
+import { useStore } from "../../stores";
+import { KeychainStore } from "../../stores/keychain";
 import { RegisterType } from "../../stores/user-login";
+import { useStyle } from "../../styles";
+import { useLanguage } from "../../translations";
+import { hideSplashScreen } from "../splash";
 
 async function waitAccountLoad(
   accountStore: IAccountStore,
@@ -123,7 +122,6 @@ export const UnlockScreen: FunctionComponent = observer(() => {
 
   const navigation = useNavigation();
   const registerConfig = useRegisterConfig(keyRingStore, []);
-  const bip44Option = useBIP44Option();
 
   const [isSplashEnd, setIsSplashEnd] = useState(false);
 

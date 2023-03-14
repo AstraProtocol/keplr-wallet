@@ -135,23 +135,23 @@ export const CommissionsCard: FunctionComponent<{
     <Card style={containerStyle}>
       {validator ? (
         <CardBody style={style.flatten(["padding-y-0"])}>
+          {validator.description.details || validator.description.website ? (
+            <View style={style.flatten(["margin-top-12"])} />
+          ) : null}
           {validator.description.details ? (
             <Text
               style={style.flatten([
                 "text-left",
                 "color-label-text-1",
                 "body3",
-                "margin-top-12",
               ])}
             >
               {validator.description.details}
-              {validator.description.website ? (
-                <Text
-                  style={style.flatten(["text-underline", "color-link-text"])}
-                >
-                  {validator.description.website}
-                </Text>
-              ) : null}
+            </Text>
+          ) : null}
+          {validator.description.website ? (
+            <Text style={style.flatten(["text-underline", "color-link-text"])}>
+              {validator.description.website}
             </Text>
           ) : null}
           <View style={style.flatten(["flex-row", "margin-top-24"])}>

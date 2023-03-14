@@ -173,9 +173,6 @@ export const PasswordInputScreen: FunctionComponent = observer(() => {
         if (keyRingStore.multiKeyStoreInfo.length === 0) {
           await keychainStore.reset();
 
-          // Social Login
-          await userLoginStore.clearLoginData();
-
           analyticsStore.setUserProperties({
             astra_hub_from_address: null,
           });
@@ -244,38 +241,6 @@ export const PasswordInputScreen: FunctionComponent = observer(() => {
     }
 
     return isValidPassword;
-  }
-
-  async function checkAndUpdateSocialLoginPassword() {
-    try {
-      const localPassword = await userLoginStore.getPassword();
-      await userLoginStore.reconstructSocialLoginData({ password });
-
-      // update password
-      if (localPassword !== password) {
-        const index = keyRingStore.multiKeyStoreInfo.findIndex(
-          (keyStore: any) => {
-            return keyStore.selected;
-          }
-        );
-
-        await keyRingStore.unlock(localPassword);
-        await keyRingStore.updatePasswordKeyRing(
-          index,
-          localPassword,
-          password
-        );
-        await keyRingStore.unlock(password);
-
-        if (keychainStore.isBiometryOn && keychainStore.isBiometrySupported) {
-          await keychainStore.turnOnBiometry(password);
-        }
-      }
-    } catch (e) {
-      return false;
-    }
-
-    return true;
   }
 
   function showError() {
