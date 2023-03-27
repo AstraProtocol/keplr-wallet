@@ -156,7 +156,8 @@
     "web3-providers-http": "^1.7.5",
     "@react-native-firebase/app": "16.4.4",
     "@react-native-firebase/messaging": "16.4.4",
-    "react-native-gesture-handler": "^1.10.3"
+    "react-native-gesture-handler": "^1.10.3",
+    "react-native-linear-gradient": "2.6.2"
   },
   "devDependencies": {
     "@ethersproject/solidity": "^5.0.2",

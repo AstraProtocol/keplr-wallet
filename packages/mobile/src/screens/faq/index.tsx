@@ -20,6 +20,7 @@ export const FAQScreen: FunctionComponent = () => {
   return (
     <View style={style.flatten(["flex-1", "background-color-background"])}>
       <CustomNavigationBar
+        hideBottomSeparator={true}
         title={intl.formatMessage({ id: "FAQ" })}
         containerStyle={{
           ...style.flatten(["background-color-background"]),
@@ -88,7 +89,7 @@ const FAQItem: FunctionComponent<{
         >
           {title}
         </Text>
-        <DropDownIcon isExpanded={isExpanded} />
+        <DropDownIcon isExpanded={!isExpanded} />
       </View>
       {isExpanded && (
         <Text

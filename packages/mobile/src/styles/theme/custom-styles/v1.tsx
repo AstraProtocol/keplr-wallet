@@ -37,7 +37,7 @@ const V1ButtonCustom = {
   },
   "button-primary-solid-disabled": {
     color: "white",
-    backgroundColor: V1Colors["purple-50"],
+    backgroundColor: V1Colors["purple-50-40"],
     opacity: 0.4,
   },
   "button-primary-outline-default": {
@@ -89,7 +89,7 @@ const V1ButtonCustom = {
   },
   "button-neutral-solid-disabled": {
     color: V1Colors["gray-10"],
-    backgroundColor: V1Colors["gray-80"],
+    backgroundColor: V1Colors["gray-80-40"],
     opacity: 0.4,
   },
   "button-neutral-outline-default": {
@@ -141,7 +141,7 @@ const V1ButtonCustom = {
   },
   "button-negative-solid-disabled": {
     color: "white",
-    backgroundColor: V1Colors["red-60"],
+    backgroundColor: V1Colors["red-60-40"],
     opacity: 0.4,
   },
   "button-negative-outline-default": {

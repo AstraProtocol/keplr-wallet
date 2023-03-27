@@ -10,6 +10,7 @@ const GrayColors = {
   "gray-90": "#2B2E54",
   "gray-100": "#1A1E40",
   "gray-overlay": "#1A1E40CC",
+  "gray-80-40": "#3C417266",
 };
 
 const PurpleColors = {
@@ -27,7 +28,7 @@ const PurpleColors = {
 
   "purple-40-10": "#866BFF1A",
   "purple-40-15": "#866BFF26",
-  "purple-50-50": "#6D4DFF66",
+  "purple-50-40": "#6D4DFF66", //disable primary solid with opacity 0.4
 };
 
 const RedColors = {
@@ -36,7 +37,7 @@ const RedColors = {
   "red-30": "#FEAABF",
   "red-40": "#FE8EAA",
   "red-50": "#FD7294",
-  "red-60": "#FD567F",
+  "red-60": "#FC5D84",
   "red-70": "#DE3A62",
   "red-80": "#B32245",
   "red-90": "#750B25",
@@ -45,6 +46,7 @@ const RedColors = {
 
   "red-50-10": "#FD72941A",
   "red-50-15": "#FD729426",
+  "red-60-40": "#FC5D8466",
 };
 
 const YellowColors = {
@@ -151,7 +153,7 @@ export const V1StepViewColors = {
   "step-text-inactive": V1Colors["gray-50"],
 
   "step-dot-active": V1Colors["purple-50"],
-  "step-dot-inactive": V1Colors["purple-50-50"],
+  "step-dot-inactive": V1Colors["purple-50-40"],
 
   "step-tick-active": V1Colors["purple-50"],
   "step-tick-inactive": V1Colors["blue-90"],

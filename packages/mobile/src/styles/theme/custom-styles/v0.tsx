@@ -141,7 +141,7 @@ const ButtonCustom = {
   },
   "button-negative-solid-disabled": {
     color: "white",
-    backgroundColor: Colors["red-60"],
+    backgroundColor: Colors["red-60-40"],
     opacity: 0.4,
   },
   "button-negative-outline-default": {

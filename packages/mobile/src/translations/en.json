@@ -112,9 +112,9 @@
   "PendingCodePushVersion": "Pending CodePush Version",
   "LatestCodePushVersion": "Latest CodePush Version",
 
-  "Dashboard.Banner.1": "Staking",
+  "Dashboard.Banner.1": "Staking with profits up to",
   "Dashboard.Banner.2": "17%/year",
-  "Dashboard.Banner.3": "Lock ASA to earn rewards everyday.\nWithdraw at any time.\nFlexible timeline.",
+  "Dashboard.Banner.3": "Lock ASA to earn rewards everyday.",
 
   "Tooltip.APR.Title": "APR",
   "Tooltip.APR.Desc": "Phần trăm lợi nhuận theo năm. Lãi suất biến động liên tục, nên phần thưởng dự tính có thể khác với phần thưởng thực tế nhận được.",

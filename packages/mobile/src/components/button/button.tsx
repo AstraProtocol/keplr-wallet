@@ -38,7 +38,7 @@ export const Button: FunctionComponent<{
   const [isPressed, setIsPressed] = useState(false);
 
   const styleDefinition = (() => {
-    var state = "default";
+    let state = "default";
     if (disabled) {
       state = "disabled";
     } else if (loading || isPressed) {
